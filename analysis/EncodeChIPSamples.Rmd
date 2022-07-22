@@ -8,6 +8,8 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+
 
 library(tidyverse)
 library(data.table)

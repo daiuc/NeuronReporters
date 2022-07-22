@@ -298,7 +298,7 @@ from Neuron Reporters</a></li>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -309,8 +309,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -323,9 +323,9 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>NeuronReporters/analysis/</code>
@@ -348,18 +348,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -450,19 +453,27 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongNocommitsyet">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstreefceee7d951deb2be3e2ea5f75929d6f5b69a9279targetblankfceee7da">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> No
-commits yet </a>
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/daiuc/NeuronReporters/tree/fceee7d951deb2be3e2ea5f75929d6f5b69a9279" target="_blank">fceee7d</a>
+</a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongNocommitsyet"
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstreefceee7d951deb2be3e2ea5f75929d6f5b69a9279targetblankfceee7da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development
 and connecting the code version to the results is critical for
 reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/daiuc/NeuronReporters/tree/fceee7d951deb2be3e2ea5f75929d6f5b69a9279" target="_blank">fceee7d</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for
@@ -477,18 +488,14 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    code/.test/
+    Ignored:    code/resources/
+    Ignored:    code/results/
+    Ignored:    code/slurm_logs/
+    Ignored:    code/workflow/notebooks/oldTFscreen/.ipynb_checkpoints/
 
-Untracked files:
-    Untracked:  .Rprofile
-    Untracked:  .gitattributes
-    Untracked:  .gitignore
-    Untracked:  NeuronReporters.Rproj
-    Untracked:  README.md
-    Untracked:  _workflowr.yml
-    Untracked:  analysis/
-    Untracked:  code/
-    Untracked:  data/
-    Untracked:  output/
+Unstaged changes:
+    Modified:   analysis/EncodeChIPSamples.Rmd
 
 </code></pre>
 <p>
@@ -503,10 +510,74 @@ have uncommitted changes.
 <hr>
 </div>
 <div id="versions" class="tab-pane fade">
+
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/EncodeChIPSamples.Rmd</code>) and
+HTML (<code>docs/EncodeChIPSamples.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/daiuc/NeuronReporters/blob/fceee7d951deb2be3e2ea5f75929d6f5b69a9279/analysis/EncodeChIPSamples.Rmd" target="_blank">fceee7d</a>
+</td>
+<td>
+daiuc
+</td>
+<td>
+2022-07-21
+</td>
+<td>
+first commit
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/daiuc/NeuronReporters/fceee7d951deb2be3e2ea5f75929d6f5b69a9279/docs/EncodeChIPSamples.html" target="_blank">fceee7d</a>
+</td>
+<td>
+daiuc
+</td>
+<td>
+2022-07-21
+</td>
+<td>
+first commit
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -514,9 +585,6 @@ There are no past versions. Publish this analysis with
 <div id="encode-tf-chip-seq-experiments" class="section level2">
 <h2>Encode TF ChIP-seq experiments</h2>
 <p>All human tissue/cell lines:</p>
-<pre class="r"><code>encode.meta %&gt;% filter(Organism %in% c(&quot;Homo sapiens&quot;)) %&gt;% 
-  select(Organism, Biosample_term_name, Target_gene_symbol, Description) %&gt;% 
-  select(Biosample_term_name) %&gt;% unique</code></pre>
 <pre><code>                           Biosample_term_name
   1:                                    HCT116
   2:                                      A549
@@ -532,13 +600,7 @@ There are no past versions. Publish this analysis with
 <p>From the above table, I selected these tissue types as relevant:</p>
 <pre><code>&quot;bipolar neuron&quot;, &quot;neural progenitor cell&quot;, &quot;neural cell&quot;, &quot;astrocyte of the cerebellum&quot;,
 &quot;brain&quot;, &quot;excitatory neuron&quot;, &quot;neural crest cell&quot;</code></pre>
-<pre class="r"><code>neuron_related_tissues = c(&quot;bipolar neuron&quot;, &quot;neural progenitor cell&quot;, &quot;neural cell&quot;, 
-                           &quot;astrocyte of the cerebellum&quot;,&quot;brain&quot;, &quot;excitatory neuron&quot;, 
-                           &quot;neural crest cell&quot;)</code></pre>
 <p>ChIP-seq on the following gene products are available:</p>
-<pre class="r"><code>encode.meta %&gt;% 
-  select(Organism, Biosample_term_name, Target_gene_symbol, Description) %&gt;% 
-  filter(Organism %in% c(&quot;Homo sapiens&quot;) &amp; Biosample_term_name %in% neuron_related_tissues)</code></pre>
 <pre><code>        Organism         Biosample_term_name Target_gene_symbol
  1: Homo sapiens              bipolar neuron               CTCF
  2: Homo sapiens      neural progenitor cell               EZH2
@@ -597,23 +659,14 @@ There are no past versions. Publish this analysis with
 26: CTCF ChIP-seq on neural crest cell originated from neural crest cell
 27:                        CTCF ChIP-seq on brain female embryo (5 days)
                                                              Description</code></pre>
-<pre class="r"><code>chip.avail.genes = filter(encode.meta, 
-                          Organism %in% c(&quot;Homo sapiens&quot;) &amp; 
-                            Biosample_term_name %in% neuron_related_tissues) %&gt;% 
-  pull(Target_gene_symbol) %&gt;% unique
-
-chip.avail.genes</code></pre>
 <pre><code> [1] &quot;CTCF&quot;    &quot;EZH2&quot;    &quot;ZEB1&quot;    &quot;POU5F1&quot;  &quot;SMC3&quot;    &quot;MXI1&quot;    &quot;RAD21&quot;  
  [8] &quot;POLR2A&quot;  &quot;REST&quot;    &quot;TAF1&quot;    &quot;EP300&quot;   &quot;SMARCA4&quot;</code></pre>
 </div>
 <div id="interaction-matrix-from-neuron-reporters"
 class="section level2">
 <h2>Interaction matrix from Neuron Reporters</h2>
-<pre class="r"><code>my.inter = &quot;../code/resources/Interaction_matrix_nofilter_AllTF_20200107.csv&quot;
-my.inter = fread(my.inter)</code></pre>
 <p>There are 456 unique TFs recognized as regulators in our network
 analyses, shown in table below:</p>
-<pre class="r"><code>select(my.inter, regulator_gene) %&gt;% unique</code></pre>
 <pre><code>     regulator_gene
   1:             AR
   2:          ARNT2
@@ -627,7 +680,6 @@ analyses, shown in table below:</p>
 455:         ZNF75D
 456:         ZSCAN4</code></pre>
 <p>Found only regulators having ChIP-seq data.</p>
-<pre class="r"><code>intersect(my.inter$regulator_gene, chip.avail.genes)</code></pre>
 <pre><code>[1] &quot;CTCF&quot;   &quot;MXI1&quot;   &quot;POU5F1&quot; &quot;REST&quot;   &quot;ZEB1&quot;  </code></pre>
 <br>
 <p>
@@ -637,7 +689,6 @@ Session information
 </button>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
-<pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.1.0 (2021-05-18)
 Platform: x86_64-conda-linux-gnu (64-bit)
 Running under: Ubuntu 20.04.2 LTS
@@ -667,23 +718,23 @@ loaded via a namespace (and not attached):
  [7] R6_2.5.1            cellranger_1.1.0    backports_1.4.1    
 [10] reprex_2.0.1        evaluate_0.15       httr_1.4.3         
 [13] pillar_1.8.0        rlang_1.0.4         googlesheets4_1.0.0
-[16] readxl_1.4.0        rstudioapi_0.13     jquerylib_0.1.4    
-[19] rmarkdown_2.14      googledrive_2.0.0   munsell_0.5.0      
-[22] broom_1.0.0         compiler_4.1.0      httpuv_1.6.5       
-[25] modelr_0.1.8        xfun_0.31           pkgconfig_2.0.3    
-[28] htmltools_0.5.3     tidyselect_1.1.2    workflowr_1.7.0    
-[31] fansi_1.0.3         crayon_1.5.1        withr_2.5.0        
-[34] tzdb_0.3.0          dbplyr_2.2.1        later_1.3.0        
-[37] grid_4.1.0          jsonlite_1.8.0      gtable_0.3.0       
-[40] lifecycle_1.0.1     DBI_1.1.3           git2r_0.30.1       
-[43] magrittr_2.0.3      scales_1.2.0        cli_3.3.0          
-[46] stringi_1.7.8       cachem_1.0.6        fs_1.5.2           
-[49] promises_1.2.0.1    xml2_1.3.3          bslib_0.4.0        
-[52] ellipsis_0.3.2      generics_0.1.3      vctrs_0.4.1        
-[55] tools_4.1.0         glue_1.6.2          hms_1.1.1          
-[58] fastmap_1.1.0       yaml_2.3.5          colorspace_2.0-3   
-[61] gargle_1.2.0        rvest_1.0.2         knitr_1.39         
-[64] haven_2.5.0         sass_0.4.2         </code></pre>
+[16] readxl_1.4.0        rstudioapi_0.13     whisker_0.4        
+[19] jquerylib_0.1.4     rmarkdown_2.14      googledrive_2.0.0  
+[22] munsell_0.5.0       broom_1.0.0         compiler_4.1.0     
+[25] httpuv_1.6.5        modelr_0.1.8        xfun_0.31          
+[28] pkgconfig_2.0.3     htmltools_0.5.3     tidyselect_1.1.2   
+[31] workflowr_1.7.0     fansi_1.0.3         crayon_1.5.1       
+[34] withr_2.5.0         tzdb_0.3.0          dbplyr_2.2.1       
+[37] later_1.3.0         grid_4.1.0          jsonlite_1.8.0     
+[40] gtable_0.3.0        lifecycle_1.0.1     DBI_1.1.3          
+[43] git2r_0.30.1        magrittr_2.0.3      scales_1.2.0       
+[46] cli_3.3.0           stringi_1.7.8       cachem_1.0.6       
+[49] fs_1.5.2            promises_1.2.0.1    xml2_1.3.3         
+[52] bslib_0.4.0         ellipsis_0.3.2      generics_0.1.3     
+[55] vctrs_0.4.1         tools_4.1.0         glue_1.6.2         
+[58] hms_1.1.1           fastmap_1.1.0       yaml_2.3.5         
+[61] colorspace_2.0-3    gargle_1.2.0        rvest_1.0.2        
+[64] knitr_1.39          haven_2.5.0         sass_0.4.2         </code></pre>
 </div>
 </div>
 
