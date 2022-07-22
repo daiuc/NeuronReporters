@@ -2,7 +2,14 @@
 title: "EncodeChIPSamples"
 author: "Chao Dai"
 date: "2022-07-21"
-output: workflowr::wflow_html
+output: 
+  workflowr::wflow_html:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    code_folding: hide
+    
+  
 editor_options:
   chunk_output_type: inline
 ---
