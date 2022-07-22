@@ -29,7 +29,7 @@ All human tissue/cell lines:
 ```{r}
 encode.meta %>% filter(Organism %in% c("Homo sapiens")) %>% 
   select(Organism, Biosample_term_name, Target_gene_symbol, Description) %>% 
-  select(Biosample_term_name) %>% unique
+  select(Biosample_term_name) %>% unique %>% rmarkdown::paged_table(.)
 ```
 
 From the above table, I selected these tissue types as relevant:
