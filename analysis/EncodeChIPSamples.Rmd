@@ -1,5 +1,5 @@
 ---
-title: "EncodeChIPSamples"
+title: "Encode ChIP-seq Samples"
 author: "Chao Dai"
 date: "2022-07-21"
 output: 

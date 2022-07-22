@@ -13,12 +13,12 @@
 
 <meta name="date" content="2022-07-21" />
 
-<title>EncodeChIPSamples</title>
+<title>Encode ChIP-seq Samples</title>
 
 <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -368,7 +368,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">EncodeChIPSamples</h1>
+<h1 class="title toc-ignore">Encode ChIP-seq Samples</h1>
 <h4 class="author">Chao Dai</h4>
 <h4 class="date">2022-07-21</h4>
 
@@ -378,7 +378,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -389,8 +389,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -403,9 +403,9 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>NeuronReporters/analysis/</code>
@@ -428,18 +428,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -530,15 +533,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree4883312939c3e4bbff79727b81ba62b3f3124139targetblank4883312a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree66e0a9c2aa4e5e2302c448383a44aaab4a479822targetblank66e0a9ca">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/daiuc/NeuronReporters/tree/4883312939c3e4bbff79727b81ba62b3f3124139" target="_blank">4883312</a>
+<a href="https://github.com/daiuc/NeuronReporters/tree/66e0a9c2aa4e5e2302c448383a44aaab4a479822" target="_blank">66e0a9c</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree4883312939c3e4bbff79727b81ba62b3f3124139targetblank4883312a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree66e0a9c2aa4e5e2302c448383a44aaab4a479822targetblank66e0a9ca"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -548,7 +551,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/daiuc/NeuronReporters/tree/4883312939c3e4bbff79727b81ba62b3f3124139" target="_blank">4883312</a>.
+<a href="https://github.com/daiuc/NeuronReporters/tree/66e0a9c2aa4e5e2302c448383a44aaab4a479822" target="_blank">66e0a9c</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -572,6 +575,7 @@ Ignored files:
     Ignored:    code/workflow/notebooks/oldTFscreen/.ipynb_checkpoints/
 
 Unstaged changes:
+    Modified:   analysis/EncodeChIPSamples.Rmd
     Modified:   analysis/_site.yml
 
 </code></pre>
@@ -618,6 +622,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/daiuc/NeuronReporters/66e0a9c2aa4e5e2302c448383a44aaab4a479822/docs/EncodeChIPSamples.html" target="_blank">66e0a9c</a>
+</td>
+<td>
+daiuc
+</td>
+<td>
+2022-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
