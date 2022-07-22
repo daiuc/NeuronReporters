@@ -3,17 +3,13 @@ title: "EncodeChIPSamples"
 author: "Chao Dai"
 date: "2022-07-21"
 output: 
-  workflowr::wflow_html:
-    toc: true
-    toc_depth: 3
-    toc_float: true
-    code_folding: show
+  workflowr::wflow_html
 editor_options:
   chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = F)
+knitr::opts_chunk$set(echo = T)
 
 
 library(tidyverse)
@@ -34,7 +30,7 @@ All human tissue/cell lines:
 ```{r}
 encode.meta %>% filter(Organism %in% c("Homo sapiens")) %>% 
   select(Organism, Biosample_term_name, Target_gene_symbol, Description) %>% 
-  select(Biosample_term_name) %>% unique %>% rmarkdown::paged_table(.)
+  select(Biosample_term_name) %>% unique
 ```
 
 From the above table, I selected these tissue types as relevant:
@@ -53,8 +49,7 @@ ChIP-seq on the following gene products are available:
 ```{r}
 encode.meta %>% 
   select(Organism, Biosample_term_name, Target_gene_symbol, Description) %>% 
-  filter(Organism %in% c("Homo sapiens") & Biosample_term_name %in% neuron_related_tissues) %>% 
-  rmarkdown::paged_table(.)
+  filter(Organism %in% c("Homo sapiens") & Biosample_term_name %in% neuron_related_tissues)
 ```
 
 ```{r}
@@ -76,8 +71,7 @@ my.inter = fread(my.inter)
 There are 456 unique TFs recognized as regulators in our network analyses, shown in table below:
 
 ```{r}
-select(my.inter, regulator_gene) %>% unique %>% 
-  rmarkdown::paged_table(.)
+select(my.inter, regulator_gene) %>% unique
 ```
 
 Found only regulators having ChIP-seq data.
