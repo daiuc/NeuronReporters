@@ -530,15 +530,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree4b0c0f73c8ba2215b684cf6742e3c155fefc7f49targetblank4b0c0f7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree4883312939c3e4bbff79727b81ba62b3f3124139targetblank4883312a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/daiuc/NeuronReporters/tree/4b0c0f73c8ba2215b684cf6742e3c155fefc7f49" target="_blank">4b0c0f7</a>
+<a href="https://github.com/daiuc/NeuronReporters/tree/4883312939c3e4bbff79727b81ba62b3f3124139" target="_blank">4883312</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree4b0c0f73c8ba2215b684cf6742e3c155fefc7f49targetblank4b0c0f7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree4883312939c3e4bbff79727b81ba62b3f3124139targetblank4883312a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -548,7 +548,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/daiuc/NeuronReporters/tree/4b0c0f73c8ba2215b684cf6742e3c155fefc7f49" target="_blank">4b0c0f7</a>.
+<a href="https://github.com/daiuc/NeuronReporters/tree/4883312939c3e4bbff79727b81ba62b3f3124139" target="_blank">4883312</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -570,6 +570,9 @@ Ignored files:
     Ignored:    code/results/
     Ignored:    code/slurm_logs/
     Ignored:    code/workflow/notebooks/oldTFscreen/.ipynb_checkpoints/
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
 
 </code></pre>
 <p>
@@ -615,6 +618,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/daiuc/NeuronReporters/blob/4883312939c3e4bbff79727b81ba62b3f3124139/analysis/EncodeChIPSamples.Rmd" target="_blank">4883312</a>
+</td>
+<td>
+daiuc
+</td>
+<td>
+2022-07-22
+</td>
+<td>
+wflow_publish("EncodeChIPSamples.Rmd")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/daiuc/NeuronReporters/57be22cb59df71e92737e4e826ef6e0f11433341/docs/EncodeChIPSamples.html" target="_blank">57be22c</a>
+</td>
+<td>
+daiuc
+</td>
+<td>
+2022-07-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -812,6 +849,9 @@ first commit
 <div id="encode-tf-chip-seq-experiments" class="section level2">
 <h2>Encode TF ChIP-seq experiments</h2>
 <p>All human tissue/cell lines:</p>
+<pre class="r"><code>encode.meta %&gt;% filter(Organism %in% c(&quot;Homo sapiens&quot;)) %&gt;% 
+  select(Organism, Biosample_term_name, Target_gene_symbol, Description) %&gt;% 
+  select(Biosample_term_name) %&gt;% unique</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["Biosample_term_name"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"HCT116"},{"1":"A549"},{"1":"foreskin fibroblast"},{"1":"H1"},{"1":"retinal pigment epithelial cell"},{"1":"HeLa-S3"},{"1":"K562"},{"1":"GM12878"},{"1":"Karpas-422"},{"1":"Ishikawa"},{"1":"cardiac muscle cell"},{"1":"MCF 10A"},{"1":"NB4"},{"1":"parathyroid adenoma"},{"1":"SK-N-SH"},{"1":"MCF-7"},{"1":"HepG2"},{"1":"WTC11"},{"1":"BLaER1"},{"1":"PC-9"},{"1":"endothelial cell of umbilical vein"},{"1":"IMR-90"},{"1":"myotube"},{"1":"bipolar neuron"},{"1":"Panc1"},{"1":"GM13977"},{"1":"osteoblast"},{"1":"mammary epithelial cell"},{"1":"GM10248"},{"1":"GM12891"},{"1":"GM12801"},{"1":"lung"},{"1":"keratinocyte"},{"1":"OCI-LY7"},{"1":"GM12874"},{"1":"GM12864"},{"1":"T47D"},{"1":"fibroblast of lung"},{"1":"kidney"},{"1":"AG08470"},{"1":"GM19099"},{"1":"WI38"},{"1":"GM18505"},{"1":"HFF-Myc"},{"1":"GM15510"},{"1":"HEK293"},{"1":"AG10803"},{"1":"lower leg skin"},{"1":"OCI-LY3"},{"1":"HEK293T"},{"1":"PC-3"},{"1":"prostate gland"},{"1":"liver"},{"1":"GM23338"},{"1":"transverse colon"},{"1":"omental fat pad"},{"1":"neural progenitor cell"},{"1":"stomach"},{"1":"neutrophil"},{"1":"GM19239"},{"1":"body of pancreas"},{"1":"gastroesophageal sphincter"},{"1":"Caco-2"},{"1":"GM10847"},{"1":"HL-60"},{"1":"hepatocyte"},{"1":"epithelial cell of esophagus"},{"1":"subcutaneous adipose tissue"},{"1":"GM12868"},{"1":"GM12869"},{"1":"foreskin keratinocyte"},{"1":"RWPE2"},{"1":"upper lobe of left lung"},{"1":"GM12872"},{"1":"DOHH2"},{"1":"choroid plexus epithelial cell"},{"1":"HGPS cell"},{"1":"skeletal muscle myoblast"},{"1":"fibroblast of dermis"},{"1":"fibroblast of pulmonary artery"},{"1":"SU-DHL-6"},{"1":"suprapubic skin"},{"1":"GM12892"},{"1":"SK-N-MC"},{"1":"sigmoid colon"},{"1":"BJ"},{"1":"GM19240"},{"1":"breast epithelium"},{"1":"SH-SY5Y"},{"1":"GM12875"},{"1":"KMS-11"},{"1":"erythroblast"},{"1":"GM12873"},{"1":"spleen"},{"1":"Loucy"},{"1":"neural cell"},{"1":"gastrocnemius medialis"},{"1":"U2OS"},{"1":"GM19193"},{"1":"BE2C"},{"1":"thyroid gland"},{"1":"AG04449"},{"1":"bronchial epithelial cell"},{"1":"GM08714"},{"1":"tibial nerve"},{"1":"adrenal gland"},{"1":"PFSK-1"},{"1":"vagina"},{"1":"astrocyte"},{"1":"epithelial cell of proximal tubule"},{"1":"B cell"},{"1":"GM20000"},{"1":"cardiac fibroblast"},{"1":"LNCAP"},{"1":"C4-2B"},{"1":"GM10266"},{"1":"CD14-positive monocyte"},{"1":"testis"},{"1":"LNCaP clone FGC"},{"1":"NT2/D1"},{"1":"22Rv1"},{"1":"U-87 MG"},{"1":"GM12867"},{"1":"GM12871"},{"1":"OCI-LY1"},{"1":"GM12870"},{"1":"Raji"},{"1":"AG04450"},{"1":"D721Med"},{"1":"astrocyte of the spinal cord"},{"1":"GM18526"},{"1":"fibroblast of villous mesenchyme"},{"1":"GM18951"},{"1":"GM19238"},{"1":"GM12866"},{"1":"fibroblast of mammary gland"},{"1":"brain microvascular endothelial cell"},{"1":"astrocyte of the cerebellum"},{"1":"fibroblast of the aortic adventitia"},{"1":"DND-41"},{"1":"AG09319"},{"1":"GM06990"},{"1":"kidney epithelial cell"},{"1":"GM12865"},{"1":"NCI-H929"},{"1":"A673"},{"1":"pancreas"},{"1":"AG09309"},{"1":"Peyer's patch"},{"1":"GM23248"},{"1":"right lobe of liver"},{"1":"H54"},{"1":"esophagus squamous epithelium"},{"1":"WERI-Rb-1"},{"1":"GM13976"},{"1":"MM.1S"},{"1":"HFFc6"},{"1":"middle frontal area 46"},{"1":"left lung"},{"1":"brain"},{"1":"VCaP"},{"1":"esophagus muscularis mucosa"},{"1":"smooth muscle cell"},{"1":"ovary"},{"1":"uterus"},{"1":"activated CD4-positive, alpha-beta T cell"},{"1":"osteocyte"},{"1":"lower lobe of right lung"},{"1":"heart right ventricle"},{"1":"upper lobe of right lung"},{"1":"heart left ventricle"},{"1":"thoracic aorta"},{"1":"epithelial cell of prostate"},{"1":"coronary artery"},{"1":"right atrium auricular region"},{"1":"RWPE1"},{"1":"tibial artery"},{"1":"ascending aorta"},{"1":"H9"},{"1":"colonic mucosa"},{"1":"type B pancreatic cell"},{"1":"CD8-positive, alpha-beta T cell"},{"1":"placenta"},{"1":"activated B cell"},{"1":"excitatory neuron"},{"1":"mesothelial cell of epicardium"},{"1":"Calu3"},{"1":"endothelial cell"},{"1":"left ventricle myocardium inferior"},{"1":"endodermal cell"},{"1":"mucosa of descending colon"},{"1":"chondrocyte"},{"1":"neural crest cell"},{"1":"lower lobe of left lung"},{"1":"nephron"},{"1":"CD4-positive, alpha-beta T cell"},{"1":"progenitor cell of endocrine pancreas"},{"1":"psoas muscle"},{"1":"nephron progenitor cell"},{"1":"natural killer cell"},{"1":"activated CD8-positive, alpha-beta T cell"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
@@ -820,26 +860,42 @@ first commit
 <p>From the above table, I selected these tissue types as relevant:</p>
 <pre><code>&quot;bipolar neuron&quot;, &quot;neural progenitor cell&quot;, &quot;neural cell&quot;, &quot;astrocyte of the cerebellum&quot;,
 &quot;brain&quot;, &quot;excitatory neuron&quot;, &quot;neural crest cell&quot;</code></pre>
+<pre class="r"><code>neuron_related_tissues = c(&quot;bipolar neuron&quot;, &quot;neural progenitor cell&quot;, &quot;neural cell&quot;, 
+                           &quot;astrocyte of the cerebellum&quot;,&quot;brain&quot;, &quot;excitatory neuron&quot;, 
+                           &quot;neural crest cell&quot;)</code></pre>
 <p>ChIP-seq on the following gene products are available:</p>
+<pre class="r"><code>encode.meta %&gt;% 
+  select(Organism, Biosample_term_name, Target_gene_symbol, Description) %&gt;% 
+  filter(Organism %in% c(&quot;Homo sapiens&quot;) &amp; Biosample_term_name %in% neuron_related_tissues)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["Organism"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Biosample_term_name"],"name":[2],"type":["chr"],"align":["left"]},{"label":["Target_gene_symbol"],"name":[3],"type":["chr"],"align":["left"]},{"label":["Description"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"Homo sapiens","2":"bipolar neuron","3":"CTCF","4":""},{"1":"Homo sapiens","2":"neural progenitor cell","3":"EZH2","4":""},{"1":"Homo sapiens","2":"bipolar neuron","3":"ZEB1","4":"Chip-Seq on biopolar spindle neuron"},{"1":"Homo sapiens","2":"bipolar neuron","3":"POU5F1","4":"Chip-Seq on biopolar spindle neuron"},{"1":"Homo sapiens","2":"neural progenitor cell","3":"CTCF","4":""},{"1":"Homo sapiens","2":"neural cell","3":"SMC3","4":"SMC3 ChIP-seq on human neural cell"},{"1":"Homo sapiens","2":"neural cell","3":"MXI1","4":"MXI1 ChIP-seq on human neural cell"},{"1":"Homo sapiens","2":"neural cell","3":"RAD21","4":"RAD21 ChIP-seq on human neural cell"},{"1":"Homo sapiens","2":"neural progenitor cell","3":"EZH2","4":""},{"1":"Homo sapiens","2":"bipolar neuron","3":"EZH2","4":""},{"1":"Homo sapiens","2":"neural cell","3":"POLR2A","4":"POLR2AphosphoS5 ChIP-seq protocol v042211.1 on human H1-neurons"},{"1":"Homo sapiens","2":"neural cell","3":"REST","4":"REST ChIP-seq protocol v042211.1 on human H1-neurons"},{"1":"Homo sapiens","2":"neural cell","3":"EZH2","4":""},{"1":"Homo sapiens","2":"astrocyte of the cerebellum","3":"CTCF","4":"CTCF ChIP-seq on human HAc"},{"1":"Homo sapiens","2":"neural cell","3":"TAF1","4":"TAF1 ChIP-seq protocol v042211.1 on human H1-neurons"},{"1":"Homo sapiens","2":"neural cell","3":"CTCF","4":"CTCF ChIP-seq on human neural cell"},{"1":"Homo sapiens","2":"neural cell","3":"EP300","4":"EP300 ChIP-seq on human neural cell"},{"1":"Homo sapiens","2":"brain","3":"CTCF","4":"CTCF ChIP-seq on brain female embryo (5 days)"},{"1":"Homo sapiens","2":"neural progenitor cell","3":"CTCF","4":"CTCF ChIP-seq on neural progenitor cell"},{"1":"Homo sapiens","2":"brain","3":"CTCF","4":"CTCF ChIP-seq on brain female embryo (5 days)"},{"1":"Homo sapiens","2":"bipolar neuron","3":"SMARCA4","4":"Chip-Seq on biopolar spindle neuron"},{"1":"Homo sapiens","2":"bipolar neuron","3":"POLR2A","4":"Chip-Seq on biopolar spindle neuron"},{"1":"Homo sapiens","2":"bipolar neuron","3":"CTCF","4":"Chip-Seq on biopolar spindle neuron"},{"1":"Homo sapiens","2":"brain","3":"CTCF","4":""},{"1":"Homo sapiens","2":"excitatory neuron","3":"CTCF","4":"CTCF ChIP-seq on excitatory neuron"},{"1":"Homo sapiens","2":"neural crest cell","3":"CTCF","4":"CTCF ChIP-seq on neural crest cell originated from neural crest cell"},{"1":"Homo sapiens","2":"brain","3":"CTCF","4":"CTCF ChIP-seq on brain female embryo (5 days)"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
+<pre class="r"><code>chip.avail.genes = filter(encode.meta, 
+                          Organism %in% c(&quot;Homo sapiens&quot;) &amp; 
+                            Biosample_term_name %in% neuron_related_tissues) %&gt;% 
+  pull(Target_gene_symbol) %&gt;% unique
+
+chip.avail.genes</code></pre>
 <pre><code> [1] &quot;CTCF&quot;    &quot;EZH2&quot;    &quot;ZEB1&quot;    &quot;POU5F1&quot;  &quot;SMC3&quot;    &quot;MXI1&quot;    &quot;RAD21&quot;  
  [8] &quot;POLR2A&quot;  &quot;REST&quot;    &quot;TAF1&quot;    &quot;EP300&quot;   &quot;SMARCA4&quot;</code></pre>
 </div>
 <div id="interaction-matrix-from-neuron-reporters"
 class="section level2">
 <h2>Interaction matrix from Neuron Reporters</h2>
+<pre class="r"><code>my.inter = &quot;../code/resources/Interaction_matrix_nofilter_AllTF_20200107.csv&quot;
+my.inter = fread(my.inter)</code></pre>
 <p>There are 456 unique TFs recognized as regulators in our network
 analyses, shown in table below:</p>
+<pre class="r"><code>select(my.inter, regulator_gene) %&gt;% unique</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["regulator_gene"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"AR"},{"1":"ARNT2"},{"1":"ATF2"},{"1":"ATF3"},{"1":"ATF4"},{"1":"ATF6"},{"1":"ATF7"},{"1":"ATOH1"},{"1":"BACH1"},{"1":"BACH2"},{"1":"BARHL2"},{"1":"BARX1"},{"1":"BARX2"},{"1":"BATF"},{"1":"BATF3"},{"1":"BCL6"},{"1":"BCL6B"},{"1":"BHLHE40"},{"1":"BHLHE41"},{"1":"CDX1"},{"1":"CDX4"},{"1":"CEBPA"},{"1":"CEBPB"},{"1":"CEBPD"},{"1":"CEBPG"},{"1":"CENPB"},{"1":"CLOCK"},{"1":"CREB1"},{"1":"CREB3"},{"1":"CREB3L1"},{"1":"CREB3L4"},{"1":"CREM"},{"1":"CTCF"},{"1":"CTCFL"},{"1":"CUX1"},{"1":"CUX2"},{"1":"DBP"},{"1":"DLX6"},{"1":"DMRT3"},{"1":"DMRTC2"},{"1":"E2F1"},{"1":"E2F2"},{"1":"E2F3"},{"1":"E2F4"},{"1":"E2F6"},{"1":"E2F8"},{"1":"EBF1"},{"1":"EBF3"},{"1":"EGR1"},{"1":"EGR2"},{"1":"EGR3"},{"1":"EGR4"},{"1":"ELF1"},{"1":"ELF2"},{"1":"ELF3"},{"1":"ELF4"},{"1":"ELF5"},{"1":"ELK1"},{"1":"ELK3"},{"1":"ELK4"},{"1":"EMX1"},{"1":"EMX2"},{"1":"EN1"},{"1":"EN2"},{"1":"EOMES"},{"1":"ERF"},{"1":"ERG"},{"1":"ESR1"},{"1":"ESR2"},{"1":"ESRRA"},{"1":"ESRRB"},{"1":"ETS1"},{"1":"ETS2"},{"1":"ETV1"},{"1":"ETV2"},{"1":"ETV3"},{"1":"ETV4"},{"1":"ETV5"},{"1":"ETV6"},{"1":"EVX1"},{"1":"FEV"},{"1":"FIGLA"},{"1":"FLI1"},{"1":"FOS"},{"1":"FOSL1"},{"1":"FOSL2"},{"1":"FOXA1"},{"1":"FOXA2"},{"1":"FOXA3"},{"1":"FOXB1"},{"1":"FOXC1"},{"1":"FOXC2"},{"1":"FOXD2"},{"1":"FOXE1"},{"1":"FOXF2"},{"1":"FOXG1"},{"1":"FOXH1"},{"1":"FOXK2"},{"1":"FOXL1"},{"1":"FOXN3"},{"1":"FOXO3"},{"1":"FOXO4"},{"1":"FOXP1"},{"1":"FOXP2"},{"1":"FOXP3"},{"1":"GABPA"},{"1":"GATA2"},{"1":"GATA3"},{"1":"GATA4"},{"1":"GATA5"},{"1":"GATA6"},{"1":"GBX2"},{"1":"GCM1"},{"1":"GCM2"},{"1":"GFI1"},{"1":"GLI2"},{"1":"GLI3"},{"1":"GLIS1"},{"1":"GLIS2"},{"1":"GLIS3"},{"1":"GMEB2"},{"1":"GRHL1"},{"1":"GSC"},{"1":"HAND2"},{"1":"HES1"},{"1":"HES2"},{"1":"HES6"},{"1":"HESX1"},{"1":"HEY1"},{"1":"HEY2"},{"1":"HIC2"},{"1":"HIF1A"},{"1":"HINFP"},{"1":"HLF"},{"1":"HMBOX1"},{"1":"HNF1A"},{"1":"HNF1B"},{"1":"HNF4A"},{"1":"HNF4G"},{"1":"HOXA1"},{"1":"HOXA13"},{"1":"HOXA5"},{"1":"HOXA6"},{"1":"HOXA7"},{"1":"HOXB2"},{"1":"HOXB3"},{"1":"HOXB4"},{"1":"HOXB7"},{"1":"HOXB8"},{"1":"HOXC11"},{"1":"HOXC13"},{"1":"HOXC8"},{"1":"HOXD13"},{"1":"HOXD3"},{"1":"HOXD8"},{"1":"HOXD9"},{"1":"HSF1"},{"1":"HSF2"},{"1":"HSF4"},{"1":"IKZF1"},{"1":"INSM1"},{"1":"IRF1"},{"1":"IRF2"},{"1":"IRF3"},{"1":"IRF4"},{"1":"IRF5"},{"1":"IRF6"},{"1":"IRF7"},{"1":"IRF8"},{"1":"ISL2"},{"1":"JDP2"},{"1":"JUN"},{"1":"JUNB"},{"1":"JUND"},{"1":"KLF10"},{"1":"KLF11"},{"1":"KLF13"},{"1":"KLF15"},{"1":"KLF16"},{"1":"KLF2"},{"1":"KLF3"},{"1":"KLF4"},{"1":"KLF5"},{"1":"KLF6"},{"1":"KLF9"},{"1":"LEF1"},{"1":"LHX1"},{"1":"LHX2"},{"1":"LHX5"},{"1":"LHX6"},{"1":"LHX9"},{"1":"LMX1B"},{"1":"MAF"},{"1":"MAFA"},{"1":"MAFF"},{"1":"MAFG"},{"1":"MAFK"},{"1":"MAX"},{"1":"MAZ"},{"1":"MEF2A"},{"1":"MEF2C"},{"1":"MEF2D"},{"1":"MEIS1"},{"1":"MEIS2"},{"1":"MEIS3"},{"1":"MEOX1"},{"1":"MEOX2"},{"1":"MITF"},{"1":"MIXL1"},{"1":"MLX"},{"1":"MLXIPL"},{"1":"MNT"},{"1":"MNX1"},{"1":"MSC"},{"1":"MSX1"},{"1":"MSX2"},{"1":"MTF1"},{"1":"MXI1"},{"1":"MYB"},{"1":"MYBL1"},{"1":"MYBL2"},{"1":"MYC"},{"1":"MYCN"},{"1":"MYF5"},{"1":"MZF1"},{"1":"NEUROD1"},{"1":"NEUROD2"},{"1":"NEUROG1"},{"1":"NEUROG2"},{"1":"NFATC2"},{"1":"NFATC3"},{"1":"NFATC4"},{"1":"NFE2"},{"1":"NFE2L1"},{"1":"NFE2L2"},{"1":"NFIA"},{"1":"NFIB"},{"1":"NFIC"},{"1":"NFIL3"},{"1":"NFIX"},{"1":"NFKB1"},{"1":"NFKB2"},{"1":"NFYA"},{"1":"NFYB"},{"1":"NFYC"},{"1":"NHLH1"},{"1":"NHLH2"},{"1":"NKX2-2"},{"1":"NKX2-5"},{"1":"NKX2-8"},{"1":"NKX3-1"},{"1":"NKX3-2"},{"1":"NKX6-1"},{"1":"NKX6-2"},{"1":"NR1D1"},{"1":"NR1D2"},{"1":"NR1I2"},{"1":"NR1I3"},{"1":"NR2C1"},{"1":"NR2C2"},{"1":"NR2F1"},{"1":"NR2F2"},{"1":"NR2F6"},{"1":"NR3C1"},{"1":"NR3C2"},{"1":"NR4A1"},{"1":"NR4A2"},{"1":"NRF1"},{"1":"NRL"},{"1":"OLIG1"},{"1":"OLIG2"},{"1":"OLIG3"},{"1":"ONECUT1"},{"1":"ONECUT2"},{"1":"OTX1"},{"1":"OTX2"},{"1":"OVOL1"},{"1":"OVOL2"},{"1":"PAX1"},{"1":"PAX3"},{"1":"PAX4"},{"1":"PAX5"},{"1":"PAX6"},{"1":"PAX9"},{"1":"PBX1"},{"1":"PBX2"},{"1":"PBX3"},{"1":"PHOX2A"},{"1":"PHOX2B"},{"1":"PITX1"},{"1":"PITX2"},{"1":"PITX3"},{"1":"PKNOX1"},{"1":"PKNOX2"},{"1":"PLAG1"},{"1":"PLAGL2"},{"1":"POU2F1"},{"1":"POU2F2"},{"1":"POU2F3"},{"1":"POU3F1"},{"1":"POU3F2"},{"1":"POU3F3"},{"1":"POU3F4"},{"1":"POU4F1"},{"1":"POU4F2"},{"1":"POU4F3"},{"1":"POU5F1"},{"1":"POU5F1B"},{"1":"POU6F1"},{"1":"POU6F2"},{"1":"PPARD"},{"1":"PPARG"},{"1":"PRDM1"},{"1":"PRDM4"},{"1":"PROX1"},{"1":"PRRX1"},{"1":"PRRX2"},{"1":"RARA"},{"1":"RARB"},{"1":"RARG"},{"1":"RAX"},{"1":"RBPJ"},{"1":"REL"},{"1":"RELA"},{"1":"RELB"},{"1":"REST"},{"1":"RFX1"},{"1":"RFX2"},{"1":"RFX3"},{"1":"RFX4"},{"1":"RFX5"},{"1":"RHOXF1"},{"1":"RORA"},{"1":"RORB"},{"1":"RORC"},{"1":"RREB1"},{"1":"RUNX1"},{"1":"RUNX2"},{"1":"RUNX3"},{"1":"RXRB"},{"1":"RXRG"},{"1":"SCRT1"},{"1":"SCRT2"},{"1":"SHOX"},{"1":"SIX1"},{"1":"SIX2"},{"1":"SMAD3"},{"1":"SNAI1"},{"1":"SNAI2"},{"1":"SNAI3"},{"1":"SOX10"},{"1":"SOX12"},{"1":"SOX13"},{"1":"SOX14"},{"1":"SOX15"},{"1":"SOX2"},{"1":"SOX21"},{"1":"SOX4"},{"1":"SOX8"},{"1":"SOX9"},{"1":"SP1"},{"1":"SP2"},{"1":"SP3"},{"1":"SP4"},{"1":"SP8"},{"1":"SPDEF"},{"1":"SREBF1"},{"1":"SREBF2"},{"1":"SRF"},{"1":"STAT1"},{"1":"STAT3"},{"1":"TBR1"},{"1":"TBX1"},{"1":"TBX15"},{"1":"TBX18"},{"1":"TBX19"},{"1":"TBX2"},{"1":"TBX3"},{"1":"TBX5"},{"1":"TBX6"},{"1":"TCF12"},{"1":"TCF21"},{"1":"TCF3"},{"1":"TCF4"},{"1":"TCF7"},{"1":"TCF7L1"},{"1":"TCF7L2"},{"1":"TCFL5"},{"1":"TEAD1"},{"1":"TEAD2"},{"1":"TEAD3"},{"1":"TEAD4"},{"1":"TEF"},{"1":"TFAP2A"},{"1":"TFAP2B"},{"1":"TFAP2C"},{"1":"TFAP2E"},{"1":"TFAP4"},{"1":"TFCP2"},{"1":"TFDP1"},{"1":"TFE3"},{"1":"TFEB"},{"1":"TFEC"},{"1":"TGIF1"},{"1":"TGIF2"},{"1":"THRB"},{"1":"TLX2"},{"1":"TP53"},{"1":"TP63"},{"1":"TP73"},{"1":"TWIST1"},{"1":"USF1"},{"1":"USF2"},{"1":"VAX1"},{"1":"VAX2"},{"1":"VDR"},{"1":"VENTX"},{"1":"VEZF1"},{"1":"VSX1"},{"1":"VSX2"},{"1":"XBP1"},{"1":"YY1"},{"1":"ZBTB14"},{"1":"ZBTB18"},{"1":"ZBTB26"},{"1":"ZBTB32"},{"1":"ZBTB33"},{"1":"ZBTB6"},{"1":"ZBTB7A"},{"1":"ZBTB7B"},{"1":"ZEB1"},{"1":"ZFP42"},{"1":"ZFP57"},{"1":"ZIC1"},{"1":"ZIC3"},{"1":"ZKSCAN1"},{"1":"ZKSCAN5"},{"1":"ZNF135"},{"1":"ZNF136"},{"1":"ZNF140"},{"1":"ZNF143"},{"1":"ZNF148"},{"1":"ZNF16"},{"1":"ZNF24"},{"1":"ZNF263"},{"1":"ZNF282"},{"1":"ZNF317"},{"1":"ZNF341"},{"1":"ZNF354C"},{"1":"ZNF382"},{"1":"ZNF384"},{"1":"ZNF410"},{"1":"ZNF449"},{"1":"ZNF460"},{"1":"ZNF75D"},{"1":"ZSCAN4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Found only regulators having ChIP-seq data.</p>
+<pre class="r"><code>intersect(my.inter$regulator_gene, chip.avail.genes)</code></pre>
 <pre><code>[1] &quot;CTCF&quot;   &quot;MXI1&quot;   &quot;POU5F1&quot; &quot;REST&quot;   &quot;ZEB1&quot;  </code></pre>
 <br>
 <p>
@@ -849,6 +905,7 @@ Session information
 </button>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.1.0 (2021-05-18)
 Platform: x86_64-conda-linux-gnu (64-bit)
 Running under: Ubuntu 20.04.2 LTS
@@ -949,7 +1006,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeCodeFolding("show" === "show");
+  window.initializeCodeFolding("hide" === "show");
 });
 </script>
 
