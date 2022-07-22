@@ -7,9 +7,7 @@ output:
     toc: true
     toc_depth: 3
     toc_float: true
-    code_folding: hide
-    
-  
+    code_folding: show
 editor_options:
   chunk_output_type: inline
 ---
