@@ -1,0 +1,78 @@
+---
+title: "EncodeChIPSamples"
+author: "Chao Dai"
+date: "2022-07-21"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+library(data.table)
+```
+
+## Encode TF ChIP-seq experiments
+
+```{r, include=FALSE}
+# encode meta data
+encode.meta = "../code/resources/experiment_report_2022_7_19_17h_55m.tsv"
+encode.meta = fread(encode.meta)
+colnames(encode.meta) = colnames(encode.meta) %>% str_replace_all(" ", "_")
+```
+
+All human tissue/cell lines:
+
+```{r}
+encode.meta %>% filter(Organism %in% c("Homo sapiens")) %>% 
+  select(Organism, Biosample_term_name, Target_gene_symbol, Description) %>% 
+  select(Biosample_term_name) %>% unique
+```
+
+From the above table, I selected these tissue types as relevant:
+
+    "bipolar neuron", "neural progenitor cell", "neural cell", "astrocyte of the cerebellum",
+    "brain", "excitatory neuron", "neural crest cell"
+
+```{r}
+neuron_related_tissues = c("bipolar neuron", "neural progenitor cell", "neural cell", 
+                           "astrocyte of the cerebellum","brain", "excitatory neuron", 
+                           "neural crest cell")
+```
+
+ChIP-seq on the following gene products are available:
+
+```{r}
+encode.meta %>% 
+  select(Organism, Biosample_term_name, Target_gene_symbol, Description) %>% 
+  filter(Organism %in% c("Homo sapiens") & Biosample_term_name %in% neuron_related_tissues)
+```
+
+```{r}
+chip.avail.genes = filter(encode.meta, 
+                          Organism %in% c("Homo sapiens") & 
+                            Biosample_term_name %in% neuron_related_tissues) %>% 
+  pull(Target_gene_symbol) %>% unique
+
+chip.avail.genes
+```
+
+## Interaction matrix from Neuron Reporters
+
+```{r}
+my.inter = "../code/resources/Interaction_matrix_nofilter_AllTF_20200107.csv"
+my.inter = fread(my.inter)
+```
+
+There are 456 unique TFs recognized as regulators in our network analyses, shown in table below:
+
+```{r}
+select(my.inter, regulator_gene) %>% unique
+```
+
+Found only regulators having ChIP-seq data.
+
+```{r}
+intersect(my.inter$regulator_gene, chip.avail.genes)
+```

@@ -1,0 +1,148 @@
+---
+title: "ATACseq Library QC"
+author: "Chao Dai"
+date: "7/2/2021"
+knit: (function(inputFile, encoding) { 
+      out_dir <- snakemake@params[["output_dir"]];
+      rmarkdown::render(inputFile, output_dir=out_dir) })
+output: html_document
+---
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Q1. 
+```{r}
+# this line only works when submitted by snakemake
+bams=snakemake@input[["bam"]]
+```
+
+```{r}
+library(ATACseqQC)
+```
+
+```{r}
+bams=snakemake@input[["bam"]]
+```
+
+
+```{r "bam1"}
+bam=bams[[1]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam2"}
+bam=bams[[2]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam3"}
+bam=bams[[3]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam4"}
+bam=bams[[4]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam5"}
+bam=bams[[5]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam6"}
+bam=bams[[6]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam7"}
+bam=bams[[7]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam8"}
+bam=bams[[8]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam9"}
+bam=bams[[9]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam10"}
+bam=bams[[10]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam11"}
+bam=bams[[11]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```
+
+```{r "bam12"}
+bam=bams[[12]]
+print(bam)
+estimateLibComplexity(readsDupFreq(bamFile = bam))
+fragSize <- fragSizeDist(bamFiles = bam, 
+                         bamFiles.labels = sub(".bam", "", basename(bam)))
+print("-------------------")
+print("   ")
+```

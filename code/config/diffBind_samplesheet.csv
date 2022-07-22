@@ -1,0 +1,13 @@
+SampleID,Tissue,Factor,Condition,Treatment,Replicate,bamReads,ControlID,bamControl,Peaks,Peakcaller
+t0_1,ESC,TF,t0,Full,1,Results/ATACseq/MarkDups/t0_1.bam,,,Results/ATACseq/macs2/t0_1_peaks.xls,macs
+t0_2,ESC,TF,t0,Full,2,Results/ATACseq/MarkDups/t0_2.bam,,,Results/ATACseq/macs2/t0_2_peaks.xls,macs
+t1_1,Neuron,TF,t1,Full,1,Results/ATACseq/MarkDups/t1_1.bam,,,Results/ATACseq/macs2/t1_1_peaks.xls,macs
+t1_2,Neuron,TF,t1,Full,2,Results/ATACseq/MarkDups/t1_2.bam,,,Results/ATACseq/macs2/t1_2_peaks.xls,macs
+t2_1,Neuron,TF,t2,Full,1,Results/ATACseq/MarkDups/t2_1.bam,,,Results/ATACseq/macs2/t2_1_peaks.xls,macs
+t2_2,Neuron,TF,t2,Full,2,Results/ATACseq/MarkDups/t2_2.bam,,,Results/ATACseq/macs2/t2_2_peaks.xls,macs
+t3_1,Neuron,TF,t3,Full,1,Results/ATACseq/MarkDups/t3_1.bam,,,Results/ATACseq/macs2/t3_1_peaks.xls,macs
+t3_2,Neuron,TF,t3,Full,2,Results/ATACseq/MarkDups/t3_2.bam,,,Results/ATACseq/macs2/t3_2_peaks.xls,macs
+t4_1,Neuron,TF,t4,Full,1,Results/ATACseq/MarkDups/t4_1.bam,,,Results/ATACseq/macs2/t4_1_peaks.xls,macs
+t4_2,Neuron,TF,t4,Full,2,Results/ATACseq/MarkDups/t4_2.bam,,,Results/ATACseq/macs2/t4_2_peaks.xls,macs
+t5_1,Neuron,TF,t5,Full,1,Results/ATACseq/MarkDups/t5_1.bam,,,Results/ATACseq/macs2/t5_1_peaks.xls,macs
+t5_2,Neuron,TF,t5,Full,2,Results/ATACseq/MarkDups/t5_2.bam,,,Results/ATACseq/macs2/t5_2_peaks.xls,macs

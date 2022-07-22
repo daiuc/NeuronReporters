@@ -1,0 +1,193 @@
+---
+title: "Enrichment Analysis"
+author: "Chao Dai"
+date: "10/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, include = F)
+knitr::opts_knit$set(root.dir = "/gpfs/commons/groups/sanjana_lab/cdai/Neurons")
+library(tidyverse)
+library(gprofiler2)
+library(cowplot)
+```
+
+
+```{r include=T, echo=FALSE}
+# read in crispr screen data and depletion list
+screen.hits = data.table::fread("Data/crispr/Hitlist_20191230.csv")
+depleted.esc = data.table::fread("Data/crispr/Deplete_List_ES_Day14vs0_Oct5.csv")
+depleted.TFs = filter(depleted.esc, Freq >=5) %>% pull(Var1)
+```
+
+```{r}
+# run enrichment on hits
+go.hits = gost(query = screen.hits$hgnc_symbol, organism = "hsapiens")
+```
+
+
+```{r}
+# run enrichment on hits, plot
+gostplot(go.hits, capped = F, interactive = F)
+```
+
+
+## Highly depleted TFs
+
+These are TFs that lost 5 or more gRNAs
+
+
+```{r include=TRUE, echo=FALSE}
+depleted.TFs
+```
+
+
+### Enrichment on highly depleted TFs
+
+
+```{r}
+go.depl = gost(depleted.TFs, organism = "hsapiens")
+```
+
+
+```{r include=T, echo=F}
+gostplot(go.depl, capped = F, interactive = F) 
+#ggsave("Results/Plots/DepletedTF_gostplot.pdf")
+```
+
+
+
+
+```{r}
+Select.Categories = c("GO:MF", "GO:CC", "GO:BP")
+names(Select.Categories) = c("GO:Molecular Function", "GO:Cellular Component", "GO:Biological Process")
+a = imap(Select.Categories, ~filter(go.depl$result, p_value < 1e-6 & str_detect(source, .x)) %>%
+             select(source, term_name, p_value, term_size, query_size, intersection_size) %>%
+             mutate(P=-log10(p_value)) %>%
+             top_n(25, P) %>%
+             ggplot() + geom_col(aes(forcats::fct_reorder(term_name, P), P)) +
+                coord_flip() +
+                labs(x = .y, y=bquote(-log[10] ~ P)) + 
+                theme_cowplot(font_size = 12) +
+                theme(axis.text = element_text(size = 8)))
+```
+
+**GO: Molecular Function**
+
+```{r include=T}
+a$`GO:Molecular Function`
+
+```
+
+
+**GO: Cellular Component**
+
+```{r include=T}
+a$`GO:Cellular Component`
+
+```
+
+
+**GO: Biological Processes**
+
+```{r include=T}
+a$`GO:Biological Process`
+```
+
+
+```{r}
+# ggsave("Results/Plots/depletedTFs_GOMF.pdf", a$`GO:Molecular Function`)
+# ggsave("Results/Plots/depletedTFs_GOCC.pdf", a$`GO:Cellular Component`)
+# ggsave("Results/Plots/depletedTFs_GOBP.pdf", a$`GO:Biological Process`)
+```
+
+```{r}
+go.hits.f1 = go.hits$result %>% filter(p_value < 1e-10) %>%
+        select(source, term_name, p_value, term_size, query_size, intersection_size)
+
+go.depl.f1 = go.depl$result %>% filter(p_value < 1e-10) %>%
+        select(source, term_name, p_value, term_size, query_size, intersection_size)
+
+```
+
+
+## Compare GO enrichment in Hits vs. Highly depleted TFs
+
+```{r}
+knitr::include_graphics("Results/Analyses/hits_Depleted_venn.png")
+```
+
+
+```{r}
+# library(VennDiagram)
+# library(RColorBrewer)
+# myCol <- brewer.pal(3, "Pastel2")[1:2]
+
+# # Chart
+# venn.diagram(
+#         x = list(go.hits.f1$term_name, go.depl.f1$term_name),
+#         category.names = c("Hits" , "Depleted"),
+#         filename = 'Results/Plots/hits_Depleted_venn.png',
+#         output=F,
+#         
+#         # Output features
+#         imagetype="png" ,
+#         height = 600 , 
+#         width = 800 , 
+#         resolution = 300,
+#         compression = "lzw",
+#         
+#         # Circles
+#         lwd = 2,
+#         lty = 'blank',
+#         fill = myCol,
+#         
+#         # Numbers
+#         cex = .6,
+#         fontface = "bold",
+#         fontfamily = "sans"
+#)
+```
+
+These are the shared Go terms:
+
+```{r include=TRUE, echo=FALSE}
+intersect(go.hits.f1$term_name, go.depl.f1$term_name) 
+```
+
+These are the differing terms: 
+
+```{r include=T, echo=F}
+setdiff(go.hits.f1$term_name, go.depl.f1$term_name)
+setdiff( go.depl.f1$term_name, go.hits.f1$term_name)
+```
+
+
+## Example tracks
+
+ZBTB18
+
+```{r include=T, echo=F}
+knitr::include_graphics("/gpfs/commons/groups/sanjana_lab/cdai/Neurons/Results/Plots/igv/ZBTB18.png")
+```
+
+
+POU3F2 -> ISL2
+
+```{r include=T, echo=F}
+knitr::include_graphics(path.expand("/gpfs/commons/groups/sanjana_lab/cdai/Neurons/Results/Plots/igv/ISL2.png"))
+```
+
+
+```{r include=T, echo=F}
+knitr::include_graphics("/gpfs/commons/groups/sanjana_lab/cdai/Neurons/Results/Plots/igv/POU3F2.png")
+```
+
+
+
+CBX4
+
+```{r include=T, echo=F}
+knitr::include_graphics("/gpfs/commons/groups/sanjana_lab/cdai/Neurons/Results/Plots/igv/CBX4.png")
+```

@@ -1,0 +1,81 @@
+import pandas as pd
+
+configfile: 'config/config.yaml'
+
+
+CHROMS = ["chr" + str(s) for s in range(1,23)]
+CHROMS.extend(['chrX','chrY'])
+
+
+
+rna = (pd.read_csv(config['RNA_SAMPLES'], sep='\t', 
+                   dtype={'treatment': str, 'timepoint':str, 'time':str, 'rep': str, 'batch': str, 'sample':str, 'fastq': str})
+      .set_index(['treatment', 'timepoint', 'rep', 'batch'], drop=False)
+      )
+
+atac = (pd.read_csv(config['ATAC_SAMPLES'], sep='\t', 
+                   dtype={'time': str, 'timepoint':str, 'rep': str, 'read':str, 'fastq': str})
+      .set_index(['timepoint', 'rep', 'read'], drop=False)
+      )
+
+
+
+FASTQ_PREFIX_RNA = [f.removesuffix('.fastq.gz') for f in rna.fastq]
+FASTQC_RNA_INPUTS = ['Data/RNAseq/fastq/' + f for f in rna.fastq]
+
+
+FASTQ_PREFIX_ATAC = [f.removesuffix('.fastq.gz') for f in atac.fastq]
+FASTQC_ATAC_INPUTS = ['Data/ATACseq/fastq/' + f for f in atac.fastq]
+
+
+# make sure rna (the rna sample sheet) is a global variable
+def get_STAR_inputs(wildcards):
+    # rna seq reads are single end
+    READ = rna.query('''treatment == @wildcards.rna_treatment and \
+                        timepoint == @wildcards.rna_timepoint and \
+                        rep == @wildcards.rna_rep and \
+                        batch == @wildcards.rna_batch ''').fastq[0]
+    READ = 'Data/RNAseq/fastq/PolyATrimmed/' + READ
+    
+    return READ
+
+# make sure atac (the atac sample sheet) is a global variable 
+def get_bwa_inputs(wildcards):
+    # atac seq reads are pair end
+    R1 = atac.query(" timepoint == @wildcards.atac_timepoint  and rep == @wildcards.atac_rep  and read == 'R1' ").fastq[0]
+    R2 = atac.query(" timepoint == @wildcards.atac_timepoint  and rep == @wildcards.atac_rep  and read == 'R2' ").fastq[0]
+    READS = ['Data/ATACseq/fastq/' + r for r in [R1, R2]]
+    return {'R1': READS[0], 'R2': READS[1]}
+
+def getCombineRsemCountsInputs(wildcards):
+    return expand("Results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}.genes.results", zip,
+                  treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch)
+
+
+
+
+#--------------------------------------
+#       Rules, rules, rules           |
+#--------------------------------------
+
+
+rule all:
+    input:
+        'Results/RNAseq/multiqc/multiqc_report.html',
+        'Results/ATACseq/multiqc/multiqc_report.html',
+        expand('Results/RNAseq/bigwig/{treatment}_{timepoint}_{rep}_{batch}.bw', zip, 
+                treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch),
+        expand('Results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}.genes.results', zip,
+                treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch),
+        'Results/RNAseq/RSEM/combined_RSEM_counts.txt',
+        expand('Results/ATACseq/macs2/{timepoint}_{rep}_peaks.narrowPeak', zip, 
+                timepoint=atac.timepoint, rep=atac.rep),
+        expand("Results/ATACseq/bigwig/{timepoint}_{rep}.bw", zip,
+                timepoint=atac.timepoint, rep=atac.rep),
+        'Results/ATACseq/diffbind/consensusPeaks.bed'
+
+
+include: 'wf-1-rna.smk'
+include: 'wf-2-atac.smk'
+
+

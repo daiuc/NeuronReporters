@@ -1,0 +1,104 @@
+---
+title: "RNAseq Reads + Alignments QC"
+author: "Chao Dai"
+date: "7/2/2021"
+knit: (function(inputFile, encoding) { 
+      out_dir <- snakemake@params[["output_dir"]];
+      rmarkdown::render(inputFile, output_dir=out_dir) })
+output: html_document
+---
+
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/gpfs/commons/groups/sanjana_lab/cdai/Neurons/")
+library(tidyverse)
+```
+
+```{r}
+# select run mode: 1: snakemake; 2: rstudio/R
+RUN_MODE=1
+
+if (RUN_MODE == 1) {
+    STAR_logs = snakemake@input[["star_final_log"]]
+} else {
+    STAR_logs = list.files("Results/RNAseq/STAR/", "*.Log.final.out", full.names = T) %>% sort
+}
+```
+
+```{r}
+STAR_logs
+```
+
+```{r}
+processLog = function(fn) {
+    log.lines = read_lines(fn)
+    total.input.reads = log.lines[grep("Number of input reads", log.lines)] %>% str_extract("[0-9]+$") %>% as.numeric
+    unique.reads = log.lines[grep("Uniquely mapped reads number", log.lines)] %>% str_extract("[0-9]+$") %>% as.numeric
+    mapped.len = log.lines[grep("Average mapped length", log.lines)] %>% str_extract("[0-9\\.]+$") %>% as.numeric %>% round
+    batch.name = str_extract(fn, "H[0-9A-Z]+")
+    sample.name = str_extract(fn, "S[012][0-9]")
+    return(c(batch.name, sample.name, total.input.reads, unique.reads, mapped.len))
+}
+```
+
+```{r}
+alignment.summary = map(STAR_logs, ~processLog(.x)) %>%
+                        do.call(rbind, .) %>% as.data.frame(., stringsAsFactors=F)
+colnames(alignment.summary) = c("batch", "sample", "total_input_reads", "unique_reads", "avg_read_length")
+alignment.summary = mutate_at(alignment.summary, .vars = c("total_input_reads", "unique_reads", "avg_read_length"),
+          .funs = ~ as.numeric(.x))
+```
+
+
+```{r}
+alignment.summary
+```
+
+```{r}
+alignment.summary %>%
+    mutate(multi_reads = total_input_reads - unique_reads) %>%
+    select(-total_input_reads, -avg_read_length) %>%
+    pivot_longer(cols = c("unique_reads", "multi_reads"), names_to = "cat", values_to ="reads") %>%
+    ggplot() + geom_col(aes(sample, reads, fill = cat)) + 
+        labs(title = "Reads per sample") +
+        scale_y_continuous(labels = scales::label_number(accuracy = .1, scale=1e-6, suffix = "M")) +
+        theme(legend.position = "bottom") +
+        facet_wrap(~batch, nrow = 2)
+        
+```
+
+## Library size statistics
+```{r}
+filter(alignment.summary, batch == "H2HY7BGXC") %>% pull(total_input_reads) %>% summary
+```
+
+```{r}
+filter(alignment.summary, batch == "HFJM7BGXC") %>% pull(total_input_reads) %>% summary
+```
+
+## Uniquely mapped reads statistics
+
+```{r}
+filter(alignment.summary, batch == "H2HY7BGXC") %>% pull(unique_reads) %>% summary
+```
+
+```{r}
+filter(alignment.summary, batch == "HFJM7BGXC") %>% pull(unique_reads) %>% summary
+```
+
+
+```{r}
+alignment.summary %>%
+    mutate(unique_rate = unique_reads / total_input_reads) %>%
+    ggplot() + geom_col(aes(sample, unique_rate, fill = batch)) +
+        scale_y_continuous(labels = scales::percent_format()) +
+        theme(legend.position = "none") + 
+        facet_wrap(~batch, nrow=2) 
+```
+
+```{r}
+alignment.summary %>%
+    mutate(unique_rate = unique_reads / total_input_reads) %>%
+    write_csv("Results/RNAseq/QC/Alignment_summary_statistics.csv")
+```
+

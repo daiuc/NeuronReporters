@@ -1,0 +1,22 @@
+
+# sample sheet describing batch, sample and replicate
+ATAC_SAMPLES: 'config/atac.tsv'
+RNA_SAMPLES: 'config/rna.tsv'
+
+# GRCh38 refseq
+FA_HS38: '/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/gencode_GRCh38.primary_assembly.genome.fa'
+
+# BWA aln refseq
+FA_HS38_BWA: '/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/bwa_gencode_genome/gencode_GRCh38.primary_assembly.genome.fa' 
+
+# STAR INDEX
+STAR_INDEX: "/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/star2.7.1a_gencode_genome"
+
+# RSEM_INDEX
+RSEM_INDEX: "/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/rsem.1.2.21.gencode.v31.ref/hg38_gencode/hg38_gencode"
+
+# Gencode GRCh38 gene name and gene id annotation
+GENE_LOOKUP: 'Data/Annotations/gencode_refseq_partial_modified_geneNames_ID_20191230.csv'
+
+# diffbind sample sheet
+DIFFBIND_SAMPLES: 'config/diffBind_samplesheet.csv'
