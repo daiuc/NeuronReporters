@@ -48,7 +48,8 @@ ChIP-seq on the following gene products are available:
 ```{r}
 encode.meta %>% 
   select(Organism, Biosample_term_name, Target_gene_symbol, Description) %>% 
-  filter(Organism %in% c("Homo sapiens") & Biosample_term_name %in% neuron_related_tissues)
+  filter(Organism %in% c("Homo sapiens") & Biosample_term_name %in% neuron_related_tissues) %>% 
+  rmarkdown::paged_table(.)
 ```
 
 ```{r}
@@ -70,7 +71,8 @@ my.inter = fread(my.inter)
 There are 456 unique TFs recognized as regulators in our network analyses, shown in table below:
 
 ```{r}
-select(my.inter, regulator_gene) %>% unique
+select(my.inter, regulator_gene) %>% unique %>% 
+  rmarkdown::paged_table(.)
 ```
 
 Found only regulators having ChIP-seq data.
