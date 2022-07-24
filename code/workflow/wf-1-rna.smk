@@ -11,9 +11,9 @@
 
 rule FastQC_RNA:
     input: FASTQC_RNA_INPUTS
-    output: touch('Results/RNAseq/fastqc/fasqc.done')
+    output: touch('results/RNAseq/fastqc/fasqc.done')
     params:
-        outdir = "Results/RNAseq/fastqc"
+        outdir = "results/RNAseq/fastqc"
     threads: 12
     resources: time=1000, mem_mb=40000, cpu=12
     shell:
@@ -27,10 +27,10 @@ rule FastQC_RNA:
 
 rule MultiQC_RNA:
     input: rules.FastQC_RNA.output
-    output: 'Results/RNAseq/multiqc/multiqc_report.html'
+    output: 'results/RNAseq/multiqc/multiqc_report.html'
     params:
-        fastqc_dir = 'Results/RNAseq/fastqc',
-        out_dir = 'Results/RNAseq/multiqc'
+        fastqc_dir = 'results/RNAseq/fastqc',
+        out_dir = 'results/RNAseq/multiqc'
     threads: 1
     shell:
         '''
@@ -41,8 +41,8 @@ rule MultiQC_RNA:
 
 
 rule CutPolyA:
-    input: "Data/RNAseq/fastq/{rna_fastq}.fastq.gz"
-    output: temp("Data/RNAseq/fastq/PolyATrimmed/{rna_fastq}.fastq.gz")
+    input: "resources/RNAseq/fastq/{rna_fastq}.fastq.gz"
+    output: temp("resources/RNAseq/fastq/PolyATrimmed/{rna_fastq}.fastq.gz")
     threads:4
     params: 
         adapter="AAAAAAA", 
@@ -63,11 +63,11 @@ rule CutPolyA:
 rule STAR_RNA:
     input: get_STAR_inputs
     output: 
-        transBam = "Results/RNAseq/STAR/{treatment}_{timepoint}_{rep}_{batch}.Aligned.toTranscriptome.out.bam",
-        genomBam = temp("Results/RNAseq/STAR/{treatment}_{timepoint}_{rep}_{batch}.Aligned.sortedByCoord.out.bam")
+        transBam = "results/RNAseq/STAR/{treatment}_{timepoint}_{rep}_{batch}.Aligned.toTranscriptome.out.bam",
+        genomBam = temp("results/RNAseq/STAR/{treatment}_{timepoint}_{rep}_{batch}.Aligned.sortedByCoord.out.bam")
     params:
         genome_dir = config['STAR_INDEX'],
-        out_prefix = "Results/RNAseq/STAR/{treatment}_{timepoint}_{rep}_{batch}.",
+        out_prefix = "results/RNAseq/STAR/{treatment}_{timepoint}_{rep}_{batch}.",
         RG = '{treatment}_{timepoint}_{rep}_{batch}',
         read_files_comm = "zcat"
     threads: 8
@@ -107,7 +107,7 @@ rule STAR_RNA:
 # filter bam
 rule filter_bam_rna:
     input: rules.STAR_RNA.output.genomBam
-    output: temp('Results/RNAseq/STAR/{treatment}_{timepoint}_{rep}_{batch}_filtered.bam')
+    output: temp('results/RNAseq/STAR/{treatment}_{timepoint}_{rep}_{batch}_filtered.bam')
     params:
         chroms = CHROMS
     threads: 4
@@ -123,8 +123,8 @@ rule MarkDups_rna:
     input:
         bam = rules.filter_bam_rna.output,
     output:
-        bam = "Results/RNAseq/MarkDups/{treatment}_{timepoint}_{rep}_{batch}.bam",
-        metrics = "Results/RNAseq/MarkDups/{treatment}_{timepoint}_{rep}_{batch}_metrics.txt"
+        bam = "results/RNAseq/MarkDups/{treatment}_{timepoint}_{rep}_{batch}.bam",
+        metrics = "results/RNAseq/MarkDups/{treatment}_{timepoint}_{rep}_{batch}_metrics.txt"
     params:
         ref = config['FA_HS38']
     threads: 1
@@ -143,7 +143,7 @@ rule MarkDups_rna:
 
 rule Bigwig_rna:
     input: rules.MarkDups_rna.output.bam
-    output: "Results/RNAseq/bigwig/{treatment}_{timepoint}_{rep}_{batch}.bw"
+    output: "results/RNAseq/bigwig/{treatment}_{timepoint}_{rep}_{batch}.bw"
     threads:8
     resources: time=600, mem_mb=36000, cpu=8
     shell:
@@ -166,10 +166,10 @@ rule Bigwig_rna:
 # rule RSEM
 rule RSEM:
     input: rules.STAR_RNA.output.transBam
-    output: "Results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}.genes.results"
+    output: "results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}.genes.results"
     params:
         rsem_idx = config['RSEM_INDEX'],
-        sample_name = "Results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}"
+        sample_name = "results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}"
     threads: 8
     resources: time=1000, mem_mb=40000, cpu=8
     shell:
@@ -186,17 +186,17 @@ rule RSEM:
 
 rule combineRsemCounts:
     input: getCombineRsemCountsInputs
-    output: 'Results/RNAseq/RSEM/combined_RSEM_counts.txt'
+    output: 'results/RNAseq/RSEM/combined_RSEM_counts.txt'
     threads: 1
     script: 'scripts/collectRsemCounts.R'
 
 # # QC stats of RNAseq reads and alignments
 # rule RNAseqQC:
 #     input:
-#         star_final_log = expand("Results/RNAseq/STAR/{batch}_S{sample}.Log.final.out", batch=RNA_BATCHES, sample=RNA_SAMPLES)
-#     output: "Results/RNAseq/QC/RNAseqAlignedReadsQC.html"  # rmarkdown render
+#         star_final_log = expand("results/RNAseq/STAR/{batch}_S{sample}.Log.final.out", batch=RNA_BATCHES, sample=RNA_SAMPLES)
+#     output: "results/RNAseq/QC/RNAseqAlignedReadsQC.html"  # rmarkdown render
 #     params:
-#         output_dir="Results/RNAseq/QC"
+#         output_dir="results/RNAseq/QC"
 #     threads: 4
 #     resources: time=600, mem_mb=36000, cpu=4
 #     script:

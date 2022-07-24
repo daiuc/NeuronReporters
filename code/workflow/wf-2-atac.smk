@@ -25,14 +25,12 @@
 
 ##-------------- ATAC-seq -------------------
 
-
-
 rule FASTQC_ATAC:
     input: FASTQC_ATAC_INPUTS
-    output: touch('Results/ATACseq/fastqc/fasqc.done')
-    #output: "Results/RNAseq/fastqc/{batch}_S{sample}/{batch}_S{sample}_fastqc.out"
+    output: touch('results/ATACseq/fastqc/fasqc.done')
+    #output: "results/RNAseq/fastqc/{batch}_S{sample}/{batch}_S{sample}_fastqc.out"
     params:
-        outdir = "Results/ATACseq/fastqc"
+        outdir = "results/ATACseq/fastqc"
     threads: 12
     resources: time=1000, mem_mb=40000, cpu=12
     shell:
@@ -46,10 +44,10 @@ rule FASTQC_ATAC:
 
 rule MultiQC_ATAC:
     input: rules.FASTQC_ATAC.output
-    output: 'Results/ATACseq/multiqc/multiqc_report.html'
+    output: 'results/ATACseq/multiqc/multiqc_report.html'
     params:
-        fastqc_dir = 'Results/ATACseq/fastqc',
-        out_dir = 'Results/ATACseq/multiqc'
+        fastqc_dir = 'results/ATACseq/fastqc',
+        out_dir = 'results/ATACseq/multiqc'
     threads: 1
     shell:
         '''
@@ -62,7 +60,7 @@ rule MultiQC_ATAC:
 
 rule bwa:
     input: unpack(get_bwa_inputs)
-    output: temp('Results/ATACseq/bwa/{timepoint}_{rep}.sam')
+    output: temp('results/ATACseq/bwa/{timepoint}_{rep}.sam')
     params:
         bwa_refseq = config['FA_HS38_BWA'],
     threads: 8
@@ -72,22 +70,22 @@ rule bwa:
         module load bwa/0.7.17
 
         bwa aln -t {threads} {params.bwa_refseq} {input.R1} \
-            > Results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.1.sai
+            > results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.1.sai
         bwa aln -t {threads} {params.bwa_refseq} {input.R2} \
-            > Results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.2.sai 
+            > results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.2.sai 
         bwa sampe -P {params.bwa_refseq} \
-            Results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.1.sai \
-            Results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.2.sai \
+            results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.1.sai \
+            results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.2.sai \
             {input.R1} {input.R2} > {output}
         
-        rm Results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.1.sai \
-            Results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.2.sai  
+        rm results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.1.sai \
+            results/ATACseq/bwa/{wildcards.timepoint}_{wildcards.rep}.2.sai  
 
         '''
 
 rule sort_bam_atac:
     input: rules.bwa.output
-    output: temp('Results/ATACseq/bwa/{timepoint}_{rep}.bam')
+    output: temp('results/ATACseq/bwa/{timepoint}_{rep}.bam')
     threads: 4
     resources: time=100, mem_mb=20000, cpu=4
     shell:
@@ -104,7 +102,7 @@ rule sort_bam_atac:
 # filter mapq >= 20, chr in chr1 - chrY
 rule filter_bam_atac:
     input: rules.sort_bam_atac.output
-    output: temp('Results/ATACseq/bwa/{timepoint}_{rep}_filtered.bam')
+    output: temp('results/ATACseq/bwa/{timepoint}_{rep}_filtered.bam')
     params:
         chroms = CHROMS
     threads: 4
@@ -120,8 +118,8 @@ rule MarkDups_atac:
     input:
         bam = rules.filter_bam_atac.output,
     output:
-        bam = "Results/ATACseq/MarkDups/{timepoint}_{rep}.bam",
-        metrics = "Results/ATACseq/MarkDups/{timepoint}_{rep}_metrics.txt"
+        bam = "results/ATACseq/MarkDups/{timepoint}_{rep}.bam",
+        metrics = "results/ATACseq/MarkDups/{timepoint}_{rep}_metrics.txt"
     params:
         ref = config['FA_HS38']
     threads: 1
@@ -141,7 +139,7 @@ rule MarkDups_atac:
 
 rule Bigwig_atac:
     input: rules.MarkDups_atac.output.bam
-    output: "Results/ATACseq/bigwig/{timepoint}_{rep}.bw"
+    output: "results/ATACseq/bigwig/{timepoint}_{rep}.bw"
     threads:8
     resources: time=600, mem_mb=36000, cpu=8
     shell:
@@ -161,9 +159,9 @@ rule Bigwig_atac:
 
 rule CallPeaks:
     input: rules.MarkDups_atac.output.bam # calling peak on each sample
-    output: "Results/ATACseq/macs2/{timepoint}_{rep}_peaks.narrowPeak"
+    output: "results/ATACseq/macs2/{timepoint}_{rep}_peaks.narrowPeak"
     params:
-        out_dir = "Results/ATACseq/macs2/",
+        out_dir = "results/ATACseq/macs2/",
         prefix = "{timepoint}_{rep}"
     resources: time=600, mem_mb=30000, cpu=1
     shell:
@@ -184,11 +182,11 @@ rule CallPeaks:
 
 # Construct consensus peaks
 rule consensusPeaks:
-    input: expand("Results/ATACseq/macs2/{timepoint}_{rep}_peaks.narrowPeak", zip, \
+    input: expand("results/ATACseq/macs2/{timepoint}_{rep}_peaks.narrowPeak", zip, \
                 timepoint=atac.timepoint, rep=atac.rep)
     output: 
-        bed = 'Results/ATACseq/diffbind/consensusPeaks.bed',
-        counts = 'Results/ATACseq/diffbind/consensusPeaks_counts.txt' 
+        bed = 'results/ATACseq/diffbind/consensusPeaks.bed',
+        counts = 'results/ATACseq/diffbind/consensusPeaks_counts.txt' 
     params:
         MIN_OVERLAP = 2,
         SAMPLESHEET = config['DIFFBIND_SAMPLES']
@@ -199,11 +197,11 @@ rule consensusPeaks:
 
 # rule ATACseqQC:
 #     input:
-#         bam = expand("Results/ATACseq/MarkDups/atac_{batch}_{sample}_markDups.bam", batch=ATAC_BATCHES, sample=ATAC_SAMPLES)
+#         bam = expand("results/ATACseq/MarkDups/atac_{batch}_{sample}_markDups.bam", batch=ATAC_BATCHES, sample=ATAC_SAMPLES)
 #     output:
-#         "Results/ATACseq/QC/ATACseqLibraryQC.html"
+#         "results/ATACseq/QC/ATACseqLibraryQC.html"
 #     params:
-#         output_dir="Results/ATACseq/QC"
+#         output_dir="results/ATACseq/QC"
 #     threads: 2
 #     resources: time=600, mem_mb=36000, cpu=4
 #     script:
