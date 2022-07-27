@@ -1,0 +1,52 @@
+---
+title: "PlotFig1B_RNAseq_Heatmap"
+author: "daiuc"
+date: "2022-07-27"
+output: 
+  
+  workflowr::wflow_html:
+    code_folding: "hide"
+editor_options:
+  chunk_output_type: inline
+---
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(data.table)
+library(ComplexHeatmap)
+
+```
+
+```{r setup2, include=FALSE}
+
+SCRIPT_MODE = FALSE
+
+if(SCRIPT_MODE) {
+  print("Working in snakemake script mode")
+} else {
+  print("Working in interactive mode")
+  library(yaml)
+  config_data = yaml.load_file("../code/config/config.yaml")
+}
+
+```
+
+
+
+## re-Plot Figure 1B: Heatmap of ~1800 TFs' gene expression over time points
+
+```{r}
+mysheets = readxl::excel_sheets(config_data$DESEQ_RESULT)
+deseq_results = map(mysheets, ~ readxl::read_excel(config_data$DESEQ_RESULT, .x))
+
+# only use fold changes
+deseq_fc <- map_dfc(deseq_results[2:6], 
+                    ~select(.x, gene_id, log2FoldChange) %>% 
+                      pull(log2FoldChange)) %>%
+            add_column(gene_id = deseq_results$H15_vs_ES$gene_id, .before = "H15_vs_ES")
+names(deseq_fc) <- c("gene_id", "H15", "D1", "D2", "D4", "D7")
+
+```
+
+

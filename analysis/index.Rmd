@@ -11,3 +11,5 @@ editor_options:
 Welcome to my research website.
 
 - [ENCODE TF ChIP Samples](EncodeChIPSamples.html)
+- [ZEB1 ChIP-seq](ChIP-ZEB1-targets.html)
+- [Figure 1B re-plot](PlotFig1B_RNAseq_Heatmap.html)
