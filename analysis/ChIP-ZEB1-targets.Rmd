@@ -82,6 +82,8 @@ as.data.frame(shared_targets)
 
 ZEB1 expression level decreases, and most of its targets are also decreasingly expressed, suggesting ZEB1 might be an inhibitor?
 
+ZEB1 gene expression level (normalized CPM):
+
 ```{r, fig.height=2}
 my.inter[regulator_gene == "ZEB1" & target_gene %in% c("ZEB1", "RERE"),
          .(target_gene, tar.ge.ES, tar.ge.H16, tar.ge.D1, tar.ge.D4)] %>% 
@@ -89,6 +91,9 @@ my.inter[regulator_gene == "ZEB1" & target_gene %in% c("ZEB1", "RERE"),
   Heatmap
 
 ```
+
+ZEB1 ATAC-seq level (normalized CPM):
+
 ```{r, fig.height = 2}
 my.inter[regulator_gene == "ZEB1" & target_gene %in% c("ZEB1", "RERE"),
          .(target_gene, atac.ES, atac.H16, atac.D1, atac.D4)] %>% 
@@ -96,7 +101,7 @@ my.inter[regulator_gene == "ZEB1" & target_gene %in% c("ZEB1", "RERE"),
   Heatmap
 ```
 
-
+ZEB1 targets' normalized gene expression (CPM)
 ```{r}
 my.inter[regulator_gene == "ZEB1" & target_gene %in% shared_targets,
          .(target_gene, tar.ge.ES, tar.ge.H16, tar.ge.D1, tar.ge.D4)
@@ -104,6 +109,7 @@ my.inter[regulator_gene == "ZEB1" & target_gene %in% shared_targets,
   Heatmap(cluster_columns = F, show_row_names=F)
   
 ```
+ZEB1 targets' ATAC normalized reads (CPM:
 
 ```{r}
 my.inter[regulator_gene == "ZEB1" & target_gene %in% shared_targets,
@@ -112,6 +118,7 @@ my.inter[regulator_gene == "ZEB1" & target_gene %in% shared_targets,
   Heatmap(cluster_columns = F, show_row_names=F)
   
 ```
+
 
 
 ## Comparing ZEB1 ChIP-seq signals on predicted target TFs vs. predicted non-target TFs
