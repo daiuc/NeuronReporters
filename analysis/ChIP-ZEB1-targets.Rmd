@@ -33,7 +33,7 @@ This ZEB1 ChIP-seq was performed on HS bipolar neuron induced from iPSC (doxycyc
 
 I downloaded SRA from NCBI, and use sra tookit to dump fastq. Reads are single end 50bp, and aligned with `bwa`. About 20M reads remain after filtering steps (mapq>20, primary alignment). See pipeline dag below: 
 ```{r}
-knitr::include_graphics("assets/chip_snakemake.dag", error = F)
+knitr::include_graphics("assets/chip_dag.svg", error = F)
 ```
 ## ZEB1 Chip-seq targets vs. our predicted targets
 
