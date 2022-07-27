@@ -132,6 +132,12 @@ knitr::include_graphics("assets/chip_ZEB1_heatmap.svg", error =F)
 
 
 
+Dag of entire analysis pipeline: 
+
+```{r}
+knitr::include_graphics("assets/snakemake_dag.svg", error = F)
+```
+
 
 
 
