@@ -1,0 +1,116 @@
+---
+title: "ZEB1 ChIP-seq analyss "
+author: "Chao Dai"
+date: "2022-07-27"
+output: 
+  rmarkdown::html_notebook:
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+    theme: readable
+    paged_df: yes
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.align = "center")
+library(tidyverse)
+library(data.table)
+library(yaml)
+library(ComplexHeatmap)
+```
+
+## Sample / Experiment description
+
+See my previous summary on how we decided on the set of ChIP-seq experiments to look for [here](https://daiuc.github.io/NeuronReporters/EncodeChIPSamples.html). See detailed experiment summary [here](https://www.encodeproject.org/experiments/ENCSR418KUS/).
+
+This ZEB1 ChIP-seq was performed on HS bipolar neuron induced from iPSC (doxycycline 4 days). Unfortunately, it seems like they either did not perform the experiment on input controls or did not publish the control dataset. So `macs2` peaks are called without control inputs. 
+
+
+
+## Analysis pipeline
+
+I downloaded SRA from NCBI, and use sra tookit to dump fastq. Reads are single end 50bp, and aligned with `bwa`. About 20M reads remain after filtering steps (mapq>20, primary alignment). See pipeline dag below: 
+```{r}
+knitr::include_graphics("assets/chip_dag.svg", error = F)
+```
+## ZEB1 Target analysis
+
+```{r}
+zeb1 = fread("../code/results/ChIP/ZEB1/targets.bed")
+config_data = yaml.load_file("../code/config/config.yaml")
+
+zeb1 = select(zeb1, V1:V10, V14)
+colnames(zeb1) = c(config_data$MACS2$NARROW, "gene")
+```
+
+ZEB1 targets that overlap a transcription factor in our TF library: 
+
+```{r}
+zeb1_chip_targets = zeb1$gene %>% unique
+#zeb1[, .(max_neglog10q = max(neglog10q)), by = gene][order(-max_neglog10q),]
+```
+
+
+```{r}
+# read in our interaction analysis result matrix
+my.inter = "../code/resources/Interaction_matrix_nofilter_AllTF_20200107.csv"
+my.inter = fread(my.inter)
+zeb1_my_targets = my.inter[regulator_gene %in% c("ZEB1")] %>% pull(target_gene) %>% unique
+
+```
+
+
+About `r scales::percent(length(intersect(zeb1_chip_targets, zeb1_my_targets))/length(zeb1_my_targets))` our network predicted ZEB1 targets are likely targets based on ZEB ChIP. 
+```{r plot-venn, fig.width=6}
+library(ggvenn)
+venn_list = list(ZEB1_ChIP = zeb1_chip_targets, ZEB1_pred = zeb1_my_targets)
+ggvenn(venn_list, fill_color = c("#0073C2FF", "#EFC000FF"),
+      stroke_size = .5, set_name_size = 4, auto_scale = T
+)
+
+```
+
+Here are the overlapping target genes: 
+```{r}
+shared_targets = intersect(zeb1_chip_targets, zeb1_my_targets)
+as.data.frame(shared_targets)
+```
+
+
+ZEB1 expression level decreases, and most of its targets are also decreasingly expressed, suggesting ZEB1 might be an inhibitor?
+
+```{r, fig.height=2}
+my.inter[regulator_gene == "ZEB1" & target_gene %in% c("ZEB1", "RERE"),
+         .(target_gene, tar.ge.ES, tar.ge.H16, tar.ge.D1, tar.ge.D4)] %>% 
+  column_to_rownames("target_gene") %>% 
+  Heatmap
+
+```
+```{r, fig.height = 2}
+my.inter[regulator_gene == "ZEB1" & target_gene %in% c("ZEB1", "RERE"),
+         .(target_gene, atac.ES, atac.H16, atac.D1, atac.D4)] %>% 
+    column_to_rownames("target_gene") %>% 
+  Heatmap
+```
+
+
+```{r}
+my.inter[regulator_gene == "ZEB1" & target_gene %in% shared_targets,
+         .(target_gene, tar.ge.ES, tar.ge.H16, tar.ge.D1, tar.ge.D4)
+         ] %>% column_to_rownames("target_gene") %>% 
+  Heatmap(cluster_columns = F, show_row_names=F)
+  
+```
+
+```{r}
+my.inter[regulator_gene == "ZEB1" & target_gene %in% shared_targets,
+         .(target_gene, atac.ES, atac.H16, atac.D1, atac.D4)
+         ] %>% column_to_rownames("target_gene") %>% 
+  Heatmap(cluster_columns = F, show_row_names=F)
+  
+```
+
+
+
