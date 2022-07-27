@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Chao Dai" />
+
+<meta name="date" content="2022-07-27" />
+
+<title>ZEB1 ChIP-seq analyss</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">NeuronReporters</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">ZEB1 ChIP-seq analyss</h1>
+<h4 class="author">Chao Dai</h4>
+<h4 class="date">2022-07-27</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-07-27
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>NeuronReporters/analysis/</code>
+<span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed19900924code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(19900924)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed19900924code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(19900924)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree763c602574396b761c9d77e02f3282e048bab90btargetblank763c602a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/daiuc/NeuronReporters/tree/763c602574396b761c9d77e02f3282e048bab90b" target="_blank">763c602</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomdaiucNeuronReporterstree763c602574396b761c9d77e02f3282e048bab90btargetblank763c602a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/daiuc/NeuronReporters/tree/763c602574396b761c9d77e02f3282e048bab90b" target="_blank">763c602</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    code/.snakemake/
+    Ignored:    code/.test/
+    Ignored:    code/logs/
+    Ignored:    code/resources/
+    Ignored:    code/results/
+    Ignored:    code/slurm_logs/
+    Ignored:    code/workflow/notebooks/.ipynb_checkpoints/
+    Ignored:    code/workflow/notebooks/oldTFscreen/.ipynb_checkpoints/
+
+Untracked files:
+    Untracked:  analysis/PlotFig1B_RNAseq_Heatmap.Rmd
+    Untracked:  code/workflow/common.smk
+    Untracked:  code/workflow/scripts/makeBedFromGencodeAnnotation.R
+
+Unstaged changes:
+    Modified:   code/config/config.yaml
+    Modified:   code/workflow/Snakefile
+    Modified:   code/workflow/notebooks/oldTFscreen/RNAseq_R_heatmap.ipynb
+    Modified:   code/workflow/notebooks/oldTFscreen/R_figures.ipynb
+    Deleted:    code/workflow/rules/common.smk
+    Modified:   code/workflow/wf-7-chip.smk
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/ChIP-ZEB1-targets.Rmd</code>) and
+HTML (<code>docs/ChIP-ZEB1-targets.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/daiuc/NeuronReporters/blob/763c602574396b761c9d77e02f3282e048bab90b/analysis/ChIP-ZEB1-targets.Rmd" target="_blank">763c602</a>
+</td>
+<td>
+daiuc
+</td>
+<td>
+2022-07-27
+</td>
+<td>
+wflow_publish("ChIP-ZEB1-targets.Rmd")
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="sample-experiment-description" class="section level2">
+<h2>Sample / Experiment description</h2>
+<p>See my previous summary on how we decided on the set of ChIP-seq
+experiments to look for <a
+href="https://daiuc.github.io/NeuronReporters/EncodeChIPSamples.html">here</a>.
+See detailed experiment summary <a
+href="https://www.encodeproject.org/experiments/ENCSR418KUS/">here</a>.</p>
+<p>This ZEB1 ChIP-seq was performed on HS bipolar neuron induced from
+iPSC (doxycycline 4 days). Unfortunately, it seems like they either did
+not perform the experiment on input controls or did not publish the
+control dataset. So <code>macs2</code> peaks are called without control
+inputs.</p>
+</div>
+<div id="analysis-pipeline" class="section level2">
+<h2>Analysis pipeline</h2>
+<p>I downloaded SRA from NCBI, and use sra tookit to dump fastq. Reads
+are single end 50bp, and aligned with <code>bwa</code>. About 20M reads
+remain after filtering steps (mapq&gt;20, primary alignment). See
+pipeline dag below:</p>
+<pre class="r"><code>knitr::include_graphics(&quot;assets/chip_dag.svg&quot;, error = F)</code></pre>
+<p><img src="assets/chip_dag.svg" style="display: block; margin: auto;" />
+## ZEB1 Target analysis</p>
+<pre class="r"><code>zeb1 = fread(&quot;../code/results/ChIP/ZEB1/targets.bed&quot;)
+config_data = yaml.load_file(&quot;../code/config/config.yaml&quot;)
+
+zeb1 = select(zeb1, V1:V10, V14)
+colnames(zeb1) = c(config_data$MACS2$NARROW, &quot;gene&quot;)</code></pre>
+<p>ZEB1 targets that overlap a transcription factor in our TF
+library:</p>
+<pre class="r"><code>zeb1_chip_targets = zeb1$gene %&gt;% unique
+#zeb1[, .(max_neglog10q = max(neglog10q)), by = gene][order(-max_neglog10q),]</code></pre>
+<pre class="r"><code># read in our interaction analysis result matrix
+my.inter = &quot;../code/resources/Interaction_matrix_nofilter_AllTF_20200107.csv&quot;
+my.inter = fread(my.inter)
+zeb1_my_targets = my.inter[regulator_gene %in% c(&quot;ZEB1&quot;)] %&gt;% pull(target_gene) %&gt;% unique</code></pre>
+<p>About 90% our network predicted ZEB1 targets are likely targets based
+on ZEB ChIP.</p>
+<pre class="r"><code>library(ggvenn)
+venn_list = list(ZEB1_ChIP = zeb1_chip_targets, ZEB1_pred = zeb1_my_targets)
+ggvenn(venn_list, fill_color = c(&quot;#0073C2FF&quot;, &quot;#EFC000FF&quot;),
+      stroke_size = .5, set_name_size = 4, auto_scale = T
+)</code></pre>
+<p><img src="figure/ChIP-ZEB1-targets.Rmd/plot-venn-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p>Here are the overlapping target genes:</p>
+<pre class="r"><code>shared_targets = intersect(zeb1_chip_targets, zeb1_my_targets)
+as.data.frame(shared_targets)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["shared_targets"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"HES4"},{"1":"SKI"},{"1":"PRDM16"},{"1":"TP73"},{"1":"HES2"},{"1":"RERE"},{"1":"CTNNBIP1"},{"1":"CASZ1"},{"1":"SPEN"},{"1":"ZBTB17"},{"1":"ZBTB40"},{"1":"E2F2"},{"1":"SPOCD1"},{"1":"TFAP2E"},{"1":"THRAP3"},{"1":"POU3F1"},{"1":"HEYL"},{"1":"MYCL"},{"1":"HIVEP3"},{"1":"KDM4A"},{"1":"DMAP1"},{"1":"GLIS1"},{"1":"SSBP3"},{"1":"NFIA"},{"1":"BARHL2"},{"1":"GFI1"},{"1":"RBM15"},{"1":"TRIM33"},{"1":"NHLH2"},{"1":"TTF2"},{"1":"NOTCH2"},{"1":"ARNT"},{"1":"GATAD2B"},{"1":"PBXIP1"},{"1":"ZBTB7B"},{"1":"GON4L"},{"1":"CRABP2"},{"1":"HDGF"},{"1":"PBX1"},{"1":"POGK"},{"1":"POU2F1"},{"1":"CREG1"},{"1":"LHX4"},{"1":"NR5A2"},{"1":"ELF3"},{"1":"SOX13"},{"1":"FCMR"},{"1":"IRF6"},{"1":"ESRRG"},{"1":"PARP1"},{"1":"TAF5L"},{"1":"TARBP1"},{"1":"ZNF669"},{"1":"ZNF496"},{"1":"DIP2C"},{"1":"KLF6"},{"1":"MKX"},{"1":"ZEB1"},{"1":"EPC1"},{"1":"ZNF25"},{"1":"ERCC6"},{"1":"EGR2"},{"1":"JMJD1C"},{"1":"MMS19"},{"1":"PAX2"},{"1":"LDB1"},{"1":"PITX3"},{"1":"SUFU"},{"1":"PDCD11"},{"1":"VAX1"},{"1":"EBF3"},{"1":"VENTX"},{"1":"SIRT3"},{"1":"IRF7"},{"1":"TRIM5"},{"1":"APBB1"},{"1":"ZNF215"},{"1":"RNF141"},{"1":"CTR9"},{"1":"TEAD1"},{"1":"ARNTL"},{"1":"TSG101"},{"1":"ZDHHC13"},{"1":"HTATIP2"},{"1":"PAX6"},{"1":"LMO2"},{"1":"ELF5"},{"1":"ZNF408"},{"1":"DDB1"},{"1":"TAF6L"},{"1":"DPF2"},{"1":"FOSL1"},{"1":"IGHMBP2"},{"1":"PHOX2A"},{"1":"RSF1"},{"1":"ANKRD42"},{"1":"POU2AF1"},{"1":"POU2F3"},{"1":"ZNF202"},{"1":"PKNOX2"},{"1":"ETS1"},{"1":"FLI1"},{"1":"TEAD4"},{"1":"FOXJ2"},{"1":"SOX5"},{"1":"ARNTL2"},{"1":"VDR"},{"1":"ASB8"},{"1":"KMT2D"},{"1":"SMARCD1"},{"1":"ATF1"},{"1":"NR4A1"},{"1":"HOXC6"},{"1":"ZNF385A"},{"1":"STAT2"},{"1":"NAB2"},{"1":"YEATS4"},{"1":"CSRP2"},{"1":"PAWR"},{"1":"BTG1"},{"1":"NFYB"},{"1":"BTBD11"},{"1":"PRDM4"},{"1":"CUX2"},{"1":"DTX1"},{"1":"DDX54"},{"1":"TBX3"},{"1":"KDM2B"},{"1":"NCOR2"},{"1":"SFSWAP"},{"1":"EP400"},{"1":"ZNF140"},{"1":"MPHOSPH8"},{"1":"GTF3A"},{"1":"POLR1D"},{"1":"FOXO1"},{"1":"ELF1"},{"1":"TSC22D1"},{"1":"MED4"},{"1":"RB1"},{"1":"DACH1"},{"1":"KLF12"},{"1":"ANKRD10"},{"1":"ZNF219"},{"1":"SALL2"},{"1":"NRL"},{"1":"NFATC4"},{"1":"BAZ1A"},{"1":"NFKBIA"},{"1":"PAX9"},{"1":"SIX4"},{"1":"ESR2"},{"1":"ZBTB25"},{"1":"RAD51B"},{"1":"ZFP36L1"},{"1":"DPF3"},{"1":"ESRRB"},{"1":"FOXN3"},{"1":"BCL11B"},{"1":"BRF1"},{"1":"NSMCE3"},{"1":"KLF13"},{"1":"RAD51"},{"1":"TP53BP1"},{"1":"MYEF2"},{"1":"TCF12"},{"1":"FOXB1"},{"1":"RORA"},{"1":"DENND4A"},{"1":"SMAD3"},{"1":"PIAS1"},{"1":"ARID3B"},{"1":"SIN3A"},{"1":"TBC1D2B"},{"1":"ARNT2"},{"1":"MEF2A"},{"1":"CERS3"},{"1":"SOX8"},{"1":"CRAMP1"},{"1":"ZNF205"},{"1":"ZNF263"},{"1":"ZSCAN32"},{"1":"ZNF174"},{"1":"CREBBP"},{"1":"TFAP4"},{"1":"ANKS3"},{"1":"MRTFB"},{"1":"SMG1"},{"1":"POLR3E"},{"1":"MAZ"},{"1":"TBX6"},{"1":"ZNF48"},{"1":"ZNF768"},{"1":"ZNF764"},{"1":"ZNF688"},{"1":"ZNF785"},{"1":"ZNF689"},{"1":"FBXL19"},{"1":"ZNF423"},{"1":"TOX3"},{"1":"CBFB"},{"1":"E2F4"},{"1":"ZDHHC1"},{"1":"NFATC3"},{"1":"ZFP90"},{"1":"ZNF19"},{"1":"ZFHX3"},{"1":"ZFP1"},{"1":"ZDHHC7"},{"1":"ZNF469"},{"1":"ZFPM1"},{"1":"SNAI3"},{"1":"CBFA2T3"},{"1":"ZNF276"},{"1":"PRDM7"},{"1":"HIC1"},{"1":"ZNF232"},{"1":"YBX2"},{"1":"SOX15"},{"1":"FXR2"},{"1":"TP53"},{"1":"NCOR1"},{"1":"RAI1"},{"1":"SREBF1"},{"1":"TAF15"},{"1":"RARA"},{"1":"STAT5A"},{"1":"STAT3"},{"1":"EZH1"},{"1":"ETV4"},{"1":"HDAC5"},{"1":"SP2"},{"1":"TRIM25"},{"1":"SUPT4H1"},{"1":"SMARCD2"},{"1":"SMURF2"},{"1":"BPTF"},{"1":"CBX4"},{"1":"SIRT7"},{"1":"MAFG"},{"1":"FOXK2"},{"1":"L3MBTL4"},{"1":"GATA6"},{"1":"ZNF396"},{"1":"SETBP1"},{"1":"PIAS2"},{"1":"MBD1"},{"1":"ONECUT2"},{"1":"ZNF407"},{"1":"TSHZ1"},{"1":"ZNF236"},{"1":"SALL3"},{"1":"NFATC1"},{"1":"CTDP1"},{"1":"ARID3A"},{"1":"KLF16"},{"1":"ZNF554"},{"1":"ZNF555"},{"1":"ZNF77"},{"1":"TLE2"},{"1":"NFIC"},{"1":"HMG20B"},{"1":"PIAS4"},{"1":"ZBTB7A"},{"1":"CREB3L3"},{"1":"KDM4B"},{"1":"RFX2"},{"1":"MLLT1"},{"1":"ZNF266"},{"1":"DNMT1"},{"1":"SMARCA4"},{"1":"ZNF653"},{"1":"ZNF627"},{"1":"ZNF491"},{"1":"ZNF443"},{"1":"ZNF490"},{"1":"JUNB"},{"1":"ZSWIM4"},{"1":"RFX1"},{"1":"NOTCH3"},{"1":"KLF2"},{"1":"JUND"},{"1":"ELL"},{"1":"CRTC1"},{"1":"GATAD2A"},{"1":"PBX4"},{"1":"ZNF254"},{"1":"CEBPA"},{"1":"USF2"},{"1":"ETV2"},{"1":"ZBTB32"},{"1":"KMT2B"},{"1":"ZNF565"},{"1":"ZNF568"},{"1":"ZNF420"},{"1":"ZNF875"},{"1":"ZNF540"},{"1":"ZNF571"},{"1":"ZFP30"},{"1":"DPF1"},{"1":"SIRT2"},{"1":"POU2F2"},{"1":"DEDD2"},{"1":"ZNF225"},{"1":"ZNF235"},{"1":"BCL3"},{"1":"RELB"},{"1":"FOSB"},{"1":"HIF3A"},{"1":"NPAS1"},{"1":"DBP"},{"1":"IRF3"},{"1":"ZNF83"},{"1":"ZNF160"},{"1":"ZNF331"},{"1":"ZNF580"},{"1":"ZNF581"},{"1":"ZNF582"},{"1":"ZNF583"},{"1":"ZNF71"},{"1":"ZIM2"},{"1":"ZNF264"},{"1":"ZNF549"},{"1":"ZNF550"},{"1":"ZNF416"},{"1":"ZNF134"},{"1":"ZNF671"},{"1":"ZNF606"},{"1":"ZSCAN18"},{"1":"ZNF544"},{"1":"ZNF324"},{"1":"ZNF446"},{"1":"ZBTB45"},{"1":"MZF1"},{"1":"MYT1L"},{"1":"GRHL1"},{"1":"NCOA1"},{"1":"DNMT3A"},{"1":"FOSL2"},{"1":"EPAS1"},{"1":"BCL11A"},{"1":"PAPOLG"},{"1":"SERTAD2"},{"1":"MXD1"},{"1":"FIGLA"},{"1":"VAX2"},{"1":"ANKRD53"},{"1":"EMX1"},{"1":"EGR4"},{"1":"TLX2"},{"1":"GCFC2"},{"1":"TCF7L1"},{"1":"POLR1A"},{"1":"ZNF514"},{"1":"AFF3"},{"1":"NPAS2"},{"1":"FHL2"},{"1":"SOWAHC"},{"1":"POLR1B"},{"1":"PAX8"},{"1":"GLI2"},{"1":"TFCP2L1"},{"1":"BIN1"},{"1":"ZEB2"},{"1":"NR4A2"},{"1":"BAZ2B"},{"1":"DLX2"},{"1":"SP3"},{"1":"NFE2L2"},{"1":"NEUROD1"},{"1":"NAB1"},{"1":"STAT4"},{"1":"KLF7"},{"1":"ZNF142"},{"1":"PTMA"},{"1":"LRRFIP1"},{"1":"HDAC4"},{"1":"ING5"},{"1":"SOX12"},{"1":"TRIB3"},{"1":"RBCK1"},{"1":"SNRPB"},{"1":"EBF4"},{"1":"ANKEF1"},{"1":"OVOL2"},{"1":"INSM1"},{"1":"ZNF337"},{"1":"ID1"},{"1":"NCOA6"},{"1":"PHF20"},{"1":"SCAND1"},{"1":"SLA2"},{"1":"RBL1"},{"1":"CTNNBL1"},{"1":"ZHX3"},{"1":"L3MBTL1"},{"1":"MYBL2"},{"1":"TOX2"},{"1":"NCOA5"},{"1":"EYA2"},{"1":"SNAI1"},{"1":"ZFP64"},{"1":"TSHZ2"},{"1":"TFAP2C"},{"1":"CTCFL"},{"1":"NELFCD"},{"1":"TAF4"},{"1":"SS18L1"},{"1":"GATA5"},{"1":"DIDO1"},{"1":"ZBTB46"},{"1":"ZNF512B"},{"1":"TCEA2"},{"1":"RUNX1"},{"1":"SIM2"},{"1":"ERG"},{"1":"ETS2"},{"1":"BRWD1"},{"1":"ZBTB21"},{"1":"PKNOX1"},{"1":"DNMT3L"},{"1":"HIRA"},{"1":"ZNF74"},{"1":"MED15"},{"1":"ZNF70"},{"1":"SEC14L2"},{"1":"PATZ1"},{"1":"RBFOX2"},{"1":"POLR2F"},{"1":"CBX7"},{"1":"EP300"},{"1":"TEF"},{"1":"PHF5A"},{"1":"POLR3H"},{"1":"CSDC2"},{"1":"XRCC6"},{"1":"TCF20"},{"1":"PHF21B"},{"1":"PPARA"},{"1":"TBC1D22A"},{"1":"PPARG"},{"1":"NR2C2"},{"1":"SATB1"},{"1":"THRB"},{"1":"RARB"},{"1":"TOP2B"},{"1":"EOMES"},{"1":"ZKSCAN7"},{"1":"ZNF35"},{"1":"ZNF501"},{"1":"LIMD1"},{"1":"ZNF589"},{"1":"PHF7"},{"1":"PBRM1"},{"1":"SFMBT1"},{"1":"HESX1"},{"1":"MITF"},{"1":"FOXP1"},{"1":"NFKBIZ"},{"1":"BBX"},{"1":"RUVBL1"},{"1":"GATA2"},{"1":"SOX14"},{"1":"ZBTB38"},{"1":"ZIC1"},{"1":"WWTR1"},{"1":"TSC22D2"},{"1":"SHOX2"},{"1":"MECOM"},{"1":"MYNN"},{"1":"SKIL"},{"1":"POLR2H"},{"1":"TP63"},{"1":"CTBP1"},{"1":"NSD2"},{"1":"NELFA"},{"1":"RNF4"},{"1":"HTT"},{"1":"HMX1"},{"1":"NKX3-2"},{"1":"RBPJ"},{"1":"UBE2K"},{"1":"APBB2"},{"1":"NFXL1"},{"1":"POLR2B"},{"1":"CNOT6L"},{"1":"NKX6-1"},{"1":"AFF1"},{"1":"NFKB1"},{"1":"LEF1"},{"1":"PITX2"},{"1":"PRDM5"},{"1":"JADE1"},{"1":"ELF2"},{"1":"NAA15"},{"1":"MAML3"},{"1":"POU4F2"},{"1":"NR3C2"},{"1":"NKD2"},{"1":"ZNF131"},{"1":"TAF9"},{"1":"JMY"},{"1":"SLF1"},{"1":"APC"},{"1":"PDLIM4"},{"1":"IRF1"},{"1":"AFF4"},{"1":"TCF7"},{"1":"JADE2"},{"1":"PURA"},{"1":"HDAC3"},{"1":"RNF14"},{"1":"CDX1"},{"1":"EBF1"},{"1":"TLX3"},{"1":"UIMC1"},{"1":"MXD3"},{"1":"RGS14"},{"1":"ZNF354B"},{"1":"ZNF354C"},{"1":"MAML1"},{"1":"SIRT5"},{"1":"JARID2"},{"1":"E2F3"},{"1":"TRIM27"},{"1":"TRIM15"},{"1":"EHMT2"},{"1":"SPDEF"},{"1":"TAF11"},{"1":"ANKS1A"},{"1":"TEAD3"},{"1":"BRPF3"},{"1":"ETV7"},{"1":"FOXP4"},{"1":"TFEB"},{"1":"SUPT3H"},{"1":"RUNX2"},{"1":"TFAP2B"},{"1":"KHDRBS2"},{"1":"EEF1A1"},{"1":"ZNF292"},{"1":"ANKRD6"},{"1":"PRDM13"},{"1":"SIM1"},{"1":"PRDM1"},{"1":"FOXO3"},{"1":"HDAC2"},{"1":"RFX6"},{"1":"MCM9"},{"1":"HEY2"},{"1":"OLIG3"},{"1":"TNFAIP3"},{"1":"HIVEP2"},{"1":"PLAGL1"},{"1":"ARID1B"},{"1":"TULP4"},{"1":"PHF10"},{"1":"MAFK"},{"1":"MEOX2"},{"1":"AHR"},{"1":"HDAC9"},{"1":"SP8"},{"1":"NFE2L3"},{"1":"CBX3"},{"1":"EVX1"},{"1":"JAZF1"},{"1":"CREB5"},{"1":"GLI3"},{"1":"AEBP1"},{"1":"IKZF1"},{"1":"MLXIPL"},{"1":"GTF2IRD1"},{"1":"GTF2I"},{"1":"GATAD1"},{"1":"TRRAP"},{"1":"TSC22D4"},{"1":"TRIP6"},{"1":"CUX1"},{"1":"HBP1"},{"1":"ZNF277"},{"1":"SND1"},{"1":"IRF5"},{"1":"ZNF786"},{"1":"ZNF282"},{"1":"ZNF467"},{"1":"ZNF862"},{"1":"AGAP3"},{"1":"SMARCD3"},{"1":"KMT2C"},{"1":"MNX1"},{"1":"GATA4"},{"1":"ZDHHC2"},{"1":"LZTS1"},{"1":"NPM2"},{"1":"EBF2"},{"1":"HMBOX1"},{"1":"IKBKB"},{"1":"CEBPD"},{"1":"CHD7"},{"1":"MYBL1"},{"1":"PRDM14"},{"1":"MSC"},{"1":"E2F5"},{"1":"KLF10"},{"1":"ZFPM2"},{"1":"TRPS1"},{"1":"ZHX2"},{"1":"GLI4"},{"1":"MAF1"},{"1":"FOXH1"},{"1":"ZNF34"},{"1":"ZNF250"},{"1":"DMRT3"},{"1":"DMRT2"},{"1":"KDM4C"},{"1":"NFIB"},{"1":"PSIP1"},{"1":"DMRTA1"},{"1":"ELAVL2"},{"1":"CREB3"},{"1":"PAX5"},{"1":"RORB"},{"1":"TLE1"},{"1":"PHF2"},{"1":"ZNF169"},{"1":"KLF4"},{"1":"ZNF483"},{"1":"PHF19"},{"1":"LMX1B"},{"1":"ASB6"},{"1":"PRRX2"},{"1":"ABL1"},{"1":"GFI1B"},{"1":"RXRA"},{"1":"EHMT1"},{"1":"TBL1X"},{"1":"MSL3"},{"1":"PIR"},{"1":"ZFX"},{"1":"BCOR"},{"1":"JADE3"},{"1":"ZNF41"},{"1":"ATRX"},{"1":"DACH2"},{"1":"TSC22D3"},{"1":"NKRF"},{"1":"ZDHHC9"},{"1":"ZNF449"},{"1":"ZNF75D"},{"1":"ZIC3"},{"1":"MECP2"},{"1":"IKBKG"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>ZEB1 expression level decreases, and most of its targets are also
+decreasingly expressed, suggesting ZEB1 might be an inhibitor?</p>
+<pre class="r"><code>my.inter[regulator_gene == &quot;ZEB1&quot; &amp; target_gene %in% c(&quot;ZEB1&quot;, &quot;RERE&quot;),
+         .(target_gene, tar.ge.ES, tar.ge.H16, tar.ge.D1, tar.ge.D4)] %&gt;% 
+  column_to_rownames(&quot;target_gene&quot;) %&gt;% 
+  Heatmap</code></pre>
+<pre><code>Warning: The input is a data frame, convert it to a matrix.</code></pre>
+<p><img src="figure/ChIP-ZEB1-targets.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>my.inter[regulator_gene == &quot;ZEB1&quot; &amp; target_gene %in% c(&quot;ZEB1&quot;, &quot;RERE&quot;),
+         .(target_gene, atac.ES, atac.H16, atac.D1, atac.D4)] %&gt;% 
+    column_to_rownames(&quot;target_gene&quot;) %&gt;% 
+  Heatmap</code></pre>
+<pre><code>Warning: The input is a data frame, convert it to a matrix.</code></pre>
+<p><img src="figure/ChIP-ZEB1-targets.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>my.inter[regulator_gene == &quot;ZEB1&quot; &amp; target_gene %in% shared_targets,
+         .(target_gene, tar.ge.ES, tar.ge.H16, tar.ge.D1, tar.ge.D4)
+         ] %&gt;% column_to_rownames(&quot;target_gene&quot;) %&gt;% 
+  Heatmap(cluster_columns = F, show_row_names=F)</code></pre>
+<pre><code>Warning: The input is a data frame, convert it to a matrix.</code></pre>
+<pre><code>The automatically generated colors map from the 1^st and 99^th of the
+values in the matrix. There are outliers in the matrix whose patterns
+might be hidden by this color mapping. You can manually set the color
+to `col` argument.
+
+Use `suppressMessages()` to turn off this message.</code></pre>
+<p><img src="figure/ChIP-ZEB1-targets.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>my.inter[regulator_gene == &quot;ZEB1&quot; &amp; target_gene %in% shared_targets,
+         .(target_gene, atac.ES, atac.H16, atac.D1, atac.D4)
+         ] %&gt;% column_to_rownames(&quot;target_gene&quot;) %&gt;% 
+  Heatmap(cluster_columns = F, show_row_names=F)</code></pre>
+<pre><code>Warning: The input is a data frame, convert it to a matrix.</code></pre>
+<p><img src="figure/ChIP-ZEB1-targets.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.0 (2021-05-18)
+Platform: x86_64-conda-linux-gnu (64-bit)
+Running under: Ubuntu 20.04.2 LTS
+
+Matrix products: default
+BLAS/LAPACK: /gpfs/commons/home/cdai/miniconda3/envs/smk/lib/libopenblasp-r0.3.18.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] ggvenn_0.1.9          ComplexHeatmap_2.10.0 yaml_2.3.5           
+ [4] data.table_1.14.2     forcats_0.5.1         stringr_1.4.0        
+ [7] dplyr_1.0.9           purrr_0.3.4           readr_2.1.2          
+[10] tidyr_1.2.0           tibble_3.1.7          ggplot2_3.3.6        
+[13] tidyverse_1.3.2      
+
+loaded via a namespace (and not attached):
+ [1] matrixStats_0.62.0  fs_1.5.2            lubridate_1.8.0    
+ [4] doParallel_1.0.17   RColorBrewer_1.1-3  httr_1.4.3         
+ [7] rprojroot_2.0.3     tools_4.1.0         backports_1.4.1    
+[10] bslib_0.4.0         utf8_1.2.2          R6_2.5.1           
+[13] DBI_1.1.3           BiocGenerics_0.40.0 colorspace_2.0-3   
+[16] GetoptLong_1.0.5    withr_2.5.0         tidyselect_1.1.2   
+[19] compiler_4.1.0      git2r_0.30.1        cli_3.3.0          
+[22] rvest_1.0.2         xml2_1.3.3          labeling_0.4.2     
+[25] sass_0.4.2          scales_1.2.0        digest_0.6.29      
+[28] rmarkdown_2.14      pkgconfig_2.0.3     htmltools_0.5.3    
+[31] highr_0.9           dbplyr_2.2.1        fastmap_1.1.0      
+[34] rlang_1.0.4         GlobalOptions_0.1.2 readxl_1.4.0       
+[37] rstudioapi_0.13     farver_2.1.1        shape_1.4.6        
+[40] jquerylib_0.1.4     generics_0.1.3      jsonlite_1.8.0     
+[43] googlesheets4_1.0.0 magrittr_2.0.3      Rcpp_1.0.9         
+[46] munsell_0.5.0       S4Vectors_0.32.4    fansi_1.0.3        
+[49] lifecycle_1.0.1     stringi_1.7.8       whisker_0.4        
+[52] parallel_4.1.0      promises_1.2.0.1    crayon_1.5.1       
+[55] haven_2.5.0         circlize_0.4.15     hms_1.1.1          
+[58] magick_2.7.3        knitr_1.39          pillar_1.8.0       
+[61] rjson_0.2.21        codetools_0.2-18    stats4_4.1.0       
+[64] reprex_2.0.1        glue_1.6.2          evaluate_0.15      
+[67] modelr_0.1.8        png_0.1-7           vctrs_0.4.1        
+[70] tzdb_0.3.0          httpuv_1.6.5        foreach_1.5.2      
+[73] cellranger_1.1.0    gtable_0.3.0        clue_0.3-61        
+[76] assertthat_0.2.1    cachem_1.0.6        xfun_0.31          
+[79] broom_1.0.0         later_1.3.0         googledrive_2.0.0  
+[82] gargle_1.2.0        iterators_1.0.14    IRanges_2.28.0     
+[85] cluster_2.1.3       workflowr_1.7.0     ellipsis_0.3.2     </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
