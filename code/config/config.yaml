@@ -18,5 +18,31 @@ RSEM_INDEX: "/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/rsem.1.2.21.g
 # Gencode GRCh38 gene name and gene id annotation
 GENE_LOOKUP: 'Data/Annotations/gencode_refseq_partial_modified_geneNames_ID_20191230.csv'
 
+# Gencode GRCh38 gtf (converted to data.frame format)
+GENCODE_HS38 : '/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/gencode.v31.primary_assembly.annotation.pandas.df.20200108.txt'
+
+# UCSC genome sizes, used by bedtools
+HG38_GENOME_SIZES: '/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/ucsc.hg38.chrom.sizes' 
+
 # diffbind sample sheet
 DIFFBIND_SAMPLES: 'config/diffBind_samplesheet.csv'
+
+
+# Previously processed results
+TF_LIST : '/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/TFlist_20191230.csv'
+HIT_LIST : '/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/Hitlist_20191230.csv'
+DESEQ_RESULT: '/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/RNA-seq_timepoint_deseq_result_20200102.xlsx'
+
+# MACS2 output columns
+MACS2:
+  NARROW:
+    - chrom
+    - start
+    - end
+    - peakname
+    - score
+    - strand
+    - fc_peak # fold change at peak
+    - negLog10p # -log10 pval at summit
+    - neglog10q # -log10 qval at summit
+    - summitpos # summit position relative to start

@@ -79,4 +79,5 @@ rule all:
 include: 'wf-1-rna.smk'
 include: 'wf-2-atac.smk'
 include: 'wf-7-chip.smk'
+include: 'common.smk'
 

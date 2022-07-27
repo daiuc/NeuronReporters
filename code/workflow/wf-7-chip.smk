@@ -154,3 +154,18 @@ rule CallPeaksChip:
             --cutoff-analysis
         ls -lah {output}
         '''
+
+
+rule IntersectChipPeaks:
+    message: 'Intersect Chip peaks to find targets'
+    input: 
+        peaks = rules.CallPeaksChip.output,
+        tf = 'resources/annotations/hs38/gencode_v31_tf_u2k_d1k.bed'
+    output: 'results/ChIP/{Gene}/targets.bed'
+    threads: 1
+    resources: cpu = 1, mem_mb = 15000, time = 2100
+    shell: 
+        '''
+        intersectBed  -wo \
+            -a {input.peaks} -b {input.tf} > {output}
+        '''
