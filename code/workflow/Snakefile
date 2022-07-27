@@ -73,7 +73,10 @@ rule all:
                 timepoint=atac.timepoint, rep=atac.rep),
         expand("results/ATACseq/bigwig/{timepoint}_{rep}.bw", zip,
                 timepoint=atac.timepoint, rep=atac.rep),
-        'results/ATACseq/diffbind/consensusPeaks.bed'
+        'results/ATACseq/diffbind/consensusPeaks.bed',
+        expand('results/ChIP/{Gene}/targets.bed', Gene = ['ZEB1']),
+        expand('results/ChIP/{Gene}/deeptools/chip.mat.gz', Gene = ['ZEB1'])
+
 
 
 include: 'wf-1-rna.smk'

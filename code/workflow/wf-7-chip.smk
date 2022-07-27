@@ -169,3 +169,30 @@ rule IntersectChipPeaks:
         intersectBed  -wo \
             -a {input.peaks} -b {input.tf} > {output}
         '''
+
+
+rule DeeptoolsHeatmap:
+    message: 'Plot heatmap using deeptools'
+    input: 
+        bigwig = rules.BigwigChip.output,
+        bed1 = 'resources/annotations/hs38/zeb1_target_tfs.bed',
+        bed2 = 'resources/annotations/hs38/zeb1_nontarget_tfs.bed'
+    output: 
+        mx = 'results/ChIP/{Gene}/deeptools/chip.mat.gz',
+        svg = 'results/ChIP/{Gene}/deeptools/chip.svg'
+    log: 'logs/DeeptoolsHeatmap_{Gene}.log'
+    threads: 4
+    resources: cpu = 4, mem_mb = 25000, time = 2100
+    shell: 
+        '''
+        computeMatrix scale-regions \
+            -S {input.bigwig} \
+            -R {input.bed1} {input.bed2} \
+            --beforeRegionStartLength 2000 \
+            --regionBodyLength 5000 \
+            --afterRegionStartLength 2000 \
+            --skipZeros -p {threads} -o {output.mx}
+
+        plotHeatmap -m {output.mx} \
+            -out {output.svg}
+        '''
