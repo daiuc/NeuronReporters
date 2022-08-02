@@ -78,9 +78,10 @@ rule all:
         expand('results/ChIP/{Gene}/deeptools/chip.mat.gz', Gene = ['ZEB1'])
 
 
-
 include: 'wf-1-rna.smk'
 include: 'wf-2-atac.smk'
+include: 'wf-5-crispr.smk'
+include: 'wf-6-qc.smk'
 include: 'wf-7-chip.smk'
 include: 'common.smk'
 

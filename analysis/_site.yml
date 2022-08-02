@@ -13,8 +13,10 @@ output:
   workflowr::wflow_html:
     toc: yes
     toc_depth: 3
-    toc_float: yes
+    toc_float: true
     code_folding: hide
     df_print: paged
-    theme: yeti
+    theme: readable
     highlight: textmate
+    number_sections: false
+

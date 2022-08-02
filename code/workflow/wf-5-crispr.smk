@@ -1,0 +1,1 @@
+# this is for reanalysis of crispr-n screen using MAGeCK

@@ -1,0 +1,98 @@
+---
+params:
+    var1: "abc"
+    var2: 5
+format: 
+    revealjs:
+        transition: slide
+        background-transition: fade
+        theme: default
+        slide-number: true
+        width: 1200
+        height: 800
+        logo: https://upload.wikimedia.org/wikipedia/commons/0/05/University_of_Chicago_wordmark.svg
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = F, message = F, warning = F)
+library(tidyverse)
+
+```
+
+
+
+## Presentation {.larger}
+
+<br>
+
+Chao Dai
+<br>
+`r Sys.Date()`
+
+
+## Slide with one figure
+
+
+```{r}
+ggplot(mpg) + geom_boxplot(aes(cyl, hwy, color = as.character(cyl))) + 
+    guides(color = guide_legend(title = NULL)) + 
+    theme_bw()
+```
+
+- one point, using text variable `r params$var1`
+
+- another point, using numeric variable `r params$var2 * pi`
+
+
+## Slide with multiple columns and figures
+
+:::: {.columns}
+
+::: {.column width="48%"}
+
+Plot 1
+```{r }
+ggplot(mpg) + geom_point(aes(hwy, cty))
+```
+
+:::
+
+::: {.column width="4%" }
+
+:::
+
+::: {.column width="48%" }
+
+Plot 2
+```{r }
+ggplot(mpg) + geom_histogram(aes(displ)) +
+    theme_bw()
+```
+
+:::
+
+::::
+
+- key points 1
+- key points 2
+
+
+## Slides with equations
+
+<br>
+
+$$E = MC^2$$
+<br>
+
+- Descriptions
+
+## {background-image="https://source.unsplash.com/koy6FlCCy5s"}
+
+::: {.r-fit-text}
+Thank you!
+:::
+
+
+
