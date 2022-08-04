@@ -10,7 +10,7 @@ navbar:
   - text: License
     href: license.html
 output:
-  workflowr::wflow_html:
+  bookdown::html_document2:
     toc: yes
     toc_depth: 3
     toc_float: true

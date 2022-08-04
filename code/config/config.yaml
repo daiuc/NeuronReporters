@@ -46,3 +46,9 @@ MACS2:
     - negLog10p # -log10 pval at summit
     - neglog10q # -log10 qval at summit
     - summitpos # summit position relative to start
+
+# previous processed bams sheet
+PREVIOUS_BAMS: 'config/previous-bams-sheet.txt'
+
+
+
