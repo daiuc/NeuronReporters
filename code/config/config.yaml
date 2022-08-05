@@ -50,5 +50,7 @@ MACS2:
 # previous processed bams sheet
 PREVIOUS_BAMS: 'config/previous-bams-sheet.txt'
 
+# annotation features bed files
+GeneBody: 'resources/annotations/hs38/gencode_v31_protein_u2k_d1k.bed'
 
 

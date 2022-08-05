@@ -137,6 +137,15 @@ rule MarkDups_atac:
 
         '''
 
+
+rule PlotFragmentSizes:
+    input: rules.MarkDups_atac.output.bam
+    output: 'results/ATACseq/PlotFragmentSizes/{timepoint}_{rep}.pdf'
+    threads: 1
+    resources: cpu = 1, mem_mb = 30000, time = 2100
+    script: 'scripts/ATACseqLibraryQC.R'
+
+
 rule Bigwig_atac:
     input: rules.MarkDups_atac.output.bam
     output: "results/ATACseq/bigwig/{timepoint}_{rep}.bw"
@@ -155,6 +164,62 @@ rule Bigwig_atac:
             --numberOfProcessors {threads} \
             --minMappingQuality 20
         '''
+
+
+def getMultiBigwigSummaryParamsCmd(wildcards):
+    if wildcards.FeatureType.upper() == 'GENOME':
+        cmd = "multiBigwigSummary bins"
+    else:
+        cmd = "multiBigwigSummary BED-file"
+    return cmd
+
+def getMultiBigwigSummaryParamsBed(wildcards):
+    if wildcards.FeatureType.upper() == 'GENOME':
+        bed = ""
+    else:
+        bed = '--BED ' + config[wildcards.FeatureType]
+    return bed
+
+def getMultiBigwigSummaryBinSize(wildcards):
+    if wildcards.FeatureType.upper() == 'GENOME':
+        bs = 10000
+    else:
+        bs = 100
+    return bs
+
+rule MultiBigwigSummaryATAC:
+    message: '### use multiBigwigSummary Genomewide'
+    input: list(set(expand("results/ATACseq/bigwig/{timepoint}_{rep}.bw", zip, timepoint=atac.timepoint, rep=atac.rep)))
+    output: 
+        npz = 'results/ATACseq/BigwigSummary/{FeatureType}/results.npz',
+        heatmap = 'results/ATACseq/BigwigSummary/{FeatureType}/heatmap.pdf',
+        matrix = 'results/ATACseq/BigwigSummary/{FeatureType}/corr.matrix'
+    params: 
+       cmd = getMultiBigwigSummaryParamsCmd,
+       bed = getMultiBigwigSummaryParamsBed,
+       binSize = getMultiBigwigSummaryBinSize
+    threads: 8
+    resources: cpu = 8, mem_mb = 25000, time = 2100
+    shell: 
+        '''
+        {params.cmd} -b {input} -o {output.npz} {params.bed} -p {threads}  -bs {params.binSize}
+        
+        plotCorrelation -in {output.npz} -c spearman -p heatmap \
+            -o {output.heatmap} --plotNumbers \
+            --outFileCorMatrix {output.matrix} \
+            -T "Spearman Correlation - {wildcards.FeatureType}" --skipZeros --colorMap viridis
+        '''
+
+
+use rule MultiBigwigSummaryATAC as MultiBigwigSummaryRNA with:
+    input: 
+        list(set(expand('results/RNAseq/bigwig/{treatment}_{timepoint}_{rep}_{batch}.bw', zip, treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch)))
+    output: 
+        npz = 'results/RNAseq/BigwigSummary/{FeatureType}/results.npz',
+        heatmap = 'results/RNAseq/BigwigSummary/{FeatureType}/heatmap.pdf',
+        matrix = 'results/RNAseq/BigwigSummary/{FeatureType}/corr.matrix'
+
+
 
 
 rule CallPeaks:
@@ -195,17 +260,6 @@ rule consensusPeaks:
 
 
 
-# rule ATACseqQC:
-#     input:
-#         bam = expand("results/ATACseq/MarkDups/atac_{batch}_{sample}_markDups.bam", batch=ATAC_BATCHES, sample=ATAC_SAMPLES)
-#     output:
-#         "results/ATACseq/QC/ATACseqLibraryQC.html"
-#     params:
-#         output_dir="results/ATACseq/QC"
-#     threads: 2
-#     resources: time=600, mem_mb=36000, cpu=4
-#     script:
-#         "Scripts/ATACseqLibraryQC.Rmd" # could also just use this script as input
         
 
 

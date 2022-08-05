@@ -49,8 +49,8 @@ def get_bwa_inputs(wildcards):
     return {'R1': READS[0], 'R2': READS[1]}
 
 def getCombineRsemCountsInputs(wildcards):
-    return expand("results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}.genes.results", zip,
-                  treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch)
+    return list(set(expand("results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}.genes.results", zip,
+                  treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch)))
 
 
 
@@ -64,15 +64,13 @@ rule all:
     input:
         'results/RNAseq/multiqc/multiqc_report.html',
         'results/ATACseq/multiqc/multiqc_report.html',
-        expand('results/RNAseq/bigwig/{treatment}_{timepoint}_{rep}_{batch}.bw', zip, 
-                treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch),
-        expand('results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}.genes.results', zip,
-                treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch),
+        list(set(expand('results/RNAseq/bigwig/{treatment}_{timepoint}_{rep}_{batch}.bw', zip, 
+                treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch))),
+        list(set(expand('results/RNAseq/RSEM/{treatment}_{timepoint}_{rep}_{batch}.genes.results', zip,
+                treatment=rna.treatment, timepoint=rna.timepoint, rep=rna.rep, batch=rna.batch))),
         'results/RNAseq/RSEM/combined_RSEM_counts.txt',
-        expand('results/ATACseq/macs2/{timepoint}_{rep}_peaks.narrowPeak', zip, 
-                timepoint=atac.timepoint, rep=atac.rep),
-        expand("results/ATACseq/bigwig/{timepoint}_{rep}.bw", zip,
-                timepoint=atac.timepoint, rep=atac.rep),
+        list(set(expand('results/ATACseq/macs2/{timepoint}_{rep}_peaks.narrowPeak', zip, timepoint=atac.timepoint, rep=atac.rep))),
+        list(set(expand("results/ATACseq/bigwig/{timepoint}_{rep}.bw", zip, timepoint=atac.timepoint, rep=atac.rep))), 
         'results/ATACseq/diffbind/consensusPeaks.bed',
         expand('results/ChIP/{Gene}/targets.bed', Gene = ['ZEB1']),
         expand('results/ChIP/{Gene}/deeptools/chip.mat.gz', Gene = ['ZEB1'])
