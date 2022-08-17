@@ -1,0 +1,185 @@
+---
+title: "MAGeCK results"
+output:
+  html_document:
+    df_print: paged
+    code_folding: "hide"
+---
+
+```{r setup, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(include = F, warning = F, message = F)
+
+library(tidyverse)
+library(data.table)
+library(EnhancedVolcano)
+
+
+theme_set(theme_bw())
+cnts = fread("../../resources/crispr/counts/wrangled_raw_counts.tsv")
+```
+
+## RRA
+
+Run RRA in 3 contrasts:
+
+-   Day14_Tdneg-vs-Day14_iN\
+-   Day14_Tdneg-vs-Day14_Tdpos\
+-   Day14_Tdpos-vs-Day14_iN
+
+------------------------------------------------------------------------
+
+### Day14_Tdneg-vs-Day14_iN - look for neuron differentiation activators
+
+For Tdtomato - vs. iN, we look for enriched genes with guides that are lost. TFs with significant reduction in sgRNA reads in the tdTomato- cells indicate that these TFs can potentially positively regulate neuron differentiation.
+
+```{r}
+# read in data
+tdneg.vs.iN = fread("../../results/crispr/mageckRRA/Day14_Tdneg-vs-Day14_iN/RRA.gene_summary.txt")
+```
+
+```{r}
+tdneg.vs.iN[, .(id, `neg|score`, `neg|lfc`)] %>%
+  column_to_rownames("id") %>% 
+  EnhancedVolcano(., rownames(.), x = "neg|lfc", y = "neg|score", 
+                  title = NULL, subtitle = NULL, caption = NULL,
+                  pCutoff = 1e-3, FCcutoff = 1, max.overlaps = 30,
+                  labSize = 3, legendLabSize = 10, legendIconSize = 3,
+                  ylim = c(0, 6)
+                  ) +
+  theme(axis.title = element_text(size = 10),
+        axis.text.x = element_text(size = 10), axis.text.y = element_text(size = 10),
+        legend.position = "None"
+        )
+```
+
+### Day14_Tdneg-vs-Day14_Tdpos - look for neuron differentiation activators
+
+For Tdtomato- vs . Tdtomato+ we look for genes with guides that are lost. Similarly to above, TFs with significantly reduced sgRNA reads in the tdTomato- cells vs. tdTomato+ cells may indicate that these TFs can promote neuron differentiation.
+
+```{r}
+# read in data
+tdneg.vs.tdpos = fread("../../results/crispr/mageckRRA/Day14_Tdneg-vs-Day14_Tdpos/RRA.gene_summary.txt")
+```
+
+```{r}
+tdneg.vs.tdpos[, .(id, `neg|score`, `neg|lfc`)] %>%
+  column_to_rownames("id") %>% 
+  EnhancedVolcano(., rownames(.), x = "neg|lfc", y = "neg|score", 
+                  title = NULL, subtitle = NULL, caption = NULL,
+                  pCutoff = 1e-3, FCcutoff = 1, max.overlaps = 30,
+                  labSize = 3, legendLabSize = 10, legendIconSize = 3,
+                  ylim = c(0, 6)
+                  ) +
+  theme(axis.title = element_text(size = 10),
+        axis.text.x = element_text(size = 10), axis.text.y = element_text(size = 10),
+        legend.position = "None"
+        )
+```      
+
+
+### Day14_Tdpos-vs-Day14_iN - look for neuron differentiation inhibitors
+
+In Tdtomato+ vs iN contrast, we look for TFs with significantly reduced sgRNA reads. These indicates that the knock out of these TFs promoted neuron differentiation, suggesting that these TFs are likely inhibitors of neuron differentiation.
+
+<br>
+
+Why do we also use negative screen in tdTomato+ vs. iN? Because this is a CRISPR-cas9 knockout screen, in theory, we should only observe targeted sgRNA reads to decrease.
+
+```{r}
+# read in data
+tdpos.vs.iN = fread("../../results/crispr/mageckRRA/Day14_Tdpos-vs-Day14_iN/RRA.gene_summary.txt")
+```
+
+```{r}
+tdpos.vs.iN[, .(id, `neg|score`, `neg|lfc`)] %>%
+  column_to_rownames("id") %>% 
+  EnhancedVolcano(., rownames(.), x = "neg|lfc", y = "neg|score", 
+                  title = NULL, subtitle = NULL, caption = NULL,
+                  pCutoff = 1e-3, FCcutoff = 1, max.overlaps = 30,
+                  labSize = 3, legendLabSize = 10, legendIconSize = 3,
+                  ylim = c(0, 6)
+                  ) +
+  theme(axis.title = element_text(size = 10),
+        axis.text.x = element_text(size = 10), axis.text.y = element_text(size = 10),
+        legend.position = "None"
+        )
+```
+
+## Compare RRA scores
+
+
+```{r}
+inner_join(x = tdneg.vs.iN[, .(id, tdneg_vs_iN = `neg|score`)],
+           y = tdneg.vs.tdpos[, .(id, tdneg_vs_tdpos = `neg|score`)], 
+           by = "id"
+           ) %>% 
+  ggplot() + geom_point(aes(tdneg_vs_iN, tdneg_vs_tdpos), alpha = .3, color = "royalblue")
+```
+
+```{r}
+inner_join(x = tdneg.vs.iN[, .(id, tdneg_vs_iN = `neg|score`)],
+           y = tdpos.vs.iN[, .(id, tdpos_vs_iN = `neg|score`)], 
+           by = "id"
+           ) %>% 
+  ggplot() + geom_point(aes(tdneg_vs_iN, tdpos_vs_iN), alpha = .3, color = "firebrick")
+```
+
+
+## Compare lfc
+
+Comparison of log(fold change) shows that indeed, tdneg_vs_iN and tdneg_vs_tdpos is highly correlated. 
+
+```{r}
+inner_join(x = tdneg.vs.iN[, .(id, tdneg_vs_iN = `neg|lfc`)],
+           y = tdneg.vs.tdpos[, .(id, tdneg_vs_tdpos = `neg|lfc`)], 
+           by = "id"
+           ) %>% 
+  ggplot() + geom_point(aes(tdneg_vs_iN, tdneg_vs_tdpos), alpha = .3, color = "royalblue")
+```
+
+
+
+
+```{r}
+inner_join(x = tdneg.vs.iN[, .(id, tdneg_vs_iN = `neg|lfc`)],
+           y = tdpos.vs.iN[, .(id, tdpos_vs_iN = `neg|lfc`)], 
+           by = "id"
+           ) %>% 
+  ggplot() + geom_point(aes(tdneg_vs_iN, tdpos_vs_iN), alpha = .3, color = "firebrick")
+```
+
+
+## Intersect tdTomato- vs. iN and tdTomato- vs. tdTomato+ top hits
+
+Intersected TFs with `neg|score < 1e-3`. 
+
+```{r}
+intersect(tdneg.vs.iN[`neg|score` < 1e-3, id], tdneg.vs.tdpos[`neg|score` < 1e-3, id])
+```
+
+
+Intersects of top 200 TFs
+
+```{r}
+intersect(tdneg.vs.iN[`neg|rank` < 201, id], tdneg.vs.tdpos[`neg|rank` < 201, id])
+```
+
+
+top 200 TFs results above, intersecting with our 120 hits. 
+
+```{r}
+hits = fread("../../resources/crispr/Hitlist_20191230.csv")
+intersect(tdneg.vs.iN[`neg|rank` < 201, id], tdneg.vs.tdpos[`neg|rank` < 201, id]) %>% 
+  intersect(hits$gene_name)
+
+```
+
+
+
+
+
+
+
+
+
+
