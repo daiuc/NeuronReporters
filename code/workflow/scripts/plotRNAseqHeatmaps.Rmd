@@ -1,0 +1,156 @@
+---
+title: "Re-plot RNA-seq heatmaps"
+output:
+  html_document:
+    df_print: paged
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+library(data.table)
+library(tidyverse)
+library(yaml)
+library(ComplexHeatmap)
+```
+
+
+```{r}
+config = yaml.load_file("config/config.yaml")
+# deseq2 results
+sheets = readxl::excel_sheets(config$DESEQ_RESULT)
+rna_data <- map(sheets, ~ readxl::read_excel(config$DESEQ_RESULT, .x))
+names(rna_data) <- sheets
+rna_data = map(rna_data, as.data.table)
+
+
+# rna fold change
+rna_fc <- map_dfc(rna_data[2:6], ~select(.x, gene_id, log2FoldChange) %>% pull(log2FoldChange)) %>%
+            add_column(gene_id = rna_data$H15_vs_ES$gene_id, .before = "H15_vs_ES")
+names(rna_fc) <- c("gene_id", "H15", "D1", "D2", "D4", "D7")
+rna_fc <- column_to_rownames(rna_fc, "gene_id")
+
+
+# TF list
+tflist = fread(config$TF_LIST) %>% .[, hgnc_symbol]
+
+# hit TF list
+hitlist = fread(config$HIT_LIST) %>% .[, hgnc_symbol]
+```
+
+```{r}
+# get all releveant ES, H15, D1, d2, D4, D7 samples' read counts
+wt_cnts <- select(rna_data$rawCounts, gene_id:S02_B2, S15_B1:S20_B2, S07_B1:S08_B2, S21_B1:S22_B2)
+
+# select low read counts
+select.rows <- rowSums(select(wt_cnts, S01_B1:S22_B2)) >= 100
+wt_cnts <- wt_cnts[select.rows,]
+
+
+# RPKM: since we used 3' enriched RNA-seq, no need to include gene length
+tf_norm_cnts <- select(wt_cnts, -gene_id, -gene_name) %>% 
+                    apply(2, function(x) { 1e6 * x / sum(x) } ) %>% 
+                    as_tibble
+
+# add gene id and gene names
+tf_norm_cnts <- cbind(wt_cnts[, 1:2], tf_norm_cnts)
+
+# select only TFs
+tf_norm_cnts <- tf_norm_cnts[gene_name %in% tflist]
+
+# use log2foldchange per time point
+TF.mx.fc <- rna_fc[tf_norm_cnts$gene_id, ] %>% as.matrix
+```
+
+```{r}
+# sample labels 
+sample.labels2 <- factor(c('H15', 'D1', 'D2', 'D4', 'D7'), levels = c('H15', 'D1', 'D2', 'D4', 'D7'))
+# gene labels
+gene.labels = as.data.table(TF.mx.fc[, 1], keep.rownames = T)[
+  , .(gene_id = V1)][
+    rna_data$H15_vs_ES[, .(gene_id, gene_name)], 
+    on = c("gene_id"), nomatch = NULL
+  ][, gene_name]
+```
+
+
+```{r}
+#-------- retrive heatmap kmean clusters and orders
+cluster.order.sheets2 = readxl::excel_sheets(config$RNA_HEATMAP_CLUSTERS_LOG2FC)
+names(cluster.order.sheets2) = cluster.order.sheets2
+# The last sheet contains Ensembl gene_IDs, not cluster info, thus do not load last sheet.
+ht1.fc.clusters = map(cluster.order.sheets2[str_length(cluster.order.sheets2) < 5], 
+                          ~ readxl::read_xlsx(config$RNA_HEATMAP_CLUSTERS_LOG2FC, sheet = .x) %>% pull(value))
+
+
+#-------- directly from heatmap or after retrieval
+# get row/column order from heatmap
+read.orders2 = unlist(flatten(ht1.fc.clusters), use.names = F)
+
+# first get clusters
+read.clusters2 = imap(ht1.fc.clusters, ~rep(.y, length(.x))) %>% 
+  unlist(use.names = F)
+# then make dataframe of row/column order and corresponding cluster
+# reorder dataframe based on row/column order 1:N, this maps cluster name back to the original data matrix
+read.clusters2 = data.frame(clusters = read.clusters2, orders = read.orders2) %>% 
+                arrange(orders) %>% 
+                pull(clusters) %>%
+                factor(., levels = names(ht1.fc.clusters))
+```
+
+
+```{r}
+
+# color function/scale
+col_breaks2 = c(-20, -5, 0, 5, 20)
+col_fun2 <- circlize::colorRamp2(breaks = col_breaks2, c("#757BBB", '#9AA2D8', "#FFFFFF","#F4A556", "#F7931E"))
+
+# mark NEUROG1/2
+NEUROG_marks = c("NEUROG1" = 1284, "NEUROG2" = 1243)
+
+set.seed(123)
+
+ha = rowAnnotation(NEUROG = anno_mark(at = NEUROG_marks, labels = names(NEUROG_marks)))
+
+p1 = Heatmap(
+  TF.mx.fc,
+  column_split = sample.labels2,
+  column_gap = unit(.2, 'mm'),
+  row_km = 9,
+  row_km_repeats = 2000,
+  row_gap = unit(2, 'mm'),
+  cluster_rows = T,
+  cluster_columns = F,
+  show_row_names = F,
+  show_column_names = F,
+  row_labels = gene.labels,
+  column_labels = sample.labels2,
+  show_row_dend = T,
+  row_dend_width = unit(20, "mm"),
+  show_column_dend = F,
+  col = col_fun2,
+  clustering_distance_rows = "euclidean",
+  clustering_method_rows = "average",
+  heatmap_legend_param = list(
+    title = 'log2FC',
+    at = col_breaks2,
+    legend_height = unit(5, 'cm')
+  ),
+  width = unit(8, 'cm'),
+  right_annotation = ha,
+  row_title = paste0(nrow(TF.mx.fc), " Transcription Factors"),
+  row_title_side = "left",
+
+)
+
+```
+
+```{r}
+pdf(file = "results/Figs/fig1B-1588-TF-RNA-seq-heatmap.pdf")
+draw(p1)
+dev.off()
+draw(p1)
+```
+
+

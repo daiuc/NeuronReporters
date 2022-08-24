@@ -202,4 +202,19 @@ rule combineRsemCounts:
 #     script:
 #         "Scripts/RNAseqAlignedReadsQC.Rmd"
 
-    
+
+
+
+################################################
+###         below is work for revision       ###
+################################################
+
+
+rule plotRNAseqHeatmaps:
+    output: touch('results/Figs/plotRNAseqHeatmaps.html')
+    script: 'scripts/plotRNAseqHeatmaps.Rmd'
+
+
+
+
+

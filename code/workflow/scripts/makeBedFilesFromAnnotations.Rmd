@@ -1,0 +1,24 @@
+---
+title: "Make annotation bed files from Gencode V31"
+output:
+  bookdown::html_document2
+  code_folding: hide
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(data.table)
+library(GenomicRanges)
+setwd("/gpfs/commons/groups/sanjana_lab/cdai/NeuronReporters/code")
+knitr::opts_chunk$set(root.dir = "/gpfs/commons/groups/sanjana_lab/cdai/NeuronReporters/code")
+```
+
+
+
+
+# Make 100kb - 3kb window of intergenic regions
+
+```{r}
+protein_bed = fread("")
+```
+

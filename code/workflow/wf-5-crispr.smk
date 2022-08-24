@@ -34,8 +34,6 @@ rule MageckRRA:
         control = getMageckRRA_control,
         day0_label = getMageckRRA_control,
         out_prefix = 'results/crispr/mageckRRA/{crispr_contrast}/RRA'
-    threads: 1
-    resources: cpu = 1 , mem_mb = 15000, time = 2100
     shell: 
         '''
         mageck test -k {input} \
@@ -44,4 +42,20 @@ rule MageckRRA:
             --remove-zero both --remove-zero-threshold 0 \
             --norm-method median \
             --sort-criteria neg
+        '''
+
+rule MageckMLE:
+    input: 
+        counts = rules.WrangleCrisprRawCountTable.output.raw,
+        
+    output: touch('results/crispr/mageckRRA/{crispr_contrast}/mageckRRA.done')
+    params: 
+        treatment = getMageckRRA_treatment,
+        control = getMageckRRA_control,
+        day0_label = getMageckRRA_control,
+        out_prefix = 'results/crispr/mageckRRA/{crispr_contrast}/RRA'
+    shell: 
+        '''
+        mageck mle -k {input} \
+            -d ""
         '''

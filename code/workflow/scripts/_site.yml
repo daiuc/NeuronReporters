@@ -1,0 +1,22 @@
+name: "NeuronReporters"
+output_dir: ../../../docs
+navbar:
+  title: "NeuronReporters"
+  left:
+  - text: Home
+    href: index.html
+  - text: About
+    href: about.html
+  - text: License
+    href: license.html
+output:
+  bookdown::html_document2:
+    toc: yes
+    toc_depth: 3
+    toc_float: true
+    code_folding: hide
+    df_print: paged
+    theme: readable
+    highlight: textmate
+    number_sections: false
+

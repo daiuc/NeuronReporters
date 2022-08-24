@@ -265,4 +265,75 @@ rule consensusPeaks:
 
 
 
+##################################################
+####       below analysis are for revision     ###
+##################################################
 
+
+
+rule getIntergenicAnnotations:
+    input: 'resources/annotations/hs38/gencode_v31_protein_u2k_d1k.bed'
+    output: 'resources/annotations/hs38/gencode_v31_intergeneic_TSSup100kb-TSSup2kb.bed'
+    params:
+        CHROM_SIZES = config['HG38_GENOME_SIZES']
+    shell: 
+        '''
+        slopBed -i {input} -g {params.CHROM_SIZES} -l 98000 -r 0 -s `# extend protein coding gene body by 100kb upstream` | \
+            subtractBed -a stdin -b {input} -s -F 0.95 `# use 100kb extended gene body to substract gene body` | \
+            sort -k1,1 -k2,2 -V > {output}
+        '''
+
+rule getIntergenicAndGeneBodyAnnotations:
+    input: 'resources/annotations/hs38/gencode_v31_protein_u2k_d1k.bed'
+    output: 'resources/annotations/hs38/gencode_v31_protein_u100k_d1k.bed'
+    params:
+        CHROM_SIZES = config['HG38_GENOME_SIZES']
+    shell:
+        '''
+        slopBed -i {input} -g {params.CHROM_SIZES} -l 98000 -r 0 -s `# extend protein coding gene body by 100kb upstream` | \
+            sort -k1,1 -k2,2 -V | \
+            awk 'BEGIN  {{OFS="\t"; print "#chrom", "start", "end", "gene_name", "score", "strand"}}
+                        {{print $0}}' > {output}
+        '''
+
+# def getComputeInteractionsFeatures(wildcards):
+#     if wildcards.interact_feature == 'GeneBody':
+#         feature = config['GeneBody']
+#     elif wildcards.interact_feature == 'Intergenic':
+#         feature = config['Intergenic']
+#     elif wildcards.interact_feature == 'IntergenicAndGeneBody':
+#         feature = config['IntergenicAndGeneBody']
+#     return feature
+
+def getComputeInteractionsFeatures(wildcards):
+    return config[wildcards.interact_feature]
+
+
+
+rule ComputeInteractions:
+    input: 
+        peaks = config['ATAC_CONSENSUS_PEAKS'],
+        atac_counts = config['ATAC_CONSENSUS_PEAKS_READS'],
+        jaspar2020 = config['JASPAR2020'],
+        tflist = config['TF_LIST'],
+        hitlist = config['HIT_LIST'],
+        features = getComputeInteractionsFeatures,
+        deseq2 = config['DESEQ_RESULT'],
+        rna_sample_names = config['RNA_SAMPLE_NAMES']
+    output: 
+        expanded = temp('results/ATACseq/Interactions/{interact_feature}_expanded.tsv')
+    wildcard_constraints: 
+        interact_feature = 'GeneBody|Intergenic|IntergenicAndGeneBody'
+    threads: 10
+    resources: cpu = 10, mem_mb = 25000, time = 2100
+    script: 'scripts/getInteractions.R'
+
+rule ZipInteractionsFile:
+    input: 
+        expanded = rules.ComputeInteractions.output.expanded
+    output: 
+        expanded = 'results/ATACseq/Interactions/{interact_feature}_expanded.tsv.gz'
+    shell: 
+        '''
+        bgzip -c {input.expanded} > {output.expanded}
+        '''

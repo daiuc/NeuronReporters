@@ -125,7 +125,7 @@ inner_join(x = tdneg.vs.iN[, .(id, tdneg_vs_iN = `neg|score`)],
 ```
 
 
-## Compare lfc
+### Compare lfc
 
 Comparison of log(fold change) shows that indeed, tdneg_vs_iN and tdneg_vs_tdpos is highly correlated. 
 
