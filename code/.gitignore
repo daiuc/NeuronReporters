@@ -19,3 +19,4 @@
 !**cluster-config.json
 *.swp
 **/*checkpoints/**
+workflow/**/old*
