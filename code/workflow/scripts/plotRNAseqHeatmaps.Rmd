@@ -13,6 +13,11 @@ library(data.table)
 library(tidyverse)
 library(yaml)
 library(ComplexHeatmap)
+
+if (getwd() != "/gpfs/commons/groups/sanjana_lab/cdai/NeuronReporters/code") {
+  setwd("/gpfs/commons/groups/sanjana_lab/cdai/NeuronReporters/code")
+}
+
 ```
 
 
@@ -103,11 +108,13 @@ read.clusters2 = data.frame(clusters = read.clusters2, orders = read.orders2) %>
 ```{r}
 
 # color function/scale
-col_breaks2 = c(-20, -5, 0, 5, 20)
-col_fun2 <- circlize::colorRamp2(breaks = col_breaks2, c("#757BBB", '#9AA2D8', "#FFFFFF","#F4A556", "#F7931E"))
+col_breaks2 = c(-5, 0, 5)
+# col_fun2 <- circlize::colorRamp2(breaks = col_breaks2, c("#757BBB", '#9AA2D8', "#FFFFFF","#F4A556", "#F7931E"))
+col_fun2 <- circlize::colorRamp2(breaks = col_breaks2, c("#757BBB", "#FFFFFF", "#F7931E"))
 
 # mark NEUROG1/2
-NEUROG_marks = c("NEUROG1" = 1284, "NEUROG2" = 1243)
+NEUROG_marks = c("NEUROG1" = which(rownames(TF.mx.fc) == "ENSG00000181965.6"), 
+                 "NEUROG2" = which(rownames(TF.mx.fc) == "ENSG00000178403.4"))
 
 set.seed(123)
 
@@ -153,4 +160,48 @@ dev.off()
 draw(p1)
 ```
 
+
+
+```{r}
+# plot 5 genes
+gene.set1 = c("MAP2", "TUBB3", "SOX2", "NANOG", "POU5F1")
+gene.set1 = rna_data$H15_vs_ES[gene_name %in% gene.set1, .(gene_name, gene_id)]
+gene.set1.fc = rna_fc[gene.set1$gene_id,]
+gene.set1.genelables = inner_join(x = data.frame(gene_id = rownames(gene.set1.fc)),
+                                  y = gene.set1, 
+                                  by = "gene_id") %>% 
+  pull(gene_name)
+
+p2 = Heatmap(
+  gene.set1.fc %>% as.matrix,
+  column_split = sample.labels2,
+  column_gap = unit(.2, 'mm'),
+  row_gap = unit(2, 'mm'),
+  cluster_rows = T,
+  cluster_columns = F,
+  show_row_names = T,
+  show_column_names = F,
+  row_labels = gene.set1.genelables,
+  column_labels = sample.labels2,
+  show_row_dend = F,
+  show_column_dend = F,
+  col = col_fun2,
+  clustering_distance_rows = "euclidean",
+  clustering_method_rows = "average",
+  heatmap_legend_param = list(
+    title = 'log2FC',
+    at = col_breaks2,
+    legend_height = unit(5, 'cm')
+  ),
+  width = unit(8, 'cm')
+)
+
+
+```
+
+```{r}
+pdf(file = "results/Figs/fig1B-5-markerTFs-RNA-seq-heatmap.pdf")
+draw(p2)
+dev.off()
+```
 

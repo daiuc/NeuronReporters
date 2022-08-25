@@ -75,3 +75,4 @@ JASPAR2020: '/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/atac/JASPAR2020_comb
 
 # crispr screen counts
 CRISPR_COUNTS: 'resources/crispr/counts/RC.csv'
+CRISPR_LOG2_RATIOS: '/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/RCmNorRatioLog2.lu.csv'
