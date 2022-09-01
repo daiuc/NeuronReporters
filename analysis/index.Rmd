@@ -13,6 +13,7 @@ editor_options:
 
 ### Reviewer 1
 
+
 -   Regarding ENCODE ChIP-seq, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.83pj8ieh9a2i)
 
     -   Encode investigated: [LINK](EncodeChIPSamples.html)
@@ -21,7 +22,10 @@ editor_options:
 
 
 
+
+
 ### Reviewer 2
+
 
 -   Regarding ATAC-seq agreement comment, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.9djvcjdqrp86)
     
@@ -33,10 +37,12 @@ editor_options:
 -   Regarding the addition of RRA ranks method for CRISPR screen, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.wkro46gscabo)
     
     -   While results not good, I did try both MAGeCK RRA and MLE tests. [LINK](MAGeCK_results.html)
-    
+
+
 -   Regarding libary QC, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.drfri2pwzln8)
 
     -   See Library summary [LINK](QC.html)
+
 
 -   Regarding RNA-seq heatmap in Fig. 1B, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.gca3m2hkd6ql)
 
