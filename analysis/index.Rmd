@@ -53,3 +53,10 @@ editor_options:
 
     -   Refer to my commonts on google doc on my attempt with MAGeCK RRA
     -   Also refer to google doc on my attempt of running permutation test. Permutation code [here](https://github.com/daiuc/NeuronReporters/blob/f85459670f33a871622b98b1b1885c41100209bb/code/workflow/scripts/getCrisprHits.R#L121)
+
+
+-   Regarding adding intergenic regions and rerun network analysis
+    
+    -   Rerun motif search and interaction scripts on new annotations of TSS+100kb -> TES+1kb. Result to be presented. 
+
+
