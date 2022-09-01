@@ -32,6 +32,7 @@ rule MageckRRA:
     params: 
         treatment = getMageckRRA_treatment,
         control = getMageckRRA_control,
+        control_sgrna = 'resources/crispr/counts/NTC_sgRNAs.txt',
         day0_label = getMageckRRA_control,
         out_prefix = 'results/crispr/mageckRRA/{crispr_contrast}/RRA'
     shell: 
@@ -41,21 +42,23 @@ rule MageckRRA:
             -n {params.out_prefix} \
             --remove-zero both --remove-zero-threshold 0 \
             --norm-method median \
-            --sort-criteria neg
+            --control-sgrna {params.control_sgrna} \
+            --sort-criteria pos
+
         '''
 
-rule MageckMLE:
-    input: 
-        counts = rules.WrangleCrisprRawCountTable.output.raw,
+# rule MageckMLE:
+#     input: 
+#         counts = rules.WrangleCrisprRawCountTable.output.raw,
         
-    output: touch('results/crispr/mageckRRA/{crispr_contrast}/mageckRRA.done')
-    params: 
-        treatment = getMageckRRA_treatment,
-        control = getMageckRRA_control,
-        day0_label = getMageckRRA_control,
-        out_prefix = 'results/crispr/mageckRRA/{crispr_contrast}/RRA'
-    shell: 
-        '''
-        mageck mle -k {input} \
-            -d ""
-        '''
+#     output: touch('results/crispr/mageckRRA/{crispr_contrast}/mageckRRA.done')
+#     params: 
+#         treatment = getMageckRRA_treatment,
+#         control = getMageckRRA_control,
+#         day0_label = getMageckRRA_control,
+#         out_prefix = 'results/crispr/mageckRRA/{crispr_contrast}/RRA'
+#     shell: 
+#         '''
+#         mageck mle -k {input} \
+#             -d ""
+#         '''
