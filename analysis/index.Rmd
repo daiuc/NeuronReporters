@@ -8,6 +8,9 @@ editor_options:
   chunk_output_type: console
 ---
 
+
+
+
 ### Reviewer 1
 
 -   Regarding ENCODE ChIP-seq, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.83pj8ieh9a2i)
@@ -16,10 +19,7 @@ editor_options:
 
     -   ZEB1 ChIP-seq analysis [LINK](ChIP-ZEB1-targets.html)
 
--   Regarding 
--   [Figure 1B re-plot](PlotFig1B_RNAseq_Heatmap.html)
 
--   [QC](QC.html)
 
 ### Reviewer 2
 
