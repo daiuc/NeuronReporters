@@ -8,9 +8,42 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+### Reviewer 1
 
-- [ENCODE TF ChIP Samples](EncodeChIPSamples.html)
-- [ZEB1 ChIP-seq](ChIP-ZEB1-targets.html)
-- [Figure 1B re-plot](PlotFig1B_RNAseq_Heatmap.html)
-- [QC](QC.html)
+-   Regarding ENCODE ChIP-seq, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.83pj8ieh9a2i)
+
+    -   Encode investigated: [LINK](EncodeChIPSamples.html)
+
+    -   ZEB1 ChIP-seq analysis [LINK](ChIP-ZEB1-targets.html)
+
+-   Regarding 
+-   [Figure 1B re-plot](PlotFig1B_RNAseq_Heatmap.html)
+
+-   [QC](QC.html)
+
+### Reviewer 2
+
+-   Regarding ATAC-seq agreement comment, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.9djvcjdqrp86)
+    
+    -   See genome-wide correlation heatmap, [LINK](https://www.dropbox.com/s/rzp7hm96djeb75a/ATAC_Genome_corr_heatmap.pdf?dl=0)
+    
+    -   See gene body correlation heatmap, [LINK](https://www.dropbox.com/s/hx23jpknw7ej3xk/ATAC_genebody_corr_heatmap.pdf?dl=0)
+    -   Further QC plot to show ATAC-seq fragment size, [LINK](https://www.dropbox.com/s/vwqrfs1vchpunpu/ATAC_fragment_sizes_t1_1.pdf?dl=0)
+
+-   Regarding the addition of RRA ranks method for CRISPR screen, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.wkro46gscabo)
+    
+    -   While results not good, I did try both MAGeCK RRA and MLE tests. [LINK](MAGeCK_results.html)
+    
+-   Regarding libary QC, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.drfri2pwzln8)
+
+    -   See Library summary [LINK](QC.html)
+
+-   Regarding RNA-seq heatmap in Fig. 1B, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.gca3m2hkd6ql)
+
+    -   Updated Heatmaps [here](https://www.dropbox.com/s/nx5p2cai6awoqsp/fig1B-5-markerTFs-RNA-seq-heatmap.pdf?dl=0) and [here](https://www.dropbox.com/s/2ja76uae8wjj0ot/fig1B-1588-TF-RNA-seq-heatmap.pdf?dl=0)
+    
+
+-   Regarding sgRNA statistics, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.oa4yoroznf83)
+
+    -   Refer to my commonts on google doc on my attempt with MAGeCK RRA
+    -   Also refer to google doc on my attempt of running permutation test. Permutation code [here](https://github.com/daiuc/NeuronReporters/blob/f85459670f33a871622b98b1b1885c41100209bb/code/workflow/scripts/getCrisprHits.R#L121)
