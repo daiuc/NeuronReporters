@@ -36,7 +36,8 @@ editor_options:
 
 -   Regarding the addition of RRA ranks method for CRISPR screen, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.wkro46gscabo)
     
-    -   While results not good, I did try both MAGeCK RRA and MLE tests. [LINK](MAGeCK_results.html)
+    -   While results not good, I did try both RRA and MLE tests. [LINK](MAGeCK_results.html)
+    -   I recently rerun RRA using NTC sgRNA as null, based on Xinhe's advice. However results are still not good. [LINK](RRA.html)
 
 
 -   Regarding libary QC, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.drfri2pwzln8)
@@ -51,7 +52,6 @@ editor_options:
 
 -   Regarding sgRNA statistics, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.oa4yoroznf83)
 
-    -   RRA analysis results..Very few genes passing loose cutoff requirement: l2fc > 0, pvalue < .05, [LINK](RRA.html)
     -   Also refer to google doc on my attempt of running permutation test. Permutation code [here](https://github.com/daiuc/NeuronReporters/blob/f85459670f33a871622b98b1b1885c41100209bb/code/workflow/scripts/getCrisprHits.R#L121)
 
 
