@@ -146,11 +146,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -360,13 +364,47 @@ div.tocify {
 </div>
 
 
-<p>Welcome to my research website.</p>
+<div id="reviewer-1" class="section level3">
+<h3>Reviewer 1</h3>
 <ul>
-<li><a href="EncodeChIPSamples.html">ENCODE TF ChIP Samples</a></li>
-<li><a href="ChIP-ZEB1-targets.html">ZEB1 ChIP-seq</a></li>
-<li><a href="PlotFig1B_RNAseq_Heatmap.html">Figure 1B re-plot</a></li>
-<li><a href="QC.html">QC</a></li>
+<li><p>Regarding ENCODE ChIP-seq, see google doc <a href="https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.83pj8ieh9a2i">section</a></p>
+<ul>
+<li><p>Encode investigated: <a href="EncodeChIPSamples.html">LINK</a></p></li>
+<li><p>ZEB1 ChIP-seq analysis <a href="ChIP-ZEB1-targets.html">LINK</a></p></li>
+</ul></li>
+<li><p>Regarding</p></li>
+<li><p><a href="PlotFig1B_RNAseq_Heatmap.html">Figure 1B re-plot</a></p></li>
+<li><p><a href="QC.html">QC</a></p></li>
 </ul>
+</div>
+<div id="reviewer-2" class="section level3">
+<h3>Reviewer 2</h3>
+<ul>
+<li><p>Regarding ATAC-seq agreement comment, see google doc <a href="https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.9djvcjdqrp86">section</a></p>
+<ul>
+<li><p>See genome-wide correlation heatmap, <a href="https://www.dropbox.com/s/rzp7hm96djeb75a/ATAC_Genome_corr_heatmap.pdf?dl=0">LINK</a></p></li>
+<li><p>See gene body correlation heatmap, <a href="https://www.dropbox.com/s/hx23jpknw7ej3xk/ATAC_genebody_corr_heatmap.pdf?dl=0">LINK</a></p></li>
+<li><p>Further QC plot to show ATAC-seq fragment size, <a href="https://www.dropbox.com/s/vwqrfs1vchpunpu/ATAC_fragment_sizes_t1_1.pdf?dl=0">LINK</a></p></li>
+</ul></li>
+<li><p>Regarding the addition of RRA ranks method for CRISPR screen, see google doc <a href="https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.wkro46gscabo">section</a></p>
+<ul>
+<li>While results not good, I did try both MAGeCK RRA and MLE tests. <a href="MAGeCK_results.html">LINK</a></li>
+</ul></li>
+<li><p>Regarding libary QC, see google doc <a href="https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.drfri2pwzln8">section</a></p>
+<ul>
+<li>See Library summary <a href="QC.html">LINK</a></li>
+</ul></li>
+<li><p>Regarding RNA-seq heatmap in Fig. 1B, see google doc <a href="https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.gca3m2hkd6ql">section</a></p>
+<ul>
+<li>Updated Heatmaps <a href="https://www.dropbox.com/s/nx5p2cai6awoqsp/fig1B-5-markerTFs-RNA-seq-heatmap.pdf?dl=0">here</a> and <a href="https://www.dropbox.com/s/2ja76uae8wjj0ot/fig1B-1588-TF-RNA-seq-heatmap.pdf?dl=0">here</a></li>
+</ul></li>
+<li><p>Regarding sgRNA statistics, see google doc <a href="https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.oa4yoroznf83">section</a></p>
+<ul>
+<li>Refer to my commonts on google doc on my attempt with MAGeCK RRA</li>
+<li>Also refer to google doc on my attempt of running permutation test. Permutation code <a href="https://github.com/daiuc/NeuronReporters/blob/f85459670f33a871622b98b1b1885c41100209bb/code/workflow/scripts/getCrisprHits.R#L121">here</a></li>
+</ul></li>
+</ul>
+</div>
 
 
 
