@@ -1,0 +1,154 @@
+---
+params:
+    l2fc_cutoff: 0
+    pval_cutoff: .05
+title: "CRISPR screen RRA"
+author: "Chao Dai"
+date: "2022-09-01"
+output: 
+    html_document:
+      df_print: "paged"
+editor_options:
+  chunk_output_type: inline
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = F, message = F)
+
+library(tidyverse)
+library(data.table)
+library(DT)
+
+l2fc_cutoff = params$l2fc_cutoff
+pval_cutoff = params$pval_cutoff
+```
+
+
+```{r}
+rra.results = c(
+  Tdneg_v_iN = "../code/results/crispr/mageckRRA/Day14_Tdneg-vs-Day14_iN/RRA.gene_summary.txt",
+  Tdneg_v_Tdpos = "../code/results/crispr/mageckRRA/Day14_Tdneg-vs-Day14_Tdpos/RRA.gene_summary.txt",
+  Tdpos_v_iN = "../code/results/crispr/mageckRRA/Day14_Tdpos-vs-Day14_iN/RRA.gene_summary.txt"
+)
+
+rra.results = map(rra.results, fread)
+
+hitlist = fread("../code/resources/crispr/Hitlist_20191230.csv")
+```
+
+
+### Genes passing cutoffs
+
+cutoffs: 
+
+- l2fc: `r l2fc_cutoff`
+- pval: `r pval_cutoff`
+    
+
+#### Tdneg_v_iN - use RRA pos rank
+
+```{r}
+rra.results$Tdneg_v_iN %>% 
+  select(dplyr::matches("(id)|(num)|(pos)")) %>% 
+  mutate(inOurHits = id %in% hitlist$gene_name) %>% 
+  filter(`pos|p-value` < pval_cutoff & abs(`pos|lfc`) > 0) %>% 
+  datatable()
+```
+
+
+#### Tdneg_v_Tdpos - use RRA pos rank
+
+```{r}
+rra.results$Tdneg_v_Tdpos %>% 
+  select(dplyr::matches("(id)|(num)|(pos)")) %>% 
+  mutate(inOurHits = id %in% hitlist$gene_name) %>% 
+  filter(`pos|p-value` < pval_cutoff & abs(`pos|lfc`) > 0) %>% 
+  datatable()
+```
+
+
+#### Tdneg_v_iN intersect Tdneg_v_Tdpos
+
+```{r}
+a = rra.results$Tdneg_v_iN %>% 
+  select(dplyr::matches("(id)|(num)|(pos)")) %>% 
+  mutate(inOurHits = id %in% hitlist$gene_name) %>% 
+  filter(`pos|p-value` < pval_cutoff & abs(`pos|lfc`) > 0) %>% 
+  pull(id)
+
+b = rra.results$Tdneg_v_Tdpos %>% 
+  select(dplyr::matches("(id)|(num)|(pos)")) %>% 
+  mutate(inOurHits = id %in% hitlist$gene_name) %>% 
+  filter(`pos|p-value` < pval_cutoff & abs(`pos|lfc`) > 0) %>% 
+  pull(id)
+```
+
+Tdneg_v_iN:
+
+    - `r a`
+
+Tdneg_v_Tdpos:
+    
+    - `r b`
+    
+Intersection of the two:
+
+    - `r intersect(a,b)`
+
+
+
+#### Tdpos_v_iN - use RRA neg rank
+
+```{r}
+rra.results$Tdpos_v_iN %>% 
+  select(dplyr::matches("(id)|(num)|(neg)")) %>% 
+  mutate(inOurHits = id %in% hitlist$gene_name) %>% 
+  filter(`neg|p-value` < pval_cutoff & abs(`neg|lfc`) > 0) %>% 
+  datatable()
+```
+
+
+
+---
+
+
+
+### Detailed RRA results
+
+#### Tdneg_v_iN
+
+```{r}
+rra.results$Tdneg_v_iN[order(`pos|rank`)][, inOurHits := id %in% hitlist$gene_name] %>% 
+  datatable(filter = "top")
+```
+
+#### Tdneg_v_Tdpos
+
+```{r}
+rra.results$Tdneg_v_Tdpos[order(`pos|rank`)] %>% 
+  datatable(filter = "top")
+```
+
+
+#### Tdpos_v_iN
+
+```{r}
+rra.results$Tdpos_v_iN[order(`neg|rank`)] %>% 
+  datatable(filter = "top")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
