@@ -325,7 +325,7 @@ rule ComputeInteractions:
     wildcard_constraints: 
         interact_feature = 'GeneBody|Intergenic|IntergenicAndGeneBody'
     threads: 10
-    resources: cpu = 10, mem_mb = 25000, time = 2100
+    resources: cpu = 10, mem_mb = 36000, time = 2100
     script: 'scripts/getInteractions.R'
 
 rule ZipInteractionsFile:

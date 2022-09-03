@@ -6,7 +6,7 @@
 
 
 #--------------------------------------------------------------------------
-# Set up ------------------------------------------------------------------
+#       Set up
 #--------------------------------------------------------------------------
 
 library(data.table)
@@ -18,12 +18,12 @@ library(Matrix)
 library(BSgenome.Hsapiens.UCSC.hg38)
 library(naturalsort)
 library(parallel)
-ncores = min(10, detectCores())
+ncores = min(16, detectCores())
 
 set.seed(2019)
 
 #--------------------------------------------------------------------------
-# Snakemake objects -------------------------------------------------------
+#       Snakemake objects
 #--------------------------------------------------------------------------
 
 SnakeMode = T
@@ -53,7 +53,7 @@ if (SnakeMode) {
 }
 
 #--------------------------------------------------------------------------
-# Support functions -------------------------------------------------------
+#       Support functions
 #--------------------------------------------------------------------------
 
 # custom function to check if a motifname contains a hit gene name or TF gene name
@@ -122,6 +122,110 @@ getTargetsFromMotif = function(motif_name, matchMotifs_obj, genomic.features, mi
 }
 
 
+getRegulatorsOfGene <- function(gene_name, motif.matches, genomic.features,
+                                min.overlap = 10, motif.list) {
+  #' @description            Given a gene name, find all the regulators' motifs (e.g. JASPAR)
+  #'                         that bind to regions specified by the intersect of genomomic.features
+  #'                         (aka annotations) and atac-seq peaks (rows in motif.matches).
+  #'
+  #' parameters
+  #' ----------
+  #' @param gene_name        character, a gene name
+  #' @param motif.matches    matchMotif object, e.g. motifMatch() result of peaks
+  #'                         and jaspar 2020 motifs
+  #' @param genomic.features GenomicRanges object, e.g. a normalized read matrix,
+  #'                         converted into GRanges object
+  #' @param min.overlap      integer, minimum overlap in base pairs, between peaks and
+  #'                         annotations
+  #' @param motif.list       vector, a list of motif names. Only return results if found
+  #'                         motifs are part of this list
+  #'
+  #' returns
+  #' -------
+  #' @return                 regulators.readcount: list, each element's name is a regulator's
+  #'                         motif name, the values are summarised readcounts of
+  #'                         matching/overlapping peaks for this regulator
+
+
+
+
+  # Step 1:Get all peaks ----------------------------------------------------
+
+  # Get motif matches matrix [i x j] (rows are peak coordinates, columns are each motif name,
+  # values are logical values indicating match)
+  # sparse logic matrix where rows are peak coordinates (GRange) and columns are Jaspar motif names
+  # 1s = motif j has a match on peak i.
+  match.matrix <- motifMatches(motif.matches) # motif match logic matrix
+  match.matrix.GRanges <- rowRanges(motif.matches) # peak coordinates, including read counts in mcols
+
+
+  # Step 2: Gene X's peaks that overlaps annotation -------------------------
+
+  # GRange coordinates of a gene
+  gene.GRanges <- genomic.features[genomic.features$gene_name == gene_name]
+
+
+  # Intersect gene X's annotation with assayed peaks
+  # e.g. ZBTB18's ATAC-seq peaks
+  match.intersect.gene <- GenomicRanges::findOverlaps(
+    query = match.matrix.GRanges, # atac-seq peaks of gene x
+    subject = gene.GRanges,       # annotation of gene x
+    minoverlap = min.overlap, ignore.strand = T)
+
+  # row index of peaks that intersect with the gene's annotation
+  overlapped.match.index <- queryHits(match.intersect.gene)
+
+
+  # Step 3: Get motifs that bind to the peaks -------------------------------
+
+  # Once extracted peaks that fall into target gene region, get the motifs that bind to these peaks.
+  if (length(overlapped.match.index) == 1) {
+    # if there's only 1 peak for gene x' annotation region, so only 1 row
+    # then get names of motifs (col values == TRUE) that bind to this peak
+    gene.regulators <- match.matrix[overlapped.match.index, ] %>%
+      .[.] %>%
+      names
+  } else {
+    # if there are >2 peaks for gene x' annotation region, so >1 rows
+    # then get motifs that have a binding site on the peaks
+    gene.regulators <- match.matrix[overlapped.match.index, ] %>%
+      colSums %>%
+      .[.>0] %>%
+      names
+  }
+
+  # Only keep motifs that are part of a given list
+  gene.regulators <- gene.regulators[gene.regulators %in% motif.list]
+
+  # Step 4: Get read counts of those binding sites --------------------------
+
+  # Get the read counts of the binding sites for each motif (regulator)
+  regulators.readcount <- list()
+  for (regulator in gene.regulators) {
+    # first get GRanges of peaks that fall within Gene x' annotation
+    readcount <- match.matrix.GRanges[overlapped.match.index, ] %>%
+      as.data.frame %>%
+      select(A1:A12) %>% # extract read counts columns
+      `*`(match.matrix[overlapped.match.index, regulator]) %>% # multiply 0 or 1 based on if the peak has a match to this regulator or not
+      colSums() # sum up all the reads from peaks that match to the regulator binding site
+    # result is a motif's total read counts covered by peaks that overlap Gene x' annotation
+    regulators.readcount[[regulator]] <- readcount # append to list
+  }
+
+  # Return a dataframe, each row gives the name of the motif that binds to the target gene,
+  # along with observed read count assciated with the matching peaks. Some genes may have no matches
+  if (length(regulators.readcount) > 0) {
+    regulators.readcount <- do.call(rbind, regulators.readcount) %>%
+      as.data.frame %>%
+      add_column("target_gene" = gene_name, .before = "A1") %>%
+      rownames_to_column("regulator_motif")
+    return(regulators.readcount)
+  }
+}
+
+
+
+
 my_unnest = function(listcolumn) {
   ncols = length(listcolumn[[1]])
   if (ncols == 4) {
@@ -184,7 +288,7 @@ getHitStatus = function(gene, hits) {
 
 
 #--------------------------------------------------------------------------
-# Load in data ------------------------------------------------------------
+#       Load in data
 #--------------------------------------------------------------------------
 print("### Load in data")
 
@@ -253,8 +357,15 @@ Jaspar_ix_raw <- matchMotifs(jaspar_2020, raw_peak_counts,
                          out = "matches", p.cutoff = 5e-5)
 
 
+
+if (!SnakeMode) {
+  # for testing
+  tflist = intersect(tflist, tf.motif.list)[1:50]
+  tf.motif.list = tflist
+}
+
 #--------------------------------------------------------------------------
-# Given motifs of regulators, find their targets --------------------------
+#       Given motifs of regulators, find their targets
 #--------------------------------------------------------------------------
 print("### Find motif targets")
 # get list of regulator TF motif names
@@ -262,6 +373,7 @@ tf_motifs = motif_lookup[is_tf == "Yes", motif] %>% sort
 names(tf_motifs) = tf_motifs
 
 # Search targets of each motif --------------------------------------------
+print("### Find targets of each TF motif - normalized counts")
 motif_to_targets = mclapply(
   tf_motifs,
   function(x) {getTargetsFromMotif(x, Jaspar_ix, genome.features, 100, tflist) %>%
@@ -272,6 +384,7 @@ motif_to_targets = mclapply(
 motif_to_targets = rbindlist(motif_to_targets)
 
 # search targets of each motif - raw
+print("### Find targets of each TF motif - raw counts")
 motif_to_targets_raw = mclapply(
   tf_motifs,
   function(x) {getTargetsFromMotif(x, Jaspar_ix_raw, genome.features, 100, tflist) %>%
@@ -282,18 +395,61 @@ motif_to_targets_raw = mclapply(
 
 motif_to_targets_raw = rbindlist(motif_to_targets_raw)
 
+
+#--------------------------------------------------------------------------
+#       For a given Gene/TF, find all the TF motifs that bind to the Gene
+#--------------------------------------------------------------------------
+
+# given a list of gene, find the regulators of each gene
+tictoc::tic()
+
+print("### Find regulators of each gene - normalized counts")
+tar2reg <- mclapply(
+  tflist,
+  function(x) {
+    getRegulatorsOfGene(x, Jaspar_ix,genome.features, 100, tf.motif.list)},
+  mc.cores = ncores)
+
+# remove null elements
+tar2reg <- map_lgl(tar2reg, ~ ! is_null(.x)) %>%
+  which %>% tar2reg[.] %>% # remove null elements
+  rbindlist # combine into 1 data.table
+
+tictoc::toc()
+
+# for raw read counts
+print("### Find regulators of each gene - raw read counts")
+tar2reg_raw <- mclapply(
+  tflist,
+  function(x) {
+    getRegulatorsOfGene(x, Jaspar_ix_raw,genome.features, 100, tf.motif.list)},
+  mc.cores = ncores)
+
+# remove null elements
+tar2reg_raw <- map_lgl(tar2reg_raw, ~ ! is_null(.x)) %>%
+  which %>% tar2reg_raw[.] %>% # remove null elements
+  rbindlist # combine into 1 data.table
+
+
+#--------------------------------------------------------------------------
+#       Combine the two approaches - remove duplicates
+#--------------------------------------------------------------------------
+
+print("### Combine regulator - targets")
+
+# Combine results from both approaches
+# approach 1 - from each motif find binding sites on all TF's peaks
+# approach 2 - from each TF, find all motifs that bind on this TF's peaks
+interactions = rbindlist(list(motif_to_targets, tar2reg)) %>% unique
+
+
 # Combine replicate 1 and replicate 2 by taking the mean
 # Result in just ES and 5 time points
 rep1 <- paste0(rep("A", 6), seq(1, 11, 2))
 rep2 <- paste0(rep("A", 6), seq(2, 12, 2))
 
-
-
-#  all putative interactions between regulator and target TFs -------------
-print("### Construt interaction matrix with motifmatchr and results")
-
 # takes about 4 minutes
-interactions = motif_to_targets[,
+interactions = interactions[,
   map2(.SD[, rep1, with = F],
        .SD[, rep2, with = F],
        ~ map2_dbl(.x, .y, function(a,b) mean(c(a,b)))),
@@ -314,10 +470,19 @@ interactions = interactions[, .(
 
 # fix regulator_gene names some times has version number
 interactions = interactions[
-  motif_lookup[, 1:2], on = c(regulator_gene = "motif"), nomatch = NULL
-  ][, .(regulator_gene = gene_name, target_gene, ES, H1, H4, H16, D1, D4)][
-    , .(ES = mean(ES), H1 = mean(H1), H4 = mean(H4),
-        H16 = mean(H16), D1 = mean(D1), D4 = mean(D4)),
+  motif_lookup[, 1:2],
+  on = c(regulator_gene = "motif"),
+  nomatch = NULL
+  ][,
+    .(regulator_gene = gene_name,
+      target_gene,
+      ES, H1, H4, H16, D1, D4)
+    ][, .(ES = mean(ES),
+          H1 = mean(H1),
+          H4 = mean(H4),
+          H16 = mean(H16),
+          D1 = mean(D1),
+          D4 = mean(D4)),
     by = .(regulator_gene, target_gene)
   ]
 
@@ -325,8 +490,12 @@ interactions = interactions[
 
 # all putative interactions - raw counts ----------------------------------
 print("### integrate motifmatchr results with raw ATAC-seq counts")
+# Combine results from both approaches
+# approach 1 - from each motif find binding sites on all TF's peaks
+# approach 2 - from each TF, find all motifs that bind on this TF's peaks
+interactions_raw = rbindlist(list(motif_to_targets_raw, tar2reg_raw)) %>% unique
 
-interactions_raw = motif_to_targets_raw[,
+interactions_raw = interactions_raw[,
                                 map2(.SD[, rep1, with = F],
                                      .SD[, rep2, with = F],
                                      ~ map2_dbl(.x, .y, function(a,b) mean(c(a,b)))),
@@ -346,10 +515,16 @@ interactions_raw = interactions_raw[, .(
 
 # fix regulator_gene names some times has version number
 interactions_raw = interactions_raw[
-  motif_lookup[, 1:2], on = c(regulator_gene = "motif"), nomatch = NULL
-  ][, .(regulator_gene = gene_name, target_gene, ES, H1, H4, H16, D1, D4)][
-    , .(ES = mean(ES), H1 = mean(H1), H4 = mean(H4),
-        H16 = mean(H16), D1 = mean(D1), D4 = mean(D4)),
+  motif_lookup[, 1:2],
+  on = c(regulator_gene = "motif"),
+  nomatch = NULL
+  ][, .(regulator_gene = gene_name, target_gene, ES, H1, H4, H16, D1, D4)
+    ][, .(ES = mean(ES),
+          H1 = mean(H1),
+          H4 = mean(H4),
+          H16 = mean(H16),
+          D1 = mean(D1),
+          D4 = mean(D4)),
     by = .(regulator_gene, target_gene)
   ]
 
@@ -379,7 +554,7 @@ interactions = interactions[, .(regulator_gene, target_gene, atac.norm = atac)
 
 
 #--------------------------------------------------------------------------
-# Integrate target gene expression, compute correlation -------------------
+#       Integrate target gene expression, compute correlation
 #--------------------------------------------------------------------------
 print("### integrate gene expression data")
 
@@ -629,15 +804,6 @@ print("### column explanations:    ")
 print("----------------------------")
 print(column_explanation)
 print("----------------------------")
-
-# remove large objects
-rm(interactions_raw, jaspar_2020, Jaspar_ix, Jaspar_ix_raw,
-  l2fc, motif_to_targets, motif_to_targets_raw, norm_counts, 
-  norm_peak_counts, peaks, raw_counts, raw_peak_counts, 
-  cor_test, dge, dge.normCounts, dge.rawCounts, fc_fdr, 
-  fdr, genome.features)
-
-gc()
 
 # output file -------------------------------------------------------------
 print("### write out files")

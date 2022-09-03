@@ -16,7 +16,7 @@ STAR_INDEX: "/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/star2.7.1a_ge
 RSEM_INDEX: "/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/rsem.1.2.21.gencode.v31.ref/hg38_gencode/hg38_gencode"
 
 # Gencode GRCh38 gene name and gene id annotation
-GENE_LOOKUP: 'Data/Annotations/gencode_refseq_partial_modified_geneNames_ID_20191230.csv'
+GENE_LOOKUP: '/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/gencode_refseq_partial_modified_geneNames_ID_20191230.csv'
 
 # Gencode GRCh38 gtf (converted to data.frame format)
 GENCODE_HS38 : '/gpfs/commons/groups/sanjana_lab/cdai/ref_genome/hs38/gencode.v31.primary_assembly.annotation.pandas.df.20200108.txt'
