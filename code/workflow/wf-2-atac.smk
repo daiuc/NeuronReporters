@@ -323,9 +323,9 @@ rule ComputeInteractions:
     output: 
         expanded = temp('results/ATACseq/Interactions/{interact_feature}_expanded.tsv')
     wildcard_constraints: 
-        interact_feature = 'GeneBody|Intergenic|IntergenicAndGeneBody'
-    threads: 10
-    resources: cpu = 10, mem_mb = 36000, time = 2100
+        interact_feature = 'GeneBody|IntergenicAndGeneBody'
+    threads: 16
+    resources: cpu = 16, mem_mb = 36000, time = 2100
     script: 'scripts/getInteractions.R'
 
 rule ZipInteractionsFile:

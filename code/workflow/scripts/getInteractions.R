@@ -293,7 +293,7 @@ getHitStatus = function(gene, hits) {
 print("### Load in data")
 
 # genome features
-genome.features = fread(genome.features, header = T) %>%
+genome.features = fread(genome.features, header = T )%>%
   makeGRangesFromDataFrame(keep.extra.columns = T, ignore.strand = F,
                            seqnames.field = "#chrom")
 
