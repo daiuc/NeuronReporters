@@ -1,0 +1,53 @@
+---
+title: "Networks"
+author: "daiuc"
+date: "2022-09-03"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r warning=FALSE, message=FALSE, include=FALSE}
+library(tidyverse)
+library(data.table)
+```
+
+
+```{r}
+# interactions - genebody from new
+inter.gb2 = fread("../code/results/ATACseq/Interactions/GeneBody_expanded.tsv.gz")
+# interactions - genebody from old
+inter.gb1 = fread("../../TFscreen/syncClusterCloud/Interaction_matrix_nofilter_AllTF_20200107.csv")
+```
+
+```{r}
+x = readxl::excel_sheets('../code/results/ATACseq/old-notebooks-out/Interactions_AllTF_ATAC_20220903.xlsx')
+y = map(x, ~ readxl::read_excel('../code/results/ATACseq/old-notebooks-out/Interactions_AllTF_ATAC_20220903.xlsx',
+                                .x))
+names(y) =x
+```
+
+```{r}
+y = do.call(rbind, y)
+y = as.data.table(y)
+```
+
+```{r}
+y = unique(y) %>% 
+  .[, 
+    .(ES = mean(ES),
+      H16 = mean(H16),
+      D1 = mean(D1),
+      D4 = mean(D4)),
+    by = .(regulator_gene, target_gene)]
+```
+
+```{r}
+y[, .(regulator_gene, target_gene)] %>% unique %>% nrow
+```
+
+```{r}
+inter.gb2[, .(regulator_gene, target_gene)] %>% unique %>% nrow
+```
+
+
