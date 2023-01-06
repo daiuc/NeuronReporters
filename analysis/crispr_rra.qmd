@@ -233,19 +233,19 @@ rraS76[, FDR := ecdf.S76(rankscore)]
 ### Enrichment of Td- vs. iN at Day14, with MC computed FDR, genes with FDR \< 0.15 are shown
 
 ```{r}
-rraS86[!is.na(rankscore) & FDR < .15]
+rraS86[!is.na(rankscore) & FDR < .15] %>% DT::datatable() %>% DT::formatRound("FDR", digits = 5)
 ```
 
 ### Enrichment of Td- vs. Td+ at Day14, with MC computed FDR
 
 ```{r}
-rraS87[!is.na(rankscore) & FDR < .15]
+rraS87[!is.na(rankscore) & FDR < .15] %>% DT::datatable() %>% DT::formatRound("FDR", digits = 5)
 ```
 
 ### Depletion of Td+ vs. iN at Day14, with MC computed FDR
 
 ```{r}
-rraS76[FDR < .15]
+rraS76[FDR < .15] %>% DT::datatable() %>% DT::formatRound("FDR", digits = 5)
 ```
 
 ------------------------------------------------------------------------
@@ -259,11 +259,11 @@ hitlist = fread("../code/resources/crispr/Hitlist_20191230.csv")
 Previous method found `r length(hitlist$gene_name)` genes, shown below:
 
 ```{r echo=FALSE}
-hitlist$gene_name
+rraS87[hitlist[, .(Gene = gene_name)], on = "Gene"][order(rankscore)] %>% DT::datatable() %>% DT::formatRound("FDR", digits = 5)
 
 ```
 
-```{r plot-venn, fig.height=7, fig.width=7, message=FALSE, warning=FALSE, include=FALSE}
+```{r plot-venn, fig.height=4, fig.width=4, message=FALSE, warning=FALSE, include=FALSE}
 # Generate 3 sets of 200 words
 set87 = rraS87[FDR < .15, Gene]
 set86 = rraS86[FDR < .15, Gene]
