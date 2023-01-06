@@ -59,4 +59,6 @@ editor_options:
     
     -   Rerun motif search and interaction scripts on new annotations of TSS+100kb -> TES+1kb. Result to be presented. 
 
+### updated analyses/comments
 
+- Did CRISPR screen analysis using custom RRA method [link](crispr_rra.html)
