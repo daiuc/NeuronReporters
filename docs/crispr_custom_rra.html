@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Chao Dai">
+<meta name="dcterms.date" content="2023-01-03">
+
+<title>CRISPR Screen Analysis - Redone with second best RRA and comparison with previous</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="crispr_custom_rra_files/libs/clipboard/clipboard.min.js"></script>
+<script src="crispr_custom_rra_files/libs/quarto-html/quarto.js"></script>
+<script src="crispr_custom_rra_files/libs/quarto-html/popper.min.js"></script>
+<script src="crispr_custom_rra_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="crispr_custom_rra_files/libs/quarto-html/anchor.min.js"></script>
+<link href="crispr_custom_rra_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="crispr_custom_rra_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="crispr_custom_rra_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="crispr_custom_rra_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="crispr_custom_rra_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">CRISPR Screen Analysis - Redone with second best RRA and comparison with previous</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Chao Dai </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 3, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<p><strong>3 read count files</strong> - non-normalized read counts - ranknorm normalized using RNOMni - log2 normalized from Congyi, this is the one used for the original screen analysis</p>
+<ul>
+<li><p>S8 vs.&nbsp;S6: These cells became non-neurons, the <strong>enrichment</strong> of guides found from S8 / S6 means that these guides discrupt TFs that may be crucial to neuron development. Because these cells failed to become neurons, enrichment of these guides mean TFs responsible for neuron development are disrupted.</p></li>
+<li><p>S7 vs.&nbsp;S6: These cells became neurons. The enrichment of guides found from S7 - S6 means that these guides disrupt TFs that may be repressors of neuron development, or that these targetted TFs are reponsible for maintaining stem cell status. The <strong>depletion</strong> of these guides means that the targeted TFs may be crucial to neuron development (since these cells have become neurons, you wouldn’t find many cells with neuron related TFs being disrupted, thus you observe depletion of gRNAs).</p></li>
+<li><p>S8 vs.&nbsp;S7: S8 are non-neurons and S7 are neurons. The <strong>enrichment</strong> of guides found in neurons, while depleted in non-neurons, mean that these guides disrupte the function of TFs that are responsible for neuron development.</p></li>
+</ul>
+<div class="cell" data-execution_count="263">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(data.table))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(tidyverse))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="prepare-count-tables" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-count-tables">prepare count tables</h2>
+<div class="cell" data-execution_count="494">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#cnts.file = "../../resources/crispr/counts/RC.csv"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cnts.file <span class="ot">=</span> <span class="st">"../../resources/crispr/counts/wrangled_raw_counts.tsv"</span> <span class="co"># raw file</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>cnts.rn.file <span class="ot">=</span> <span class="st">"../../resources/crispr/counts/wrangled_ranknorm_counts.tsv"</span> <span class="co"># rank normalized</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>cnts.l2.file <span class="ot">=</span> <span class="st">"/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/RCmNorRatioLog2.lu.csv"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="495">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>cnts <span class="ot">=</span> <span class="fu">fread</span>(cnts.file) <span class="sc">%&gt;%</span> .[, .(<span class="at">ID=</span>sgRNA, Gene, <span class="at">S6 =</span> Day14_iN, <span class="at">S7=</span>Day14_Tdpos, <span class="at">S8=</span>Day14_Tdneg)]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>cnts.l2 <span class="ot">=</span> <span class="fu">fread</span>(cnts.l2.file) <span class="sc">%&gt;%</span> .[, .(ID, Gene, S6, S7, S8)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="496">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># group 10 NTC guides into 1 NTC group</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>NTC <span class="ot">=</span> <span class="fu">paste</span>(<span class="st">"NonTargeting_Human_"</span>, <span class="fu">sort</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="dv">10</span>)), <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>cnts[<span class="fu">str_detect</span>(<span class="fu">toupper</span>(Gene), <span class="st">"NONTARGET"</span>), Gene <span class="sc">:</span><span class="er">=</span> NTC]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="497">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove any guides where S6 or iN is 1 or less</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># remove genes that have less than 5 guides left at iN or S6</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>cnts <span class="ot">=</span> cnts[S6 <span class="sc">&gt;</span> <span class="dv">1</span>]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>cnts <span class="ot">=</span> cnts[, .(ID, S6, S7, S8, .N), by <span class="ot">=</span> Gene][N<span class="sc">&gt;</span><span class="dv">4</span>, <span class="sc">-</span><span class="fu">c</span>(<span class="st">"N"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="498">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>selcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"S6"</span>, <span class="st">"S7"</span>, <span class="st">"S8"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># log2 RPM normalize counts</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>cnts.norm <span class="ot">=</span> cnts[, <span class="fu">c</span>(</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">ID =</span> ID, <span class="at">Gene =</span> Gene),</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">lapply</span>(.SD, <span class="cf">function</span>(x) <span class="fu">log2</span>(<span class="fu">if_else</span>(x<span class="sc">==</span><span class="dv">0</span>, .<span class="dv">1</span>, .<span class="dv">1</span><span class="sc">*</span>x)<span class="sc">*</span><span class="fl">1e6</span><span class="sc">/</span><span class="fu">sum</span>(x)) )</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>), .SDcols <span class="ot">=</span> selcols]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="499">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cnts[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(cnts)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>cnts.norm[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(cnts.norm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.table: 5 × 5</caption>
+<thead>
+    <tr><th scope="col">Gene</th><th scope="col">ID</th><th scope="col">S6</th><th scope="col">S7</th><th scope="col">S8</th></tr>
+    <tr><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th><th scope="col">&lt;int&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>AATF</td><td>GUIDES_sg00000</td><td> 46</td><td>23</td><td>0</td></tr>
+    <tr><td>AATF</td><td>GUIDES_sg00003</td><td>122</td><td>35</td><td>0</td></tr>
+    <tr><td>AATF</td><td>GUIDES_sg00004</td><td>  5</td><td> 0</td><td>0</td></tr>
+    <tr><td>AATF</td><td>GUIDES_sg00006</td><td> 50</td><td>34</td><td>0</td></tr>
+    <tr><td>AATF</td><td>GUIDES_sg00007</td><td> 22</td><td>16</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class="list-inline"><li>17899</li><li>5</li></ol>
+</div>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.table: 5 × 5</caption>
+<thead>
+    <tr><th scope="col">ID</th><th scope="col">Gene</th><th scope="col">S6</th><th scope="col">S7</th><th scope="col">S8</th></tr>
+    <tr><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th><th scope="col">&lt;dbl&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>GUIDES_sg00000</td><td>AATF</td><td> 1.4236802</td><td> 0.8385772</td><td>-4.135369</td></tr>
+    <tr><td>GUIDES_sg00003</td><td>AATF</td><td> 2.8308556</td><td> 1.4442983</td><td>-4.135369</td></tr>
+    <tr><td>GUIDES_sg00004</td><td>AATF</td><td>-1.7779537</td><td>-3.6849848</td><td>-4.135369</td></tr>
+    <tr><td>GUIDES_sg00006</td><td>AATF</td><td> 1.5439744</td><td> 1.4024781</td><td>-4.135369</td></tr>
+    <tr><td>GUIDES_sg00007</td><td>AATF</td><td> 0.3595499</td><td> 0.3150152</td><td>-4.135369</td></tr>
+</tbody>
+</table>
+</div>
+<div class="cell-output cell-output-display">
+<style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class="list-inline"><li>17899</li><li>5</li></ol>
+</div>
+</div>
+</section>
+<section id="functions-for-computation" class="level2">
+<h2 class="anchored" data-anchor-id="functions-for-computation">functions for computation</h2>
+<div class="cell" data-execution_count="450">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>makeDT <span class="ot">=</span> <span class="cf">function</span>(dt, dt.norm) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dt: is raw counts,</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dt.norm: is the same, but normalized</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># columns: ID, Gene, denom, num</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># both denom and num conditions must have at least 2 guides with reads &gt; 0</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    genes1 <span class="ot">=</span> dt[denom <span class="sc">&gt;</span> <span class="dv">0</span>, .N, by <span class="ot">=</span> Gene][N<span class="sc">&gt;</span><span class="dv">1</span>, Gene] <span class="sc">%&gt;%</span> unique</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    genes2 <span class="ot">=</span> dt[num <span class="sc">&gt;</span> <span class="dv">0</span>, .N, by <span class="ot">=</span> Gene][N<span class="sc">&gt;</span><span class="dv">1</span>, Gene] <span class="sc">%&gt;%</span> unique</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    genes <span class="ot">=</span> <span class="fu">intersect</span>(genes1, genes2)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    dt <span class="ot">=</span> dt[Gene <span class="sc">%in%</span> genes <span class="sc">&amp;</span> denom <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> num <span class="sc">&gt;</span> <span class="dv">0</span>]</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    dt.norm <span class="ot">=</span> dt.norm[Gene <span class="sc">%in%</span> genes]</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    dt.out <span class="ot">=</span> dt.norm[dt[, .(ID, Gene)], on <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Gene"</span>, <span class="st">"ID"</span>), nomatch<span class="ot">=</span><span class="cn">NULL</span>]</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(dt.out)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="412">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>weightedSum <span class="ot">=</span> <span class="cf">function</span>(x) {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># x must be a numerical vector of exactly 2 elements</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># x must be sorted, x[1] &lt;= x[2]</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fl">0.25</span><span class="sc">*</span>x[<span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.75</span><span class="sc">*</span>x[<span class="dv">2</span>]) <span class="co"># more weights no the second rank</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="421">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>RRA <span class="ot">=</span> <span class="cf">function</span>(dt, enrichment) {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># dt is a dataframe with column ID, Gene, denom, num (which are Log2 RPM normalized reads)</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    dt <span class="ot">=</span> dt[, .(ID, Gene, denom, num, <span class="at">l2fc =</span> num <span class="sc">-</span> denom)] <span class="co"># compute l2fc</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (enrichment) {</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        dt <span class="ot">=</span> dt[, .(ID, Gene,l2fc, <span class="at">rk=</span><span class="fu">rank</span>(<span class="sc">-</span>l2fc, <span class="at">ties.method =</span> <span class="st">"max"</span>))] <span class="co"># look for enriched guides</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        dt <span class="ot">=</span> dt[, .(ID, Gene,l2fc, <span class="at">rk=</span><span class="fu">rank</span>(l2fc, <span class="at">ties.method =</span> <span class="st">"max"</span>))] <span class="co"># look for depleted guides</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    dt <span class="ot">=</span> dt[<span class="fu">order</span>(Gene, rk), .SD[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], by <span class="ot">=</span> Gene <span class="co"># select top 2 guides for each gene</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>            ][, .(<span class="at">rankscore =</span> <span class="fu">weightedSum</span>(rk)), by <span class="ot">=</span> Gene</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>             ][<span class="fu">order</span>(rankscore)]</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(dt)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="compute-enrichment-of-s8-vs-s6" class="level2">
+<h2 class="anchored" data-anchor-id="compute-enrichment-of-s8-vs-s6">compute enrichment of S8 vs S6</h2>
+<div class="cell" data-execution_count="460">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># enrichment of guides in td- vs. iN (S8 VS. S6)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dtS86 <span class="ot">=</span> <span class="fu">makeDT</span>(<span class="at">dt =</span> cnts[, .(ID, Gene, <span class="at">denom =</span> S6, <span class="at">num =</span> S8)],</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">dt.norm =</span> cnts.norm[, .(ID, Gene, <span class="at">denom =</span> S6, <span class="at">num =</span> S8)])</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>rraS86 <span class="ot">=</span> <span class="fu">RRA</span>(dtS86, <span class="at">enrichment =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="compute-enrichment-of-s8-vs-s7" class="level2">
+<h2 class="anchored" data-anchor-id="compute-enrichment-of-s8-vs-s7">compute enrichment of S8 vs S7</h2>
+<div class="cell" data-execution_count="585">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># enrichment of guides in td- vs. td+ (S8 VS. S7)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dtS87 <span class="ot">=</span> <span class="fu">makeDT</span>(<span class="at">dt =</span> cnts[, .(ID, Gene, <span class="at">denom =</span> S7, <span class="at">num =</span> S8)],</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">dt.norm =</span> cnts.norm[, .(ID, Gene, <span class="at">denom =</span> S7, <span class="at">num =</span> S8)])</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>rraS87 <span class="ot">=</span> <span class="fu">RRA</span>(dtS87, <span class="at">enrichment =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="compute-depletion-of-s7-vs-s6" class="level2">
+<h2 class="anchored" data-anchor-id="compute-depletion-of-s7-vs-s6">compute depletion of S7 vs S6</h2>
+<div class="cell" data-execution_count="472">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># depletion of guides in td+ vs. iN (S7 VS. S6)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>dtS76 <span class="ot">=</span> <span class="fu">makeDT</span>(<span class="at">dt =</span> cnts[, .(ID, Gene, <span class="at">denom =</span> S6, <span class="at">num =</span> S7)],</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">dt.norm =</span> cnts.norm[, .(ID, Gene, <span class="at">denom =</span> S6, <span class="at">num =</span> S7)])</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>rraS76 <span class="ot">=</span> <span class="fu">RRA</span>(dtS76, <span class="at">enrichment =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="monte-carlo-simulation---s86-enrichment" class="level2">
+<h2 class="anchored" data-anchor-id="monte-carlo-simulation---s86-enrichment">Monte Carlo simulation - S86 enrichment</h2>
+<div class="cell" data-execution_count="562">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>N_sim <span class="ot">=</span> <span class="dv">20</span> <span class="co"># number of simulations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="564">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sim.rraS86.l <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_sim) {</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    sim.cnts <span class="ot">=</span> cnts[</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>        , .(Gene, ID,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">S6 =</span> S6[<span class="fu">sample</span>(<span class="fu">length</span>(S6))],</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">S7 =</span> S7[<span class="fu">sample</span>(<span class="fu">length</span>(S7))],</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">S8 =</span> S8[<span class="fu">sample</span>(<span class="fu">length</span>(S8))])]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    selcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"S6"</span>, <span class="st">"S7"</span>, <span class="st">"S8"</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># log2 RPM normalize counts</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    sim.cnts.norm <span class="ot">=</span> sim.cnts[, <span class="fu">c</span>(<span class="fu">list</span>(<span class="at">ID =</span> ID, <span class="at">Gene =</span> Gene),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">lapply</span>(.SD, <span class="cf">function</span>(x) <span class="fu">log2</span>(<span class="fu">if_else</span>(x<span class="sc">==</span><span class="dv">0</span>, .<span class="dv">1</span>, .<span class="dv">1</span><span class="sc">*</span>x)<span class="sc">*</span><span class="fl">1e6</span><span class="sc">/</span><span class="fu">sum</span>(x)) )), </span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        .SDcols <span class="ot">=</span> selcols]</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>               </span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    sim.dtS86 <span class="ot">=</span> <span class="fu">makeDT</span>(<span class="at">dt =</span> sim.cnts[, .(ID, Gene, <span class="at">denom =</span> S6, <span class="at">num =</span> S8)],</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">dt.norm =</span> sim.cnts.norm[, .(ID, Gene, <span class="at">denom =</span> S6, <span class="at">num =</span> S8)])</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    sim.rraS86 <span class="ot">=</span> <span class="fu">list</span>(<span class="fu">RRA</span>(sim.dtS86, <span class="at">enrichment =</span> T))</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    sim.rraS86.l <span class="ot">=</span> <span class="fu">c</span>(sim.rraS86.l, sim.rraS86)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="565">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get ecdf</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>ecdf.S86 <span class="ot">=</span> <span class="fu">ecdf</span>(<span class="fu">map</span>(sim.rraS86.l, <span class="sc">~</span>.x<span class="sc">$</span>rankscore) <span class="sc">%&gt;%</span> flatten <span class="sc">%&gt;%</span> unlist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="580">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use ecdf to compute FDR value</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>rraS86[, FDR <span class="sc">:</span><span class="er">=</span> <span class="fu">ecdf.S86</span>(rankscore)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="monte-carlo-simulation---s87-enrichment" class="level2">
+<h2 class="anchored" data-anchor-id="monte-carlo-simulation---s87-enrichment">Monte Carlo simulation - S87 enrichment</h2>
+<div class="cell" data-execution_count="587">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>N_sim <span class="ot">=</span> <span class="dv">20</span> <span class="co"># number of simulations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="588">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sim.rraS87.l <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_sim) {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    sim.cnts <span class="ot">=</span> cnts[</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        , .(Gene, ID,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">S6 =</span> S6[<span class="fu">sample</span>(<span class="fu">length</span>(S6))],</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">S7 =</span> S7[<span class="fu">sample</span>(<span class="fu">length</span>(S7))],</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">S8 =</span> S8[<span class="fu">sample</span>(<span class="fu">length</span>(S8))])]</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    selcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"S6"</span>, <span class="st">"S7"</span>, <span class="st">"S8"</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># log2 RPM normalize counts</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    sim.cnts.norm <span class="ot">=</span> sim.cnts[, <span class="fu">c</span>(<span class="fu">list</span>(<span class="at">ID =</span> ID, <span class="at">Gene =</span> Gene),</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">lapply</span>(.SD, <span class="cf">function</span>(x) <span class="fu">log2</span>(<span class="fu">if_else</span>(x<span class="sc">==</span><span class="dv">0</span>, .<span class="dv">1</span>, .<span class="dv">1</span><span class="sc">*</span>x)<span class="sc">*</span><span class="fl">1e6</span><span class="sc">/</span><span class="fu">sum</span>(x)) )), </span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>        .SDcols <span class="ot">=</span> selcols]</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>               </span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    sim.dtS87 <span class="ot">=</span> <span class="fu">makeDT</span>(<span class="at">dt =</span> sim.cnts[, .(ID, Gene, <span class="at">denom =</span> S7, <span class="at">num =</span> S8)],</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">dt.norm =</span> sim.cnts.norm[, .(ID, Gene, <span class="at">denom =</span> S7, <span class="at">num =</span> S8)])</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    sim.rraS87 <span class="ot">=</span> <span class="fu">list</span>(<span class="fu">RRA</span>(sim.dtS87, <span class="at">enrichment =</span> T))</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>    sim.rraS87.l <span class="ot">=</span> <span class="fu">c</span>(sim.rraS87.l, sim.rraS87)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="589">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get ecdf</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>ecdf.S87 <span class="ot">=</span> <span class="fu">ecdf</span>(<span class="fu">map</span>(sim.rraS87.l, <span class="sc">~</span>.x<span class="sc">$</span>rankscore) <span class="sc">%&gt;%</span> flatten <span class="sc">%&gt;%</span> unlist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="590">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use ecdf to compute FDR value</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>rraS87[, FDR <span class="sc">:</span><span class="er">=</span> <span class="fu">ecdf.S87</span>(rankscore)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="monte-carlo-simulation---s76-depletion" class="level2">
+<h2 class="anchored" data-anchor-id="monte-carlo-simulation---s76-depletion">Monte Carlo simulation - S76 depletion</h2>
+<div class="cell" data-execution_count="593">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>N_sim <span class="ot">=</span> <span class="dv">20</span> <span class="co"># number of simulations</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="594">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>sim.rraS76.l <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N_sim) {</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    sim.cnts <span class="ot">=</span> cnts[</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>        , .(Gene, ID,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">S6 =</span> S6[<span class="fu">sample</span>(<span class="fu">length</span>(S6))],</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">S7 =</span> S7[<span class="fu">sample</span>(<span class="fu">length</span>(S7))],</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">S8 =</span> S8[<span class="fu">sample</span>(<span class="fu">length</span>(S8))])]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    selcols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"S6"</span>, <span class="st">"S7"</span>, <span class="st">"S8"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># log2 RPM normalize counts</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    sim.cnts.norm <span class="ot">=</span> sim.cnts[, <span class="fu">c</span>(<span class="fu">list</span>(<span class="at">ID =</span> ID, <span class="at">Gene =</span> Gene),</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">lapply</span>(.SD, <span class="cf">function</span>(x) <span class="fu">log2</span>(<span class="fu">if_else</span>(x<span class="sc">==</span><span class="dv">0</span>, .<span class="dv">1</span>, .<span class="dv">1</span><span class="sc">*</span>x)<span class="sc">*</span><span class="fl">1e6</span><span class="sc">/</span><span class="fu">sum</span>(x)) )), </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>        .SDcols <span class="ot">=</span> selcols]</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>               </span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    sim.dtS76 <span class="ot">=</span> <span class="fu">makeDT</span>(<span class="at">dt =</span> sim.cnts[, .(ID, Gene, <span class="at">denom =</span> S6, <span class="at">num =</span> S7)],</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">dt.norm =</span> sim.cnts.norm[, .(ID, Gene, <span class="at">denom =</span> S6, <span class="at">num =</span> S7)])</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    sim.rraS76 <span class="ot">=</span> <span class="fu">list</span>(<span class="fu">RRA</span>(sim.dtS76, <span class="at">enrichment =</span> F))</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    sim.rraS76.l <span class="ot">=</span> <span class="fu">c</span>(sim.rraS76.l, sim.rraS76)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="595">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get ecdf</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>ecdf.S76 <span class="ot">=</span> <span class="fu">ecdf</span>(<span class="fu">map</span>(sim.rraS76.l, <span class="sc">~</span>.x<span class="sc">$</span>rankscore) <span class="sc">%&gt;%</span> flatten <span class="sc">%&gt;%</span> unlist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="596">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use ecdf to compute FDR value</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>rraS76[, FDR <span class="sc">:</span><span class="er">=</span> <span class="fu">ecdf.S76</span>(rankscore)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="compare-with-hit-list-identified-previously" class="level2">
+<h2 class="anchored" data-anchor-id="compare-with-hit-list-identified-previously">Compare with hit list identified previously</h2>
+<div class="cell" data-execution_count="602">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>hitlist <span class="ot">=</span> <span class="fu">fread</span>(<span class="st">"../../resources/crispr/Hitlist_20191230.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="634">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>hitlist[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+<table class="dataframe table table-sm table-striped">
+<caption>A data.table: 2 × 2</caption>
+<thead>
+    <tr><th scope="col">gene_name</th><th scope="col">hgnc_symbol</th></tr>
+    <tr><th scope="col">&lt;chr&gt;</th><th scope="col">&lt;chr&gt;</th></tr>
+</thead>
+<tbody>
+    <tr><td>PHOX2A</td><td>PHOX2A</td></tr>
+    <tr><td>TAF1L </td><td>TAF1L </td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell" data-execution_count="612">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggvenn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="615">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate 3 sets of 200 words</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>set87 <span class="ot">=</span> rraS87[FDR <span class="sc">&lt;</span> .<span class="dv">1</span>, Gene]</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>set86 <span class="ot">=</span> rraS86[FDR <span class="sc">&lt;</span> .<span class="dv">1</span>, Gene]</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>set76 <span class="ot">=</span> rraS76[FDR <span class="sc">&lt;</span> .<span class="dv">1</span>, Gene]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="625">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Helper function to display Venn diagram</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>display_venn <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...){</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid.newpage</span>()</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  venn_object <span class="ot">&lt;-</span> <span class="fu">venn.diagram</span>(x, <span class="at">filename =</span> <span class="cn">NULL</span>, ...)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid.draw</span>(venn_object)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="663">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">display_venn</span>(<span class="at">x =</span> <span class="fu">list</span>(set86, set87, hitlist<span class="sc">$</span>gene_name), </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">category =</span> <span class="fu">c</span>(<span class="st">"Td- vs iN"</span>, <span class="st">"Td- vs Td+"</span>, <span class="st">"Hits"</span>),</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> .<span class="dv">7</span>, <span class="at">fill =</span> <span class="fu">c</span>(<span class="st">"tomato1"</span>, <span class="st">'lightblue'</span>, <span class="st">'lightgreen'</span>),</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">cat.cex =</span> <span class="fl">1.5</span>, <span class="at">cex =</span> <span class="fl">1.7</span>, <span class="at">label.col =</span> <span class="st">"blue"</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>            )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="crispr_custom_rra_files/figure-html/cell-35-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="606">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>rraS87[FDR <span class="sc">&lt;</span> .<span class="dv">1</span>, Gene]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class="list-inline"><li>'ZNF441'</li><li>'ZNF440'</li><li>'CRY1'</li><li>'E2F1'</li><li>'CDX4'</li><li>'BHLHA15'</li><li>'ZNF311'</li><li>'EGR3'</li><li>'ZIC1'</li><li>'NR1I2'</li><li>'ZNF250'</li><li>'ZNF639'</li><li>'PRDM6'</li><li>'DLX5'</li><li>'TOX4'</li><li>'THRA'</li><li>'BRWD1'</li><li>'CHD5'</li><li>'CBX4'</li><li>'VAX2'</li><li>'ZBTB18'</li><li>'RAI14'</li><li>'RBPJ'</li><li>'TSHZ3'</li><li>'NKX3-2'</li><li>'TAF1L'</li><li>'APBB2'</li><li>'SCRT2'</li><li>'HSFY1'</li><li>'ZNF136'</li><li>'EMX1'</li><li>'UBE2K'</li><li>'CTDP1'</li><li>'JUNB'</li><li>'MECP2'</li><li>'POLR2B'</li><li>'ZZZ3'</li><li>'NonTargeting_Human_22'</li><li>'ZNF554'</li><li>'KLF10'</li><li>'INSM1'</li><li>'MEOX2'</li><li>'ZNF671'</li><li>'NonTargeting_Human_90'</li><li>'SMAD3'</li><li>'EBF1'</li><li>'ZNF563'</li><li>'PAX7'</li><li>'ZNF141'</li><li>'ZFPM1'</li><li>'HIST1H2BC'</li><li>'JUND'</li><li>'HTATIP2'</li><li>'PRDM5'</li><li>'GATA1'</li><li>'TFEB'</li><li>'CREBZF'</li><li>'VGLL2'</li><li>'SKI'</li><li>'ZFY'</li><li>'HIF3A'</li><li>'NonTargeting_Human_13'</li><li>'ELK3'</li><li>'NonTargeting_Human_31'</li><li>'NonTargeting_Human_57'</li><li>'ZIM3'</li><li>'ARID1B'</li><li>'AHR'</li><li>'NonTargeting_Human_88'</li></ol>
+</div>
+</div>
+<div class="cell" data-execution_count="669">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">intersect</span>(<span class="fu">union</span>(set87, set86), hitlist<span class="sc">$</span>gene_name) <span class="sc">%&gt;%</span> length</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">intersect</span>(<span class="fu">union</span>(set87, set86), hitlist<span class="sc">$</span>gene_name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+74
+</div>
+<div class="cell-output cell-output-display">
+<style>
+.list-inline {list-style: none; margin:0; padding: 0}
+.list-inline>li {display: inline-block}
+.list-inline>li:not(:last-child)::after {content: "\00b7"; padding: 0 .5ex}
+</style>
+<ol class="list-inline"><li>'ZNF441'</li><li>'ZNF440'</li><li>'CRY1'</li><li>'E2F1'</li><li>'CDX4'</li><li>'BHLHA15'</li><li>'ZNF311'</li><li>'EGR3'</li><li>'ZIC1'</li><li>'NR1I2'</li><li>'ZNF250'</li><li>'ZNF639'</li><li>'PRDM6'</li><li>'DLX5'</li><li>'TOX4'</li><li>'THRA'</li><li>'BRWD1'</li><li>'CHD5'</li><li>'CBX4'</li><li>'VAX2'</li><li>'ZBTB18'</li><li>'RAI14'</li><li>'RBPJ'</li><li>'TSHZ3'</li><li>'NKX3-2'</li><li>'TAF1L'</li><li>'APBB2'</li><li>'SCRT2'</li><li>'HSFY1'</li><li>'ZNF136'</li><li>'EMX1'</li><li>'UBE2K'</li><li>'CTDP1'</li><li>'JUNB'</li><li>'MECP2'</li><li>'POLR2B'</li><li>'ZZZ3'</li><li>'ZNF554'</li><li>'KLF10'</li><li>'INSM1'</li><li>'MEOX2'</li><li>'ZNF671'</li><li>'SMAD3'</li><li>'EBF1'</li><li>'ZNF563'</li><li>'PAX7'</li><li>'ZNF141'</li><li>'ZFPM1'</li><li>'HIST1H2BC'</li><li>'JUND'</li><li>'HTATIP2'</li><li>'PRDM5'</li><li>'GATA1'</li><li>'TFEB'</li><li>'CREBZF'</li><li>'VGLL2'</li><li>'SKI'</li><li>'ZFY'</li><li>'HIF3A'</li><li>'ELK3'</li><li>'ZIM3'</li><li>'ARID1B'</li><li>'AHR'</li><li>'ZNF510'</li><li>'ISL2'</li><li>'TSC22D3'</li><li>'ZNF239'</li><li>'PHF12'</li><li>'NFKBIB'</li><li>'SIX5'</li><li>'NEUROG3'</li><li>'PAX2'</li><li>'LHX4'</li><li>'CTNNB1'</li></ol>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
