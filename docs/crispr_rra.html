@@ -575,8 +575,9 @@ rraS76[, FDR := ecdf.S76(rankscore)]</code></pre>
 </div>
 <hr />
 </div>
-<div id="compare-with-hits-found-from-existing-method-using-fdr-.15" class="section level3">
-<h3>Compare with hits found from existing method, using FDR&lt; .15</h3>
+</div>
+<div id="compare-with-hits-found-from-existing-method-using-fdr-.15" class="section level2">
+<h2>Compare with hits found from existing method, using FDR&lt; .15</h2>
 <pre class="r"><code>hitlist = fread(&quot;../code/resources/crispr/Hitlist_20191230.csv&quot;)</code></pre>
 <p>Previous method found 122 genes, shown below:</p>
 <pre><code>##   [1] &quot;PHOX2A&quot;    &quot;TAF1L&quot;     &quot;TFEB&quot;      &quot;VAX2&quot;      &quot;SNAI2&quot;     &quot;ELK3&quot;     
@@ -600,20 +601,19 @@ rraS76[, FDR := ecdf.S76(rankscore)]</code></pre>
 ## [109] &quot;ZBTB18&quot;    &quot;CHD5&quot;      &quot;CTNNB1&quot;    &quot;ZNF554&quot;    &quot;UBE2K&quot;     &quot;HTATIP2&quot;  
 ## [115] &quot;NEUROG3&quot;   &quot;SMAD3&quot;     &quot;LHX4&quot;      &quot;PRDM6&quot;     &quot;NEUROG1&quot;   &quot;NEUROG2&quot;  
 ## [121] &quot;HIST1H2BC&quot; &quot;HIST1H1E&quot;</code></pre>
-<pre><code>## INFO [2023-01-06 13:17:58] [[1]]
-## INFO [2023-01-06 13:17:58] x
-## INFO [2023-01-06 13:17:58] 
-## INFO [2023-01-06 13:17:58] $filename
-## INFO [2023-01-06 13:17:58] NULL
-## INFO [2023-01-06 13:17:58] 
-## INFO [2023-01-06 13:17:58] $disable.logging
-## INFO [2023-01-06 13:17:58] T
-## INFO [2023-01-06 13:17:58] 
-## INFO [2023-01-06 13:17:58] [[4]]
-## INFO [2023-01-06 13:17:58] ...
-## INFO [2023-01-06 13:17:58]</code></pre>
-<pre><code>## png 
-##   2</code></pre>
+<p><img src="crispr_rra_files/figure-html/plot-venn-1.png" width="384" /></p>
+<pre><code>## INFO [2023-01-06 13:20:52] [[1]]
+## INFO [2023-01-06 13:20:52] x
+## INFO [2023-01-06 13:20:52] 
+## INFO [2023-01-06 13:20:52] $filename
+## INFO [2023-01-06 13:20:52] NULL
+## INFO [2023-01-06 13:20:52] 
+## INFO [2023-01-06 13:20:52] $disable.logging
+## INFO [2023-01-06 13:20:52] T
+## INFO [2023-01-06 13:20:52] 
+## INFO [2023-01-06 13:20:52] [[4]]
+## INFO [2023-01-06 13:20:52] ...
+## INFO [2023-01-06 13:20:52]</code></pre>
 <pre class="r"><code>knitr::include_graphics(&quot;venn.png&quot;)</code></pre>
 <p><img src="venn.png" width="240" /></p>
 <p>Notice a large number of overlaps. When we combine hits found from Td- vs. iN and Td- vs. Td+ with FDR &lt; 0.15 (which is the same way we selected our 120 hits. There are 23 (NEUROG1 and NEUROG2 are not considered) hits found in existing method, but not found in the RRA method. Nearly all the hits that we initially removed in our existing method, which are labeled as hit with the RRA method are non-targeting controls. This highlights the advantage of our existing manual method of more precise control of false positives and potential false negatives. Of course, the disadvantage is that the existing manual method does not produce a p-value thus is less informative in statistical confidence.</p>
@@ -651,7 +651,6 @@ rraS76[, FDR := ecdf.S76(rankscore)]</code></pre>
 ##  [7] &quot;NonTargeting_Human_69&quot; &quot;NonTargeting_Human_39&quot; &quot;NonTargeting_Human_99&quot;
 ## [10] &quot;ATF6B&quot;                 &quot;NonTargeting_Human_67&quot; &quot;ZNF766&quot;               
 ## [13] &quot;NonTargeting_Human_64&quot; &quot;NonTargeting_Human_73&quot;</code></pre>
-</div>
 </div>
 
 
