@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="daiuc" />
+
+<meta name="date" content="2023-01-03" />
+
+<title>CRISPR Screen RRA Analysis</title>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">NeuronReporters</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">CRISPR Screen RRA Analysis</h1>
+<h4 class="author">daiuc</h4>
+<h4 class="date">2023-01-03</h4>
+
+</div>
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p><strong>S8 vs. S6:</strong></p>
+<ul>
+<li>These cells became non-neurons, the <strong>enrichment</strong> of guides found from S8 / S6 means that these guides discrupt TFs that may be crucial to neuron development. Because these cells failed to become neurons, <strong>enrichment</strong> of these guides mean TFs responsible for neuron development are disrupted.</li>
+</ul>
+<p><strong>S7 vs. S6:</strong></p>
+<ul>
+<li><p>These cells became neurons. The <strong>enrichment</strong> of guides found from S7 - S6 means that these guides disrupt TFs that may be repressors of neuron development, or that these targetted TFs are reponsible for maintaining stem cell status.</p></li>
+<li><p>The <strong>depletion</strong> of these guides means that the targeted TFs may be crucial to neuron development (since these cells have become neurons, you wouldn’t find many cells with neuron related TFs being disrupted, thus you observe depletion of gRNAs).</p></li>
+</ul>
+<p><strong>S8 vs. S7:</strong></p>
+<ul>
+<li>S8 are non-neurons and S7 are neurons. The <strong>enrichment</strong> of guides found in neurons, while depleted in non-neurons, mean that these guides disrupte the function of TFs that are responsible for neuron development.</li>
+</ul>
+<pre class="r"><code>#cnts.file = &quot;../../resources/crispr/counts/RC.csv&quot;
+cnts.file = &quot;../code/resources/crispr/counts/wrangled_raw_counts.tsv&quot; # raw file
+#cnts.rn.file = &quot;../../resources/crispr/counts/wrangled_ranknorm_counts.tsv&quot; # rank normalized
+#cnts.l2.file = &quot;/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/RCmNorRatioLog2.lu.csv&quot;
+
+cnts = fread(cnts.file) %&gt;% .[, .(ID=sgRNA, Gene, S6 = Day14_iN, S7=Day14_Tdpos, S8=Day14_Tdneg)]
+#cnts.l2 = fread(cnts.l2.file) %&gt;% .[, .(ID, Gene, S6, S7, S8)]
+
+
+# group 10 NTC guides into 1 NTC group
+NTC = paste(&quot;NonTargeting_Human_&quot;, sort(rep(1:100, 10)), sep=&quot;&quot;)
+cnts[str_detect(toupper(Gene), &quot;NONTARGET&quot;), Gene := NTC]
+
+# remove any guides where S6 or iN is 1 or less
+# remove genes that have less than 5 guides left at iN or S6
+cnts = cnts[S6 &gt; 1]
+cnts = cnts[, .(ID, S6, S7, S8, .N), by = Gene][N&gt;4, -c(&quot;N&quot;)]
+
+selcols = c(&quot;S6&quot;, &quot;S7&quot;, &quot;S8&quot;)
+# log2 RPM normalize counts
+cnts.norm = cnts[, c(
+    list(ID = ID, Gene = Gene),
+    lapply(.SD, function(x) log2(if_else(x==0, .1, .1*x)*1e6/sum(x)) )
+), .SDcols = selcols]</code></pre>
+<pre class="r"><code>makeDT = function(dt, dt.norm) {
+    # dt: is raw counts,
+    # dt.norm: is the same, but normalized
+    # columns: ID, Gene, denom, num
+    
+    # both denom and num conditions must have at least 2 guides with reads &gt; 0
+    genes1 = dt[denom &gt; 0, .N, by = Gene][N&gt;1, Gene] %&gt;% unique
+    genes2 = dt[num &gt; 0, .N, by = Gene][N&gt;1, Gene] %&gt;% unique
+    genes = intersect(genes1, genes2)
+    
+    dt = dt[Gene %in% genes &amp; denom &gt; 0 &amp; num &gt; 0]
+    dt.norm = dt.norm[Gene %in% genes]
+    
+    dt.out = dt.norm[dt[, .(ID, Gene)], on = c(&quot;Gene&quot;, &quot;ID&quot;), nomatch=NULL]
+    
+    return(dt.out)
+}
+
+weightedSum = function(x) {
+    # x must be a numerical vector of exactly 2 elements
+    # x must be sorted, x[1] &lt;= x[2]
+    return(0.25*x[1] + 0.75*x[2]) # more weights no the second rank
+}
+
+RRA = function(dt, enrichment) {
+    # dt is a dataframe with column ID, Gene, denom, num (which are Log2 RPM normalized reads)
+    dt = dt[, .(ID, Gene, denom, num, l2fc = num - denom)] # compute l2fc
+    if (enrichment) {
+        dt = dt[, .(ID, Gene,l2fc, rk=rank(-l2fc, ties.method = &quot;max&quot;))] # look for enriched guides
+    } else {
+        dt = dt[, .(ID, Gene,l2fc, rk=rank(l2fc, ties.method = &quot;max&quot;))] # look for depleted guides
+    }
+    dt = dt[order(Gene, rk), .SD[1:2], by = Gene # select top 2 guides for each gene
+            ][, .(rankscore = weightedSum(rk)), by = Gene
+             ][order(rankscore)]
+    return(dt)
+}</code></pre>
+<hr />
+</div>
+<div id="compute-enrichment-or-depletion" class="section level2">
+<h2>Compute enrichment or depletion</h2>
+<p>Result shown in the next section.</p>
+<pre class="r"><code># enrichment of guides in td- vs. iN (S8 VS. S6)
+dtS86 = makeDT(dt = cnts[, .(ID, Gene, denom = S6, num = S8)],
+               dt.norm = cnts.norm[, .(ID, Gene, denom = S6, num = S8)])
+rraS86 = RRA(dtS86, enrichment = T)</code></pre>
+<pre class="r"><code># enrichment of guides in td- vs. td+ (S8 VS. S7)
+dtS87 = makeDT(dt = cnts[, .(ID, Gene, denom = S7, num = S8)],
+               dt.norm = cnts.norm[, .(ID, Gene, denom = S7, num = S8)])
+rraS87 = RRA(dtS87, enrichment = T)</code></pre>
+<pre class="r"><code># depletion of guides in td+ vs. iN (S7 VS. S6)
+dtS76 = makeDT(dt = cnts[, .(ID, Gene, denom = S6, num = S7)],
+               dt.norm = cnts.norm[, .(ID, Gene, denom = S6, num = S7)])
+rraS76 = RRA(dtS76, enrichment = F)</code></pre>
+<hr />
+</div>
+<div id="monte-carlo-simulation" class="section level2">
+<h2>Monte Carlo simulation</h2>
+<p>Simulations are set to run 20 iterations.</p>
+<pre class="r"><code>N_sim = 20 # number of simulations
+
+sim.rraS86.l = list()
+for (i in 1:N_sim) {
+    sim.cnts = cnts[
+        , .(Gene, ID,
+           S6 = S6[sample(length(S6))],
+           S7 = S7[sample(length(S7))],
+           S8 = S8[sample(length(S8))])]
+    
+    selcols = c(&quot;S6&quot;, &quot;S7&quot;, &quot;S8&quot;)
+    # log2 RPM normalize counts
+    sim.cnts.norm = sim.cnts[, c(list(ID = ID, Gene = Gene),
+        lapply(.SD, function(x) log2(if_else(x==0, .1, .1*x)*1e6/sum(x)) )), 
+        .SDcols = selcols]
+               
+    sim.dtS86 = makeDT(dt = sim.cnts[, .(ID, Gene, denom = S6, num = S8)],
+               dt.norm = sim.cnts.norm[, .(ID, Gene, denom = S6, num = S8)])
+    sim.rraS86 = list(RRA(sim.dtS86, enrichment = T))
+    sim.rraS86.l = c(sim.rraS86.l, sim.rraS86)
+}
+
+# get ecdf
+ecdf.S86 = ecdf(map(sim.rraS86.l, ~.x$rankscore) %&gt;% flatten %&gt;% unlist)
+
+# use ecdf to compute FDR value
+rraS86[, FDR := ecdf.S86(rankscore)]</code></pre>
+<pre class="r"><code>N_sim = 20 # number of simulations
+
+sim.rraS87.l = list()
+for (i in 1:N_sim) {
+    sim.cnts = cnts[
+        , .(Gene, ID,
+           S6 = S6[sample(length(S6))],
+           S7 = S7[sample(length(S7))],
+           S8 = S8[sample(length(S8))])]
+    
+    selcols = c(&quot;S6&quot;, &quot;S7&quot;, &quot;S8&quot;)
+    # log2 RPM normalize counts
+    sim.cnts.norm = sim.cnts[, c(list(ID = ID, Gene = Gene),
+        lapply(.SD, function(x) log2(if_else(x==0, .1, .1*x)*1e6/sum(x)) )), 
+        .SDcols = selcols]
+               
+    sim.dtS87 = makeDT(dt = sim.cnts[, .(ID, Gene, denom = S7, num = S8)],
+               dt.norm = sim.cnts.norm[, .(ID, Gene, denom = S7, num = S8)])
+    sim.rraS87 = list(RRA(sim.dtS87, enrichment = T))
+    sim.rraS87.l = c(sim.rraS87.l, sim.rraS87)
+}
+
+# get ecdf
+ecdf.S87 = ecdf(map(sim.rraS87.l, ~.x$rankscore) %&gt;% flatten %&gt;% unlist)
+
+# use ecdf to compute FDR value
+rraS87[, FDR := ecdf.S87(rankscore)]</code></pre>
+<pre class="r"><code>N_sim = 20 # number of simulations
+
+sim.rraS76.l = list()
+for (i in 1:N_sim) {
+    sim.cnts = cnts[
+        , .(Gene, ID,
+           S6 = S6[sample(length(S6))],
+           S7 = S7[sample(length(S7))],
+           S8 = S8[sample(length(S8))])]
+    
+    selcols = c(&quot;S6&quot;, &quot;S7&quot;, &quot;S8&quot;)
+    # log2 RPM normalize counts
+    sim.cnts.norm = sim.cnts[, c(list(ID = ID, Gene = Gene),
+        lapply(.SD, function(x) log2(if_else(x==0, .1, .1*x)*1e6/sum(x)) )), 
+        .SDcols = selcols]
+               
+    sim.dtS76 = makeDT(dt = sim.cnts[, .(ID, Gene, denom = S6, num = S7)],
+               dt.norm = sim.cnts.norm[, .(ID, Gene, denom = S6, num = S7)])
+    sim.rraS76 = list(RRA(sim.dtS76, enrichment = F))
+    sim.rraS76.l = c(sim.rraS76.l, sim.rraS76)
+}
+
+# get ecdf
+ecdf.S76 = ecdf(map(sim.rraS76.l, ~.x$rankscore) %&gt;% flatten %&gt;% unlist)
+
+# use ecdf to compute FDR value
+rraS76[, FDR := ecdf.S76(rankscore)]</code></pre>
+<div id="enrichment-of-td--vs.-in-at-day14-with-mc-computed-fdr-genes-with-fdr-0.15-are-shown" class="section level3">
+<h3>Enrichment of Td- vs. iN at Day14, with MC computed FDR, genes with FDR &lt; 0.15 are shown</h3>
+<pre class="r"><code>rraS86[!is.na(rankscore) &amp; FDR &lt; .15]</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Gene"],"name":[1],"type":["chr"],"align":["left"]},{"label":["rankscore"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["FDR"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"ZNF441","2":"28.75","3":"0.001072879"},{"1":"ZNF440","2":"49.25","3":"0.002605564"},{"1":"ZBTB18","2":"83.75","3":"0.005977470"},{"1":"CRY1","2":"88.00","3":"0.006437275"},{"1":"BRWD1","2":"88.25","3":"0.006437275"},{"1":"CDX4","2":"89.75","3":"0.006667178"},{"1":"ZZZ3","2":"98.50","3":"0.008199862"},{"1":"E2F1","2":"102.75","3":"0.008966204"},{"1":"RAI14","2":"115.50","3":"0.011571768"},{"1":"EGR3","2":"123.25","3":"0.013487624"},{"1":"CHD5","2":"123.75","3":"0.013564258"},{"1":"ZNF250","2":"127.75","3":"0.014560503"},{"1":"PRDM6","2":"132.75","3":"0.016016553"},{"1":"SCRT2","2":"142.00","3":"0.018545482"},{"1":"TOX4","2":"142.00","3":"0.018545482"},{"1":"ZNF639","2":"144.00","3":"0.019081922"},{"1":"TAF1L","2":"149.50","3":"0.020308070"},{"1":"ZNF311","2":"149.75","3":"0.020461338"},{"1":"DLX5","2":"154.25","3":"0.021994023"},{"1":"ZIC1","2":"155.25","3":"0.022530462"},{"1":"BHLHA15","2":"163.75","3":"0.026362173"},{"1":"ZNF671","2":"165.75","3":"0.026898613"},{"1":"HSFY1","2":"167.25","3":"0.027128516"},{"1":"CBX4","2":"170.50","3":"0.028201395"},{"1":"THRA","2":"171.50","3":"0.028431297"},{"1":"VAX2","2":"174.00","3":"0.029657445"},{"1":"UBE2K","2":"175.00","3":"0.029963982"},{"1":"KLF10","2":"179.50","3":"0.031190130"},{"1":"EMX1","2":"180.00","3":"0.031343398"},{"1":"EBF1","2":"182.50","3":"0.032109740"},{"1":"JUNB","2":"186.25","3":"0.033412522"},{"1":"NR1I2","2":"198.75","3":"0.038163844"},{"1":"POLR2B","2":"209.25","3":"0.042072189"},{"1":"CREBZF","2":"212.25","3":"0.043145069"},{"1":"ZNF141","2":"213.75","3":"0.043758142"},{"1":"ARID1B","2":"215.25","3":"0.044677753"},{"1":"NonTargeting_Human_67","2":"219.00","3":"0.045903901"},{"1":"NKX3-2","2":"219.75","3":"0.046133803"},{"1":"RBPJ","2":"219.75","3":"0.046133803"},{"1":"ZNF510","2":"233.00","3":"0.051498199"},{"1":"NonTargeting_Human_31","2":"233.25","3":"0.051574833"},{"1":"CTDP1","2":"237.00","3":"0.053720592"},{"1":"ZNF554","2":"239.75","3":"0.054793471"},{"1":"INSM1","2":"247.25","3":"0.058471914"},{"1":"VGLL2","2":"247.25","3":"0.058471914"},{"1":"GATA1","2":"251.25","3":"0.060234501"},{"1":"HTATIP2","2":"254.00","3":"0.060770940"},{"1":"ISL2","2":"254.50","3":"0.060847575"},{"1":"TFEB","2":"257.00","3":"0.062073722"},{"1":"TSHZ3","2":"259.00","3":"0.062916699"},{"1":"JUND","2":"271.00","3":"0.068357729"},{"1":"MEOX2","2":"271.00","3":"0.068357729"},{"1":"ZNF136","2":"273.00","3":"0.069277339"},{"1":"TSC22D3","2":"274.25","3":"0.069890413"},{"1":"NonTargeting_Human_99","2":"274.75","3":"0.070120316"},{"1":"PRDM5","2":"284.50","3":"0.074565101"},{"1":"ZFPM1","2":"284.50","3":"0.074565101"},{"1":"ZNF239","2":"285.00","3":"0.074795003"},{"1":"NonTargeting_Human_22","2":"285.50","3":"0.075024906"},{"1":"PHF12","2":"288.25","3":"0.076557591"},{"1":"NFKBIB","2":"294.25","3":"0.079852862"},{"1":"MECP2","2":"298.00","3":"0.081462181"},{"1":"APBB2","2":"298.50","3":"0.081768718"},{"1":"SIX5","2":"302.50","3":"0.083454671"},{"1":"HIST1H2BC","2":"303.25","3":"0.083991110"},{"1":"ZNF766","2":"308.50","3":"0.086826577"},{"1":"HIF3A","2":"309.00","3":"0.086826577"},{"1":"PAX7","2":"310.50","3":"0.087439651"},{"1":"NEUROG3","2":"315.00","3":"0.090045214"},{"1":"ELK3","2":"317.00","3":"0.091654533"},{"1":"PAX2","2":"326.50","3":"0.095946050"},{"1":"LHX4","2":"327.50","3":"0.096559123"},{"1":"NonTargeting_Human_90","2":"330.25","3":"0.097708637"},{"1":"CTNNB1","2":"334.75","3":"0.100544103"},{"1":"NonTargeting_Human_13","2":"335.00","3":"0.100544103"},{"1":"SMAD3","2":"337.75","3":"0.102000153"},{"1":"ZKSCAN3","2":"338.75","3":"0.102383324"},{"1":"TAF5","2":"339.50","3":"0.102766496"},{"1":"RORB","2":"343.25","3":"0.104835620"},{"1":"ZNF502","2":"348.00","3":"0.106751475"},{"1":"SKI","2":"349.25","3":"0.107211281"},{"1":"FOXQ1","2":"357.75","3":"0.112269139"},{"1":"HOXC13","2":"361.00","3":"0.114261629"},{"1":"ZIM3","2":"362.25","3":"0.115027971"},{"1":"HOXB3","2":"363.50","3":"0.116100851"},{"1":"NonTargeting_Human_64","2":"368.75","3":"0.119166220"},{"1":"POU2F3","2":"370.50","3":"0.120085830"},{"1":"POLR2J","2":"377.25","3":"0.123687639"},{"1":"NFAT5","2":"378.50","3":"0.124300713"},{"1":"TBPL1","2":"379.50","3":"0.124913786"},{"1":"AIP","2":"389.75","3":"0.130508085"},{"1":"NonTargeting_Human_88","2":"393.75","3":"0.133266917"},{"1":"ZNF282","2":"395.75","3":"0.133956625"},{"1":"ZNF92","2":"396.25","3":"0.134493065"},{"1":"AHR","2":"405.50","3":"0.139321021"},{"1":"CNOT6","2":"408.00","3":"0.140700437"},{"1":"ZFY","2":"409.00","3":"0.141083608"},{"1":"ZNF34","2":"409.00","3":"0.141083608"},{"1":"ZNF547","2":"410.00","3":"0.141696682"},{"1":"RCOR2","2":"411.25","3":"0.142309756"},{"1":"NonTargeting_Human_57","2":"412.50","3":"0.143229366"},{"1":"NonTargeting_Human_73","2":"417.25","3":"0.145375125"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="enrichment-of-td--vs.-td-at-day14-with-mc-computed-fdr" class="section level3">
+<h3>Enrichment of Td- vs. Td+ at Day14, with MC computed FDR</h3>
+<pre class="r"><code>rraS87[!is.na(rankscore) &amp; FDR &lt; .15]</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Gene"],"name":[1],"type":["chr"],"align":["left"]},{"label":["rankscore"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["FDR"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"ZNF441","2":"10.75","3":"0.000000000"},{"1":"ZNF440","2":"53.25","3":"0.002622521"},{"1":"CRY1","2":"54.25","3":"0.002704475"},{"1":"E2F1","2":"77.75","3":"0.005572857"},{"1":"CDX4","2":"81.25","3":"0.006392395"},{"1":"BHLHA15","2":"84.50","3":"0.007375840"},{"1":"ZNF311","2":"95.50","3":"0.009916407"},{"1":"EGR3","2":"105.50","3":"0.011965252"},{"1":"ZIC1","2":"107.75","3":"0.012456974"},{"1":"NR1I2","2":"112.75","3":"0.013358466"},{"1":"ZNF250","2":"133.25","3":"0.018439600"},{"1":"ZNF639","2":"133.25","3":"0.018439600"},{"1":"PRDM6","2":"135.00","3":"0.019095230"},{"1":"DLX5","2":"136.75","3":"0.019586953"},{"1":"TOX4","2":"139.75","3":"0.020406491"},{"1":"THRA","2":"140.00","3":"0.020488445"},{"1":"BRWD1","2":"143.50","3":"0.021471890"},{"1":"CHD5","2":"145.00","3":"0.021799705"},{"1":"CBX4","2":"162.50","3":"0.027454516"},{"1":"VAX2","2":"162.50","3":"0.027454516"},{"1":"ZBTB18","2":"164.75","3":"0.027782331"},{"1":"RAI14","2":"165.00","3":"0.027864285"},{"1":"RBPJ","2":"166.25","3":"0.028683822"},{"1":"TSHZ3","2":"171.00","3":"0.030404852"},{"1":"NKX3-2","2":"173.75","3":"0.031306343"},{"1":"TAF1L","2":"176.75","3":"0.032207835"},{"1":"APBB2","2":"178.50","3":"0.032699557"},{"1":"SCRT2","2":"180.00","3":"0.033191280"},{"1":"HSFY1","2":"183.25","3":"0.034092772"},{"1":"ZNF136","2":"190.00","3":"0.036223570"},{"1":"EMX1","2":"197.75","3":"0.039091952"},{"1":"UBE2K","2":"197.75","3":"0.039091952"},{"1":"CTDP1","2":"204.25","3":"0.042288149"},{"1":"JUNB","2":"206.25","3":"0.042943780"},{"1":"MECP2","2":"209.25","3":"0.044009179"},{"1":"POLR2B","2":"210.00","3":"0.044336994"},{"1":"ZZZ3","2":"210.00","3":"0.044336994"},{"1":"NonTargeting_Human_22","2":"212.50","3":"0.045730208"},{"1":"ZNF554","2":"214.00","3":"0.046303885"},{"1":"KLF10","2":"220.50","3":"0.047942960"},{"1":"INSM1","2":"229.50","3":"0.051958695"},{"1":"MEOX2","2":"232.00","3":"0.052450418"},{"1":"ZNF671","2":"232.00","3":"0.052450418"},{"1":"NonTargeting_Human_90","2":"236.50","3":"0.054581216"},{"1":"SMAD3","2":"239.00","3":"0.056056384"},{"1":"EBF1","2":"240.00","3":"0.056793968"},{"1":"ZNF563","2":"250.25","3":"0.061055565"},{"1":"PAX7","2":"252.00","3":"0.061793149"},{"1":"ZNF141","2":"253.00","3":"0.061957056"},{"1":"ZFPM1","2":"258.75","3":"0.063923947"},{"1":"HIST1H2BC","2":"264.00","3":"0.067366006"},{"1":"JUND","2":"267.75","3":"0.068923127"},{"1":"HTATIP2","2":"268.75","3":"0.069824619"},{"1":"PRDM5","2":"280.25","3":"0.075971152"},{"1":"GATA1","2":"295.00","3":"0.082773316"},{"1":"TFEB","2":"296.50","3":"0.083674807"},{"1":"CREBZF","2":"297.50","3":"0.084248484"},{"1":"VGLL2","2":"297.75","3":"0.084330438"},{"1":"SKI","2":"298.00","3":"0.084330438"},{"1":"ZFY","2":"298.00","3":"0.084330438"},{"1":"HIF3A","2":"301.75","3":"0.086543190"},{"1":"NonTargeting_Human_13","2":"306.00","3":"0.088510080"},{"1":"ELK3","2":"318.00","3":"0.095722013"},{"1":"NonTargeting_Human_31","2":"319.00","3":"0.096131782"},{"1":"NonTargeting_Human_57","2":"319.25","3":"0.096131782"},{"1":"ZIM3","2":"320.25","3":"0.096869366"},{"1":"ARID1B","2":"323.50","3":"0.098262580"},{"1":"AHR","2":"324.75","3":"0.099082118"},{"1":"NonTargeting_Human_88","2":"325.25","3":"0.099246025"},{"1":"NFAT5","2":"328.50","3":"0.101130962"},{"1":"NEUROG3","2":"333.25","3":"0.103589575"},{"1":"TSC22D3","2":"335.50","3":"0.105802327"},{"1":"LHX4","2":"341.00","3":"0.108998525"},{"1":"NonTargeting_Human_69","2":"341.75","3":"0.109490248"},{"1":"ZNF239","2":"343.25","3":"0.110473693"},{"1":"NonTargeting_Human_39","2":"346.75","3":"0.112030815"},{"1":"SIX5","2":"347.25","3":"0.112276676"},{"1":"ZNF510","2":"355.25","3":"0.117931487"},{"1":"PAX2","2":"357.00","3":"0.119488608"},{"1":"ZNF92","2":"362.50","3":"0.121619407"},{"1":"CTNNB1","2":"363.75","3":"0.122520898"},{"1":"TAF5","2":"365.25","3":"0.123504344"},{"1":"NFKBIB","2":"368.00","3":"0.125225373"},{"1":"NonTargeting_Human_99","2":"369.75","3":"0.126536633"},{"1":"ZKSCAN3","2":"380.00","3":"0.134240288"},{"1":"AFF4","2":"380.75","3":"0.134977872"},{"1":"ATF6B","2":"381.00","3":"0.135305688"},{"1":"ARNTL","2":"381.25","3":"0.135305688"},{"1":"TCEA2","2":"382.25","3":"0.136043272"},{"1":"PHF12","2":"384.50","3":"0.137190624"},{"1":"MPHOSPH8","2":"385.25","3":"0.137846255"},{"1":"ZNF34","2":"390.75","3":"0.141616129"},{"1":"RORB","2":"397.25","3":"0.145386002"},{"1":"HOXB3","2":"399.25","3":"0.147025078"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="depletion-of-td-vs.-in-at-day14-with-mc-computed-fdr" class="section level3">
+<h3>Depletion of Td+ vs. iN at Day14, with MC computed FDR</h3>
+<pre class="r"><code>rraS76[FDR &lt; .15]</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Gene"],"name":[1],"type":["chr"],"align":["left"]},{"label":["rankscore"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["FDR"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"MXI1","2":"62.50","3":"0.0005063291"},{"1":"NCOA3","2":"65.00","3":"0.0005569620"},{"1":"NR5A2","2":"70.25","3":"0.0005822785"},{"1":"TFEC","2":"84.00","3":"0.0009367089"},{"1":"HIF1AN","2":"87.50","3":"0.0010632911"},{"1":"ZNF85","2":"88.50","3":"0.0010632911"},{"1":"MCM7","2":"91.00","3":"0.0011645570"},{"1":"PRDM5","2":"122.00","3":"0.0018987342"},{"1":"SMARCA5","2":"142.50","3":"0.0026329114"},{"1":"ZFPL1","2":"145.50","3":"0.0027341772"},{"1":"ZNF582","2":"147.50","3":"0.0029113924"},{"1":"ZNF337","2":"164.75","3":"0.0035696203"},{"1":"HDAC9","2":"174.75","3":"0.0040506329"},{"1":"ANKZF1","2":"186.25","3":"0.0047848101"},{"1":"MAML3","2":"186.25","3":"0.0047848101"},{"1":"RBBP7","2":"207.75","3":"0.0061012658"},{"1":"NKX2-1","2":"209.75","3":"0.0061772152"},{"1":"EIF2AK2","2":"214.25","3":"0.0063544304"},{"1":"MYBBP1A","2":"215.75","3":"0.0064303797"},{"1":"EWSR1","2":"219.25","3":"0.0067594937"},{"1":"MCM3","2":"220.75","3":"0.0068354430"},{"1":"NOTCH3","2":"230.75","3":"0.0076455696"},{"1":"NUPR1","2":"233.00","3":"0.0077215190"},{"1":"ZNF107","2":"241.75","3":"0.0084050633"},{"1":"SRF","2":"243.50","3":"0.0085569620"},{"1":"GFI1","2":"253.25","3":"0.0090632911"},{"1":"ARID1B","2":"255.75","3":"0.0091392405"},{"1":"STAT4","2":"256.25","3":"0.0091645570"},{"1":"YEATS2","2":"257.00","3":"0.0092151899"},{"1":"ZNF207","2":"260.00","3":"0.0093670886"},{"1":"GRHL1","2":"261.00","3":"0.0094430380"},{"1":"EGR1","2":"273.75","3":"0.0103037975"},{"1":"HNRNPUL1","2":"278.50","3":"0.0106075949"},{"1":"MNX1","2":"301.75","3":"0.0128354430"},{"1":"TBX6","2":"305.75","3":"0.0130886076"},{"1":"PHF6","2":"306.75","3":"0.0131392405"},{"1":"PHF7","2":"309.50","3":"0.0133417722"},{"1":"LZTR1","2":"312.00","3":"0.0136202532"},{"1":"TAF6","2":"313.50","3":"0.0137468354"},{"1":"SMARCB1","2":"324.25","3":"0.0146582278"},{"1":"GTF2B","2":"332.75","3":"0.0154177215"},{"1":"ZNF462","2":"338.50","3":"0.0158734177"},{"1":"BCL3","2":"341.00","3":"0.0161772152"},{"1":"JMJD1C","2":"344.75","3":"0.0164556962"},{"1":"MED21","2":"352.00","3":"0.0173924051"},{"1":"KMT2D","2":"362.75","3":"0.0181265823"},{"1":"ZNF256","2":"364.75","3":"0.0183291139"},{"1":"ZNF469","2":"366.50","3":"0.0184556962"},{"1":"NCOA1","2":"367.25","3":"0.0185316456"},{"1":"BCL11A","2":"370.75","3":"0.0188354430"},{"1":"PIR","2":"371.75","3":"0.0188860759"},{"1":"ATF6B","2":"375.00","3":"0.0192911392"},{"1":"ZNF100","2":"378.00","3":"0.0195696203"},{"1":"IRX4","2":"382.00","3":"0.0200253165"},{"1":"FOXD3","2":"394.25","3":"0.0211898734"},{"1":"PAX8","2":"396.00","3":"0.0212658228"},{"1":"ID3","2":"407.00","3":"0.0223797468"},{"1":"PRDM9","2":"407.75","3":"0.0224303797"},{"1":"ZNF235","2":"409.75","3":"0.0226582278"},{"1":"ZNF383","2":"412.00","3":"0.0228101266"},{"1":"ANKRD42","2":"419.50","3":"0.0237215190"},{"1":"PRDM13","2":"419.75","3":"0.0237468354"},{"1":"ZNF292","2":"426.25","3":"0.0243797468"},{"1":"NCOA2","2":"432.00","3":"0.0252405063"},{"1":"ZSCAN18","2":"434.25","3":"0.0256202532"},{"1":"TRIP11","2":"434.75","3":"0.0257215190"},{"1":"TIAL1","2":"436.00","3":"0.0257721519"},{"1":"MZF1","2":"439.50","3":"0.0261012658"},{"1":"ZNF580","2":"439.50","3":"0.0261012658"},{"1":"HNRNPD","2":"440.25","3":"0.0262025316"},{"1":"NPAS3","2":"440.25","3":"0.0262025316"},{"1":"NDNL2","2":"441.25","3":"0.0262784810"},{"1":"IKBKG","2":"441.50","3":"0.0262784810"},{"1":"RBL1","2":"443.00","3":"0.0264556962"},{"1":"BARX1","2":"446.75","3":"0.0268354430"},{"1":"KDM2A","2":"450.00","3":"0.0272151899"},{"1":"TOX2","2":"455.75","3":"0.0276455696"},{"1":"GMEB2","2":"456.50","3":"0.0277468354"},{"1":"SNRPB","2":"456.75","3":"0.0277721519"},{"1":"RERE","2":"457.00","3":"0.0277974684"},{"1":"TCF21","2":"457.50","3":"0.0278734177"},{"1":"CERS2","2":"458.75","3":"0.0280253165"},{"1":"ZBTB10","2":"460.25","3":"0.0281265823"},{"1":"ZNF80","2":"468.25","3":"0.0291392405"},{"1":"BAZ1B","2":"474.25","3":"0.0297721519"},{"1":"MED1","2":"475.00","3":"0.0297974684"},{"1":"HIC2","2":"477.00","3":"0.0299746835"},{"1":"NFIB","2":"483.75","3":"0.0308860759"},{"1":"ZNF573","2":"487.50","3":"0.0313164557"},{"1":"PRDM14","2":"488.50","3":"0.0313924051"},{"1":"HES6","2":"490.50","3":"0.0314936709"},{"1":"LDB1","2":"501.75","3":"0.0328860759"},{"1":"TBX18","2":"504.75","3":"0.0332911392"},{"1":"HMGB3","2":"510.25","3":"0.0339240506"},{"1":"UBP1","2":"515.25","3":"0.0345316456"},{"1":"BARX2","2":"529.00","3":"0.0362531646"},{"1":"ISL2","2":"529.00","3":"0.0362531646"},{"1":"ZRANB2","2":"535.75","3":"0.0372405063"},{"1":"KDM4A","2":"554.00","3":"0.0393417722"},{"1":"POLR3E","2":"558.50","3":"0.0398734177"},{"1":"CUX1","2":"560.75","3":"0.0403037975"},{"1":"NR4A2","2":"561.75","3":"0.0405063291"},{"1":"HCLS1","2":"567.75","3":"0.0413670886"},{"1":"BCOR","2":"571.50","3":"0.0417468354"},{"1":"ZDHHC16","2":"572.25","3":"0.0418481013"},{"1":"ZSWIM4","2":"578.00","3":"0.0425822785"},{"1":"DAXX","2":"587.50","3":"0.0440000000"},{"1":"ARNT","2":"591.50","3":"0.0445569620"},{"1":"SNAPC3","2":"600.75","3":"0.0458987342"},{"1":"ZDHHC9","2":"601.75","3":"0.0460759494"},{"1":"ZNF653","2":"602.25","3":"0.0461012658"},{"1":"NFXL1","2":"603.50","3":"0.0463037975"},{"1":"ATF1","2":"607.25","3":"0.0468101266"},{"1":"CXXC1","2":"609.75","3":"0.0470632911"},{"1":"TP53BP1","2":"619.75","3":"0.0486582278"},{"1":"NELFE","2":"620.50","3":"0.0487088608"},{"1":"YEATS4","2":"620.75","3":"0.0487341772"},{"1":"INSM1","2":"623.75","3":"0.0493164557"},{"1":"ZMYND11","2":"625.25","3":"0.0494936709"},{"1":"MYCL","2":"632.00","3":"0.0504810127"},{"1":"ZNF451","2":"632.25","3":"0.0505316456"},{"1":"ZFP37","2":"639.50","3":"0.0514430380"},{"1":"ZBTB14","2":"640.75","3":"0.0515949367"},{"1":"SOX6","2":"641.75","3":"0.0517468354"},{"1":"SOX2","2":"642.00","3":"0.0517974684"},{"1":"SREBF2","2":"642.75","3":"0.0519746835"},{"1":"MTA2","2":"645.25","3":"0.0522784810"},{"1":"MTF2","2":"652.00","3":"0.0532151899"},{"1":"ZZZ3","2":"654.50","3":"0.0534430380"},{"1":"TMF1","2":"658.75","3":"0.0539493671"},{"1":"COPS5","2":"660.00","3":"0.0541012658"},{"1":"PHTF1","2":"660.75","3":"0.0541772152"},{"1":"TBX22","2":"663.75","3":"0.0546582278"},{"1":"TCEA2","2":"674.00","3":"0.0562278481"},{"1":"NFKBIZ","2":"681.00","3":"0.0572658228"},{"1":"NKD2","2":"681.25","3":"0.0572911392"},{"1":"MAFF","2":"693.25","3":"0.0589367089"},{"1":"MXD1","2":"694.75","3":"0.0590886076"},{"1":"DAZAP2","2":"695.25","3":"0.0591645570"},{"1":"ARNTL2","2":"701.00","3":"0.0599240506"},{"1":"NELFB","2":"703.75","3":"0.0603037975"},{"1":"URI1","2":"707.75","3":"0.0608101266"},{"1":"FOXN2","2":"718.25","3":"0.0624810127"},{"1":"SFSWAP","2":"718.25","3":"0.0624810127"},{"1":"MED8","2":"724.75","3":"0.0635443038"},{"1":"SUGP1","2":"725.75","3":"0.0638481013"},{"1":"SCRT2","2":"728.75","3":"0.0642784810"},{"1":"BARHL2","2":"729.75","3":"0.0644050633"},{"1":"CREBZF","2":"735.00","3":"0.0651645570"},{"1":"TFDP2","2":"737.00","3":"0.0655189873"},{"1":"NKRF","2":"739.75","3":"0.0659240506"},{"1":"EBF3","2":"741.00","3":"0.0661012658"},{"1":"PHF21A","2":"743.00","3":"0.0663797468"},{"1":"TLE6","2":"746.25","3":"0.0668860759"},{"1":"RAX2","2":"746.75","3":"0.0669367089"},{"1":"BNC1","2":"747.25","3":"0.0670379747"},{"1":"CDX2","2":"754.75","3":"0.0683291139"},{"1":"GTF2E1","2":"756.75","3":"0.0687594937"},{"1":"SCML2","2":"770.75","3":"0.0708101266"},{"1":"CSRP3","2":"780.00","3":"0.0723544304"},{"1":"CDX1","2":"786.50","3":"0.0734936709"},{"1":"RBBP4","2":"799.75","3":"0.0752151899"},{"1":"GATAD2B","2":"806.00","3":"0.0761518987"},{"1":"ZNF500","2":"812.25","3":"0.0769620253"},{"1":"PTMA","2":"822.50","3":"0.0788860759"},{"1":"ARID3B","2":"825.50","3":"0.0792405063"},{"1":"SP100","2":"829.25","3":"0.0797468354"},{"1":"MSX2","2":"834.00","3":"0.0805822785"},{"1":"ZNF324","2":"835.75","3":"0.0809113924"},{"1":"HIST1H1T","2":"838.25","3":"0.0812658228"},{"1":"TONSL","2":"843.25","3":"0.0820506329"},{"1":"ASCC1","2":"843.50","3":"0.0821012658"},{"1":"TAL2","2":"845.75","3":"0.0824303797"},{"1":"FOXP3","2":"850.00","3":"0.0832405063"},{"1":"ZNF592","2":"854.75","3":"0.0841772152"},{"1":"PDLIM4","2":"855.75","3":"0.0843037975"},{"1":"TBX15","2":"861.00","3":"0.0854683544"},{"1":"HINFP","2":"867.50","3":"0.0865822785"},{"1":"TLX1","2":"868.75","3":"0.0868607595"},{"1":"SMARCC1","2":"869.00","3":"0.0869367089"},{"1":"ZNF221","2":"873.75","3":"0.0878734177"},{"1":"SPI1","2":"877.75","3":"0.0886075949"},{"1":"SIX5","2":"885.75","3":"0.0899746835"},{"1":"GATAD1","2":"886.00","3":"0.0899746835"},{"1":"EGR2","2":"887.50","3":"0.0902784810"},{"1":"FIGLA","2":"892.75","3":"0.0910886076"},{"1":"CEBPE","2":"895.25","3":"0.0917721519"},{"1":"ZNF638","2":"896.00","3":"0.0918734177"},{"1":"MPLKIP","2":"901.75","3":"0.0926329114"},{"1":"SOWAHC","2":"903.00","3":"0.0928607595"},{"1":"TRIM5","2":"907.75","3":"0.0934936709"},{"1":"ATF7IP","2":"909.00","3":"0.0936202532"},{"1":"CTNNBL1","2":"909.75","3":"0.0937468354"},{"1":"ASCL3","2":"920.00","3":"0.0957468354"},{"1":"MCM5","2":"920.50","3":"0.0957974684"},{"1":"MED15","2":"921.75","3":"0.0960000000"},{"1":"POLR3F","2":"923.00","3":"0.0961265823"},{"1":"EAF1","2":"928.00","3":"0.0969113924"},{"1":"ARNT2","2":"930.75","3":"0.0973924051"},{"1":"HOXB5","2":"931.00","3":"0.0974177215"},{"1":"ZNF593","2":"937.00","3":"0.0984556962"},{"1":"PHF23","2":"943.00","3":"0.0997974684"},{"1":"MYEF2","2":"952.75","3":"0.1013924051"},{"1":"SRSF5","2":"954.00","3":"0.1016202532"},{"1":"ZNF641","2":"958.00","3":"0.1022531646"},{"1":"MCM8","2":"959.50","3":"0.1024556962"},{"1":"NFATC2","2":"961.25","3":"0.1027088608"},{"1":"NR0B1","2":"966.75","3":"0.1037468354"},{"1":"ADNP2","2":"972.75","3":"0.1047594937"},{"1":"YAF2","2":"972.75","3":"0.1047594937"},{"1":"TCEB3C","2":"974.50","3":"0.1050886076"},{"1":"ZKSCAN7","2":"978.25","3":"0.1057974684"},{"1":"HOXC5","2":"979.75","3":"0.1061265823"},{"1":"ZNF446","2":"980.25","3":"0.1062784810"},{"1":"TOP2B","2":"981.00","3":"0.1064050633"},{"1":"TP63","2":"990.25","3":"0.1082784810"},{"1":"UBTF","2":"990.75","3":"0.1084050633"},{"1":"SIRT4","2":"999.00","3":"0.1096455696"},{"1":"HMGN4","2":"1010.00","3":"0.1112911392"},{"1":"POU3F2","2":"1010.50","3":"0.1113924051"},{"1":"MYT1L","2":"1016.50","3":"0.1125063291"},{"1":"POLR1C","2":"1021.25","3":"0.1133417722"},{"1":"POU4F1","2":"1024.50","3":"0.1138227848"},{"1":"IRF5","2":"1024.75","3":"0.1138734177"},{"1":"ZNF32","2":"1028.25","3":"0.1146329114"},{"1":"MCM4","2":"1028.75","3":"0.1147088608"},{"1":"CEBPD","2":"1029.00","3":"0.1147088608"},{"1":"HSBP1","2":"1031.25","3":"0.1151898734"},{"1":"RFC1","2":"1033.00","3":"0.1155696203"},{"1":"MED23","2":"1041.00","3":"0.1171898734"},{"1":"MED27","2":"1043.75","3":"0.1176455696"},{"1":"ZNF490","2":"1044.75","3":"0.1178227848"},{"1":"ZSCAN23","2":"1047.75","3":"0.1183797468"},{"1":"ZBTB20","2":"1053.00","3":"0.1193924051"},{"1":"SNAI1","2":"1054.75","3":"0.1197974684"},{"1":"NR1H3","2":"1055.50","3":"0.1200253165"},{"1":"HAND1","2":"1056.00","3":"0.1201265823"},{"1":"EHMT1","2":"1056.75","3":"0.1202531646"},{"1":"TRIM31","2":"1056.75","3":"0.1202531646"},{"1":"MYB","2":"1057.50","3":"0.1205063291"},{"1":"FOXK2","2":"1057.75","3":"0.1205316456"},{"1":"POU6F1","2":"1058.75","3":"0.1208101266"},{"1":"FOXN4","2":"1059.50","3":"0.1209873418"},{"1":"SMAD6","2":"1062.00","3":"0.1215696203"},{"1":"WT1","2":"1064.50","3":"0.1221012658"},{"1":"CTCF","2":"1068.50","3":"0.1230632911"},{"1":"IRF3","2":"1068.75","3":"0.1231139241"},{"1":"MITF","2":"1069.00","3":"0.1231898734"},{"1":"ANKRA2","2":"1070.25","3":"0.1235189873"},{"1":"TFAP4","2":"1077.00","3":"0.1250126582"},{"1":"PAX4","2":"1077.25","3":"0.1251139241"},{"1":"ZSCAN10","2":"1077.50","3":"0.1251645570"},{"1":"TSHZ2","2":"1078.25","3":"0.1253670886"},{"1":"SUPT5H","2":"1085.25","3":"0.1266582278"},{"1":"ENO1","2":"1091.75","3":"0.1280506329"},{"1":"VSX1","2":"1093.25","3":"0.1283291139"},{"1":"ZNF343","2":"1093.50","3":"0.1283291139"},{"1":"PMS1","2":"1094.00","3":"0.1284050633"},{"1":"ABT1","2":"1096.50","3":"0.1289367089"},{"1":"ZNF34","2":"1097.75","3":"0.1292405063"},{"1":"RARB","2":"1098.25","3":"0.1293924051"},{"1":"CALCOCO1","2":"1100.00","3":"0.1296708861"},{"1":"SAP30BP","2":"1101.50","3":"0.1298227848"},{"1":"ZNF700","2":"1102.25","3":"0.1299493671"},{"1":"ZNF480","2":"1103.25","3":"0.1300253165"},{"1":"ZBTB3","2":"1105.00","3":"0.1304556962"},{"1":"LEF1","2":"1105.75","3":"0.1305822785"},{"1":"DEK","2":"1107.00","3":"0.1309367089"},{"1":"NonTargeting_Human_57","2":"1112.75","3":"0.1322531646"},{"1":"ZNF566","2":"1114.50","3":"0.1325569620"},{"1":"GATA3","2":"1115.75","3":"0.1327341772"},{"1":"TAF4","2":"1116.25","3":"0.1328354430"},{"1":"RFX3","2":"1116.75","3":"0.1329620253"},{"1":"KMT2A","2":"1119.75","3":"0.1335189873"},{"1":"FOSL2","2":"1121.25","3":"0.1337721519"},{"1":"ASB8","2":"1123.75","3":"0.1343291139"},{"1":"GLIS1","2":"1124.75","3":"0.1346582278"},{"1":"TRIM25","2":"1125.00","3":"0.1347088608"},{"1":"HIRA","2":"1125.50","3":"0.1347594937"},{"1":"HEYL","2":"1129.25","3":"0.1353924051"},{"1":"VAX1","2":"1131.25","3":"0.1358481013"},{"1":"TAF9B","2":"1132.75","3":"0.1360000000"},{"1":"CNBP","2":"1133.50","3":"0.1361265823"},{"1":"BLZF1","2":"1136.50","3":"0.1368101266"},{"1":"IRF7","2":"1138.25","3":"0.1371645570"},{"1":"ZNF143","2":"1139.25","3":"0.1373924051"},{"1":"CASZ1","2":"1144.25","3":"0.1383797468"},{"1":"GTF3C3","2":"1145.75","3":"0.1385822785"},{"1":"TBX1","2":"1147.25","3":"0.1388354430"},{"1":"IRX2","2":"1147.50","3":"0.1388607595"},{"1":"BRCA1","2":"1150.75","3":"0.1393670886"},{"1":"HIST1H2BJ","2":"1152.50","3":"0.1397215190"},{"1":"NR1D2","2":"1154.00","3":"0.1399240506"},{"1":"ZFPM1","2":"1155.75","3":"0.1402531646"},{"1":"NR1D1","2":"1157.25","3":"0.1405569620"},{"1":"EPC1","2":"1158.00","3":"0.1407088608"},{"1":"NonTargeting_Human_12","2":"1159.25","3":"0.1409113924"},{"1":"ZNF584","2":"1161.00","3":"0.1413164557"},{"1":"BAZ1A","2":"1163.75","3":"0.1418987342"},{"1":"NEUROG1","2":"1165.50","3":"0.1423291139"},{"1":"ZFP57","2":"1168.25","3":"0.1428860759"},{"1":"ZNF7","2":"1168.25","3":"0.1428860759"},{"1":"HMG20A","2":"1175.00","3":"0.1447341772"},{"1":"HOXB8","2":"1175.25","3":"0.1447848101"},{"1":"EZH2","2":"1176.25","3":"0.1449367089"},{"1":"NFKB1","2":"1176.50","3":"0.1450126582"},{"1":"TBX5","2":"1176.50","3":"0.1450126582"},{"1":"ANKRD1","2":"1177.75","3":"0.1452151899"},{"1":"ZNF229","2":"1178.25","3":"0.1452151899"},{"1":"SP4","2":"1193.25","3":"0.1481518987"},{"1":"ZNF479","2":"1196.50","3":"0.1489113924"},{"1":"TSHZ1","2":"1197.50","3":"0.1490886076"},{"1":"POLR2G","2":"1198.50","3":"0.1494683544"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<hr />
+</div>
+<div id="compare-with-hits-found-from-existing-method-using-fdr-.15" class="section level3">
+<h3>Compare with hits found from existing method, using FDR&lt; .15</h3>
+<pre class="r"><code>hitlist = fread(&quot;../code/resources/crispr/Hitlist_20191230.csv&quot;)</code></pre>
+<p>Previous method found 122 genes, shown below:</p>
+<pre><code>##   [1] &quot;PHOX2A&quot;    &quot;TAF1L&quot;     &quot;TFEB&quot;      &quot;VAX2&quot;      &quot;SNAI2&quot;     &quot;ELK3&quot;     
+##   [7] &quot;ISL2&quot;      &quot;ZBTB43&quot;    &quot;ZNF200&quot;    &quot;MLLT6&quot;     &quot;NFAT5&quot;     &quot;ZNF563&quot;   
+##  [13] &quot;ZNF3&quot;      &quot;ZFY&quot;       &quot;ZNF502&quot;    &quot;RCOR2&quot;     &quot;TSC22D3&quot;   &quot;NR1I2&quot;    
+##  [19] &quot;RBPJ&quot;      &quot;HSFY1&quot;     &quot;TAF5&quot;      &quot;RAI14&quot;     &quot;PHF12&quot;     &quot;BRWD1&quot;    
+##  [25] &quot;FOXQ1&quot;     &quot;CREBZF&quot;    &quot;EMX1&quot;      &quot;ZNF324&quot;    &quot;ZIM3&quot;      &quot;ZNF311&quot;   
+##  [31] &quot;ZNF136&quot;    &quot;EGR3&quot;      &quot;ASB1&quot;      &quot;CBX4&quot;      &quot;GTF2A2&quot;    &quot;ZKSCAN3&quot;  
+##  [37] &quot;HOXC13&quot;    &quot;ZNF671&quot;    &quot;ZNF639&quot;    &quot;KLF10&quot;     &quot;JADE3&quot;     &quot;ARID1B&quot;   
+##  [43] &quot;ZNF547&quot;    &quot;CNOT6&quot;     &quot;EBF1&quot;      &quot;AHR&quot;       &quot;PAX7&quot;      &quot;POLR2B&quot;   
+##  [49] &quot;SIX5&quot;      &quot;CDX4&quot;      &quot;GATA1&quot;     &quot;ZNF573&quot;    &quot;NKX3-2&quot;    &quot;ZNF250&quot;   
+##  [55] &quot;POU2F3&quot;    &quot;PRDM5&quot;     &quot;NBPF24&quot;    &quot;ZNF34&quot;     &quot;SKI&quot;       &quot;E2F1&quot;     
+##  [61] &quot;ARNTL&quot;     &quot;MEOX2&quot;     &quot;AIP&quot;       &quot;ZNF510&quot;    &quot;ZNF440&quot;    &quot;DLX5&quot;     
+##  [67] &quot;HIF3A&quot;     &quot;SOX15&quot;     &quot;APBB2&quot;     &quot;TOX4&quot;      &quot;ZNF239&quot;    &quot;FOXN2&quot;    
+##  [73] &quot;SCRT2&quot;     &quot;RORB&quot;      &quot;CRY1&quot;      &quot;ZNF92&quot;     &quot;JUND&quot;      &quot;CEBPA&quot;    
+##  [79] &quot;INSM1&quot;     &quot;ZNF441&quot;    &quot;THRA&quot;      &quot;NKRF&quot;      &quot;MPHOSPH8&quot;  &quot;NR1D2&quot;    
+##  [85] &quot;ZFPM1&quot;     &quot;JUNB&quot;      &quot;TBPL1&quot;     &quot;ZNF141&quot;    &quot;BHLHA15&quot;   &quot;EHF&quot;      
+##  [91] &quot;ZZZ3&quot;      &quot;ZIC1&quot;      &quot;POU3F2&quot;    &quot;HOXB3&quot;     &quot;KLF14&quot;     &quot;CTDP1&quot;    
+##  [97] &quot;VGLL2&quot;     &quot;AFF4&quot;      &quot;ZNF282&quot;    &quot;MECP2&quot;     &quot;TCEA2&quot;     &quot;SLA2&quot;     
+## [103] &quot;TSHZ3&quot;     &quot;NFKBIB&quot;    &quot;PAX2&quot;      &quot;POLR2J&quot;    &quot;ZFP2&quot;      &quot;ZNF107&quot;   
+## [109] &quot;ZBTB18&quot;    &quot;CHD5&quot;      &quot;CTNNB1&quot;    &quot;ZNF554&quot;    &quot;UBE2K&quot;     &quot;HTATIP2&quot;  
+## [115] &quot;NEUROG3&quot;   &quot;SMAD3&quot;     &quot;LHX4&quot;      &quot;PRDM6&quot;     &quot;NEUROG1&quot;   &quot;NEUROG2&quot;  
+## [121] &quot;HIST1H2BC&quot; &quot;HIST1H1E&quot;</code></pre>
+<pre class="r"><code># Generate 3 sets of 200 words
+set87 = rraS87[FDR &lt; .15, Gene]
+set86 = rraS86[FDR &lt; .15, Gene]
+set76 = rraS76[FDR &lt; .15, Gene]
+
+# Helper function to display Venn diagram
+display_venn &lt;- function(x, ...){
+  library(VennDiagram)
+  grid.newpage()
+  venn_object &lt;- venn.diagram(x, filename = NULL, ...)
+  grid.draw(venn_object)
+}
+
+display_venn(x = list(set86, set87, hitlist$gene_name), 
+             category = c(&quot;Td- vs iN&quot;, &quot;Td- vs Td+&quot;, &quot;Hits&quot;),
+             alpha = .7, fill = c(&quot;tomato1&quot;, &#39;lightblue&#39;, &#39;lightgreen&#39;),
+             cat.cex = 1, cex = 1, label.col = &quot;blue&quot;
+            )</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre><code>## Loading required package: futile.logger</code></pre>
+<p><img src="chrispr_rra_files/figure-html/plot-venn-1.png" width="384" /></p>
+<p>Notice a large number of overlaps. When we combine hits found from Td- vs. iN and Td- vs. Td+ with FDR &lt; 0.15 (which is the same way we selected our 120 hits. There are 23 (NEUROG1 and NEUROG2 are not considered) hits found in existing method, but not found in the RRA method. Nearly all the hits that we initially removed in our existing method, which are labeled as hit with the RRA method are non-targeting controls. This highlights the advantage of our existing manual method of more precise control of false positives and potential false negatives. Of course, the disadvantage is that the existing manual method does not produce a p-value thus is less informative in statistical confidence.</p>
+<p>Below shows hits that are found in both this method and our existing method. Notice many of these TFs are repeatedly identified as differentially expressed as well as later identified as nodes in the putative neuronal development gene regulatory network.</p>
+<pre class="r"><code>intersect(union(set87, set86), hitlist$gene_name) %&gt;% length</code></pre>
+<pre><code>## [1] 96</code></pre>
+<pre class="r"><code>intersect(union(set87, set86), hitlist$gene_name)</code></pre>
+<pre><code>##  [1] &quot;ZNF441&quot;    &quot;ZNF440&quot;    &quot;CRY1&quot;      &quot;E2F1&quot;      &quot;CDX4&quot;      &quot;BHLHA15&quot;  
+##  [7] &quot;ZNF311&quot;    &quot;EGR3&quot;      &quot;ZIC1&quot;      &quot;NR1I2&quot;     &quot;ZNF250&quot;    &quot;ZNF639&quot;   
+## [13] &quot;PRDM6&quot;     &quot;DLX5&quot;      &quot;TOX4&quot;      &quot;THRA&quot;      &quot;BRWD1&quot;     &quot;CHD5&quot;     
+## [19] &quot;CBX4&quot;      &quot;VAX2&quot;      &quot;ZBTB18&quot;    &quot;RAI14&quot;     &quot;RBPJ&quot;      &quot;TSHZ3&quot;    
+## [25] &quot;NKX3-2&quot;    &quot;TAF1L&quot;     &quot;APBB2&quot;     &quot;SCRT2&quot;     &quot;HSFY1&quot;     &quot;ZNF136&quot;   
+## [31] &quot;EMX1&quot;      &quot;UBE2K&quot;     &quot;CTDP1&quot;     &quot;JUNB&quot;      &quot;MECP2&quot;     &quot;POLR2B&quot;   
+## [37] &quot;ZZZ3&quot;      &quot;ZNF554&quot;    &quot;KLF10&quot;     &quot;INSM1&quot;     &quot;MEOX2&quot;     &quot;ZNF671&quot;   
+## [43] &quot;SMAD3&quot;     &quot;EBF1&quot;      &quot;ZNF563&quot;    &quot;PAX7&quot;      &quot;ZNF141&quot;    &quot;ZFPM1&quot;    
+## [49] &quot;HIST1H2BC&quot; &quot;JUND&quot;      &quot;HTATIP2&quot;   &quot;PRDM5&quot;     &quot;GATA1&quot;     &quot;TFEB&quot;     
+## [55] &quot;CREBZF&quot;    &quot;VGLL2&quot;     &quot;SKI&quot;       &quot;ZFY&quot;       &quot;HIF3A&quot;     &quot;ELK3&quot;     
+## [61] &quot;ZIM3&quot;      &quot;ARID1B&quot;    &quot;AHR&quot;       &quot;NFAT5&quot;     &quot;NEUROG3&quot;   &quot;TSC22D3&quot;  
+## [67] &quot;LHX4&quot;      &quot;ZNF239&quot;    &quot;SIX5&quot;      &quot;ZNF510&quot;    &quot;PAX2&quot;      &quot;ZNF92&quot;    
+## [73] &quot;CTNNB1&quot;    &quot;TAF5&quot;      &quot;NFKBIB&quot;    &quot;ZKSCAN3&quot;   &quot;AFF4&quot;      &quot;ARNTL&quot;    
+## [79] &quot;TCEA2&quot;     &quot;PHF12&quot;     &quot;MPHOSPH8&quot;  &quot;ZNF34&quot;     &quot;RORB&quot;      &quot;HOXB3&quot;    
+## [85] &quot;ISL2&quot;      &quot;ZNF502&quot;    &quot;FOXQ1&quot;     &quot;HOXC13&quot;    &quot;POU2F3&quot;    &quot;POLR2J&quot;   
+## [91] &quot;TBPL1&quot;     &quot;AIP&quot;       &quot;ZNF282&quot;    &quot;CNOT6&quot;     &quot;ZNF547&quot;    &quot;RCOR2&quot;</code></pre>
+<p>Below are hits that are found in our existing method but missed in this method.</p>
+<pre class="r"><code>setdiff(hitlist$gene_name, union(set87, set86))</code></pre>
+<pre><code>##  [1] &quot;PHOX2A&quot;   &quot;SNAI2&quot;    &quot;ZBTB43&quot;   &quot;ZNF200&quot;   &quot;MLLT6&quot;    &quot;ZNF3&quot;    
+##  [7] &quot;ZNF324&quot;   &quot;ASB1&quot;     &quot;GTF2A2&quot;   &quot;JADE3&quot;    &quot;ZNF573&quot;   &quot;NBPF24&quot;  
+## [13] &quot;SOX15&quot;    &quot;FOXN2&quot;    &quot;CEBPA&quot;    &quot;NKRF&quot;     &quot;NR1D2&quot;    &quot;EHF&quot;     
+## [19] &quot;POU3F2&quot;   &quot;KLF14&quot;    &quot;SLA2&quot;     &quot;ZFP2&quot;     &quot;ZNF107&quot;   &quot;NEUROG1&quot; 
+## [25] &quot;NEUROG2&quot;  &quot;HIST1H1E&quot;</code></pre>
+<p>Below are labeled hits in this method but rejected in our existing method. Notice many are in fact non-targeting controls, suggesting our existing method may be better suited in removing false positives.</p>
+<pre class="r"><code>setdiff(union(set87, set86), hitlist$gene_name)</code></pre>
+<pre><code>##  [1] &quot;NonTargeting_Human_22&quot; &quot;NonTargeting_Human_90&quot; &quot;NonTargeting_Human_13&quot;
+##  [4] &quot;NonTargeting_Human_31&quot; &quot;NonTargeting_Human_57&quot; &quot;NonTargeting_Human_88&quot;
+##  [7] &quot;NonTargeting_Human_69&quot; &quot;NonTargeting_Human_39&quot; &quot;NonTargeting_Human_99&quot;
+## [10] &quot;ATF6B&quot;                 &quot;NonTargeting_Human_67&quot; &quot;ZNF766&quot;               
+## [13] &quot;NonTargeting_Human_64&quot; &quot;NonTargeting_Human_73&quot;</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
