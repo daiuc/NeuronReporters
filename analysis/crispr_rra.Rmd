@@ -272,19 +272,18 @@ display_venn <- function(x, ...){
   grid.draw(venn_object)
 }
 
-# png("venn.png")
+png("../docs/assets/venn.png")
 display_venn(x = list(set86, set87, hitlist$gene_name), 
              category = c("Td- vs iN", "Td- vs Td+", "Hits"),
              alpha = .7, fill = c("tomato1", 'lightblue', 'lightgreen'),
              cat.cex = 1, cex = 1, label.col = "blue",
              imagetype = "png"
             )
-# dev.off()
+dev.off()
 ```
 
-```{r}
-knitr::include_graphics("venn.png")
-```
+
+![](assets/venn.png)
 
 
 
