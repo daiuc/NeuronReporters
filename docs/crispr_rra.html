@@ -616,11 +616,12 @@ display_venn &lt;- function(x, ...){
 display_venn(x = list(set86, set87, hitlist$gene_name), 
              category = c(&quot;Td- vs iN&quot;, &quot;Td- vs Td+&quot;, &quot;Hits&quot;),
              alpha = .7, fill = c(&quot;tomato1&quot;, &#39;lightblue&#39;, &#39;lightgreen&#39;),
-             cat.cex = 1, cex = 1, label.col = &quot;blue&quot;
+             cat.cex = 1, cex = 1, label.col = &quot;blue&quot;,
+             imagetype = &quot;png&quot;
             )</code></pre>
 <pre><code>## Loading required package: grid</code></pre>
 <pre><code>## Loading required package: futile.logger</code></pre>
-<p><img src="chrispr_rra_files/figure-html/plot-venn-1.png" width="384" /></p>
+<p><img src="crispr_rra_files/figure-html/plot-venn-1.png" width="384" /></p>
 <p>Notice a large number of overlaps. When we combine hits found from Td- vs. iN and Td- vs. Td+ with FDR &lt; 0.15 (which is the same way we selected our 120 hits. There are 23 (NEUROG1 and NEUROG2 are not considered) hits found in existing method, but not found in the RRA method. Nearly all the hits that we initially removed in our existing method, which are labeled as hit with the RRA method are non-targeting controls. This highlights the advantage of our existing manual method of more precise control of false positives and potential false negatives. Of course, the disadvantage is that the existing manual method does not produce a p-value thus is less informative in statistical confidence.</p>
 <p>Below shows hits that are found in both this method and our existing method. Notice many of these TFs are repeatedly identified as differentially expressed as well as later identified as nodes in the putative neuronal development gene regulatory network.</p>
 <pre class="r"><code>intersect(union(set87, set86), hitlist$gene_name) %&gt;% length</code></pre>
