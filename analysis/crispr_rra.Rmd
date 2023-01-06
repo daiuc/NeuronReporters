@@ -133,7 +133,7 @@ rraS76 = RRA(dtS76, enrichment = F)
 
 Simulations are set to run 20 iterations.
 
-```{r mc-Tdneg_vs_iN, cache=TRUE}
+```{r mc-Tdneg_vs_iN}
 N_sim = 20 # number of simulations
 
 sim.rraS86.l = list()
@@ -163,7 +163,7 @@ ecdf.S86 = ecdf(map(sim.rraS86.l, ~.x$rankscore) %>% flatten %>% unlist)
 rraS86[, FDR := ecdf.S86(rankscore)]
 ```
 
-```{r mc-Tdneg_vs_Tdpos, cache=TRUE}
+```{r mc-Tdneg_vs_Tdpos}
 N_sim = 20 # number of simulations
 
 sim.rraS87.l = list()
@@ -194,7 +194,7 @@ rraS87[, FDR := ecdf.S87(rankscore)]
 
 ```
 
-```{r mc-Tdpos_vs_iN, cache=TRUE}
+```{r mc-Tdpos_vs_iN}
 N_sim = 20 # number of simulations
 
 sim.rraS76.l = list()
@@ -258,7 +258,7 @@ hitlist$gene_name
 
 ```
 
-```{r plot-venn, fig.height=3, fig.width=4}
+```{r plot-venn, fig.height=3, fig.width=4, message=FALSE, warning=FALSE, echo=FALSE}
 # Generate 3 sets of 200 words
 set87 = rraS87[FDR < .15, Gene]
 set86 = rraS86[FDR < .15, Gene]
@@ -268,17 +268,26 @@ set76 = rraS76[FDR < .15, Gene]
 display_venn <- function(x, ...){
   library(VennDiagram)
   grid.newpage()
-  venn_object <- venn.diagram(x, filename = NULL, ...)
+  venn_object <- venn.diagram(x, filename = NULL, disable.logging=T, ...)
   grid.draw(venn_object)
 }
 
+png("venn.png")
 display_venn(x = list(set86, set87, hitlist$gene_name), 
              category = c("Td- vs iN", "Td- vs Td+", "Hits"),
              alpha = .7, fill = c("tomato1", 'lightblue', 'lightgreen'),
              cat.cex = 1, cex = 1, label.col = "blue",
              imagetype = "png"
             )
+dev.off()
 ```
+
+```{r}
+knitr::include_graphics("venn.png")
+```
+
+
+
 
 Notice a large number of overlaps. When we combine hits found from Td- vs. iN and Td- vs. Td+ with FDR \< 0.15 (which is the same way we selected our 120 hits. There are 23 (NEUROG1 and NEUROG2 are not considered) hits found in existing method, but not found in the RRA method. Nearly all the hits that we initially removed in our existing method, which are labeled as hit with the RRA method are non-targeting controls. This highlights the advantage of our existing manual method of more precise control of false positives and potential false negatives. Of course, the disadvantage is that the existing manual method does not produce a p-value thus is less informative in statistical confidence.
 
