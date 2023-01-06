@@ -1,0 +1,32 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.qmd"
+    - "**/*.qmd"
+    - "*.qmd"
+    - "!code/"
+    - "!data/"
+    - "!output"
+
+
+website:
+  title: "NeuronReporters"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - about.qmd
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-fold: true
+
+execute:
+  freeze: auto
+
+
+

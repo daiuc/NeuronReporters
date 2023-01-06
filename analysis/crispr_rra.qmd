@@ -1,0 +1,317 @@
+---
+title: "CRISPR Screen RRA Analysis"
+author: "daiuc"
+date: "2023-01-03"
+format: 
+  html:
+    code-fold: true
+output: 
+    workflowr::wflow_html:
+      code_folding: hide
+---
+
+## Introduction
+
+**Td- vs. iN at Day14 (S8/S6):**
+
+-   These cells became non-neurons, the **enrichment** of guides found from S8 / S6 means that these guides discrupt TFs that may be crucial to neuron development. Because these cells failed to become neurons, **enrichment** of these guides mean TFs responsible for neuron development are disrupted.
+
+
+**Td- vs. Td+ at Day14 (S8/S7)**
+
+-   S8 are non-neurons and S7 are neurons. The **enrichment** of guides found in neurons, while depleted in non-neurons, mean that these guides disrupte the function of TFs that are responsible for neuron development.
+
+
+**Td+ vs. iN at Day14 (S7/S6)**
+
+-   These cells became neurons. The **enrichment** of guides found from S7 - S6 means that these guides disrupt TFs that may be repressors of neuron development, or that these targetted TFs are reponsible for maintaining stem cell status.
+
+-   The **depletion** of these guides means that the targeted TFs may be crucial to neuron development (since these cells have become neurons, you wouldn't find many cells with neuron related TFs being disrupted, thus you observe depletion of gRNAs).
+
+
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+suppressMessages(library(data.table))
+suppressMessages(library(tidyverse))
+```
+
+```{r count-data-prep, include=TRUE}
+#cnts.file = "../../resources/crispr/counts/RC.csv"
+cnts.file = "../code/resources/crispr/counts/wrangled_raw_counts.tsv" # raw file
+#cnts.rn.file = "../../resources/crispr/counts/wrangled_ranknorm_counts.tsv" # rank normalized
+#cnts.l2.file = "/gpfs/commons/groups/sanjana_lab/cdai/TFscreen/RCmNorRatioLog2.lu.csv"
+
+cnts = fread(cnts.file) %>% .[, .(ID=sgRNA, Gene, S6 = Day14_iN, S7=Day14_Tdpos, S8=Day14_Tdneg)]
+#cnts.l2 = fread(cnts.l2.file) %>% .[, .(ID, Gene, S6, S7, S8)]
+
+
+# group 10 NTC guides into 1 NTC group
+NTC = paste("NonTargeting_Human_", sort(rep(1:100, 10)), sep="")
+cnts[str_detect(toupper(Gene), "NONTARGET"), Gene := NTC]
+
+# remove any guides where S6 or iN is 1 or less
+# remove genes that have less than 5 guides left at iN or S6
+cnts = cnts[S6 > 1]
+cnts = cnts[, .(ID, S6, S7, S8, .N), by = Gene][N>4, -c("N")]
+
+selcols = c("S6", "S7", "S8")
+# log2 RPM normalize counts
+cnts.norm = cnts[, c(
+    list(ID = ID, Gene = Gene),
+    lapply(.SD, function(x) log2(if_else(x==0, .1, .1*x)*1e6/sum(x)) )
+), .SDcols = selcols]
+
+```
+
+```{r useful-functions}
+makeDT = function(dt, dt.norm) {
+    # dt: is raw counts,
+    # dt.norm: is the same, but normalized
+    # columns: ID, Gene, denom, num
+    
+    # both denom and num conditions must have at least 2 guides with reads > 0
+    genes1 = dt[denom > 0, .N, by = Gene][N>1, Gene] %>% unique
+    genes2 = dt[num > 0, .N, by = Gene][N>1, Gene] %>% unique
+    genes = intersect(genes1, genes2)
+    
+    dt = dt[Gene %in% genes & denom > 0 & num > 0]
+    dt.norm = dt.norm[Gene %in% genes]
+    
+    dt.out = dt.norm[dt[, .(ID, Gene)], on = c("Gene", "ID"), nomatch=NULL]
+    
+    return(dt.out)
+}
+
+weightedSum = function(x) {
+    # x must be a numerical vector of exactly 2 elements
+    # x must be sorted, x[1] <= x[2]
+    return(0.25*x[1] + 0.75*x[2]) # more weights no the second rank
+}
+
+RRA = function(dt, enrichment) {
+    # dt is a dataframe with column ID, Gene, denom, num (which are Log2 RPM normalized reads)
+    dt = dt[, .(ID, Gene, denom, num, l2fc = num - denom)] # compute l2fc
+    if (enrichment) {
+        dt = dt[, .(ID, Gene,l2fc, rk=rank(-l2fc, ties.method = "max"))] # look for enriched guides
+    } else {
+        dt = dt[, .(ID, Gene,l2fc, rk=rank(l2fc, ties.method = "max"))] # look for depleted guides
+    }
+    dt = dt[order(Gene, rk), .SD[1:2], by = Gene # select top 2 guides for each gene
+            ][, .(rankscore = weightedSum(rk)), by = Gene
+             ][order(rankscore)]
+    return(dt)
+}
+
+```
+
+------------------------------------------------------------------------
+
+## Compute enrichment or depletion
+
+Result shown in the next section.
+
+```{r enrichment-of-Tdneg_vs_iN}
+# enrichment of guides in td- vs. iN (S8 VS. S6)
+dtS86 = makeDT(dt = cnts[, .(ID, Gene, denom = S6, num = S8)],
+               dt.norm = cnts.norm[, .(ID, Gene, denom = S6, num = S8)])
+rraS86 = RRA(dtS86, enrichment = T)
+```
+
+```{r enrichment-of-Tdneg_vs_Tdpos}
+# enrichment of guides in td- vs. td+ (S8 VS. S7)
+dtS87 = makeDT(dt = cnts[, .(ID, Gene, denom = S7, num = S8)],
+               dt.norm = cnts.norm[, .(ID, Gene, denom = S7, num = S8)])
+rraS87 = RRA(dtS87, enrichment = T)
+```
+
+```{r depletion-of-Tdpos_vs_iN}
+# depletion of guides in td+ vs. iN (S7 VS. S6)
+dtS76 = makeDT(dt = cnts[, .(ID, Gene, denom = S6, num = S7)],
+               dt.norm = cnts.norm[, .(ID, Gene, denom = S6, num = S7)])
+rraS76 = RRA(dtS76, enrichment = F)
+
+```
+
+------------------------------------------------------------------------
+
+## Monte Carlo simulation
+
+Simulations are set to run 20 iterations.
+
+```{r mc-Tdneg_vs_iN}
+N_sim = 20 # number of simulations
+
+sim.rraS86.l = list()
+for (i in 1:N_sim) {
+    sim.cnts = cnts[
+        , .(Gene, ID,
+           S6 = S6[sample(length(S6))],
+           S7 = S7[sample(length(S7))],
+           S8 = S8[sample(length(S8))])]
+    
+    selcols = c("S6", "S7", "S8")
+    # log2 RPM normalize counts
+    sim.cnts.norm = sim.cnts[, c(list(ID = ID, Gene = Gene),
+        lapply(.SD, function(x) log2(if_else(x==0, .1, .1*x)*1e6/sum(x)) )), 
+        .SDcols = selcols]
+               
+    sim.dtS86 = makeDT(dt = sim.cnts[, .(ID, Gene, denom = S6, num = S8)],
+               dt.norm = sim.cnts.norm[, .(ID, Gene, denom = S6, num = S8)])
+    sim.rraS86 = list(RRA(sim.dtS86, enrichment = T))
+    sim.rraS86.l = c(sim.rraS86.l, sim.rraS86)
+}
+
+# get ecdf
+ecdf.S86 = ecdf(map(sim.rraS86.l, ~.x$rankscore) %>% flatten %>% unlist)
+
+# use ecdf to compute FDR value
+rraS86[, FDR := ecdf.S86(rankscore)]
+```
+
+```{r mc-Tdneg_vs_Tdpos}
+N_sim = 20 # number of simulations
+
+sim.rraS87.l = list()
+for (i in 1:N_sim) {
+    sim.cnts = cnts[
+        , .(Gene, ID,
+           S6 = S6[sample(length(S6))],
+           S7 = S7[sample(length(S7))],
+           S8 = S8[sample(length(S8))])]
+    
+    selcols = c("S6", "S7", "S8")
+    # log2 RPM normalize counts
+    sim.cnts.norm = sim.cnts[, c(list(ID = ID, Gene = Gene),
+        lapply(.SD, function(x) log2(if_else(x==0, .1, .1*x)*1e6/sum(x)) )), 
+        .SDcols = selcols]
+               
+    sim.dtS87 = makeDT(dt = sim.cnts[, .(ID, Gene, denom = S7, num = S8)],
+               dt.norm = sim.cnts.norm[, .(ID, Gene, denom = S7, num = S8)])
+    sim.rraS87 = list(RRA(sim.dtS87, enrichment = T))
+    sim.rraS87.l = c(sim.rraS87.l, sim.rraS87)
+}
+
+# get ecdf
+ecdf.S87 = ecdf(map(sim.rraS87.l, ~.x$rankscore) %>% flatten %>% unlist)
+
+# use ecdf to compute FDR value
+rraS87[, FDR := ecdf.S87(rankscore)]
+
+```
+
+```{r mc-Tdpos_vs_iN}
+N_sim = 20 # number of simulations
+
+sim.rraS76.l = list()
+for (i in 1:N_sim) {
+    sim.cnts = cnts[
+        , .(Gene, ID,
+           S6 = S6[sample(length(S6))],
+           S7 = S7[sample(length(S7))],
+           S8 = S8[sample(length(S8))])]
+    
+    selcols = c("S6", "S7", "S8")
+    # log2 RPM normalize counts
+    sim.cnts.norm = sim.cnts[, c(list(ID = ID, Gene = Gene),
+        lapply(.SD, function(x) log2(if_else(x==0, .1, .1*x)*1e6/sum(x)) )), 
+        .SDcols = selcols]
+               
+    sim.dtS76 = makeDT(dt = sim.cnts[, .(ID, Gene, denom = S6, num = S7)],
+               dt.norm = sim.cnts.norm[, .(ID, Gene, denom = S6, num = S7)])
+    sim.rraS76 = list(RRA(sim.dtS76, enrichment = F))
+    sim.rraS76.l = c(sim.rraS76.l, sim.rraS76)
+}
+
+# get ecdf
+ecdf.S76 = ecdf(map(sim.rraS76.l, ~.x$rankscore) %>% flatten %>% unlist)
+
+# use ecdf to compute FDR value
+rraS76[, FDR := ecdf.S76(rankscore)]
+
+```
+
+### Enrichment of Td- vs. iN at Day14, with MC computed FDR, genes with FDR \< 0.15 are shown
+
+```{r}
+rraS86[!is.na(rankscore) & FDR < .15]
+```
+
+### Enrichment of Td- vs. Td+ at Day14, with MC computed FDR
+
+```{r}
+rraS87[!is.na(rankscore) & FDR < .15]
+```
+
+### Depletion of Td+ vs. iN at Day14, with MC computed FDR
+
+```{r}
+rraS76[FDR < .15]
+```
+
+------------------------------------------------------------------------
+
+## Compare with hits found from existing method, using FDR\< .15
+
+```{r}
+hitlist = fread("../code/resources/crispr/Hitlist_20191230.csv")
+```
+
+Previous method found `r length(hitlist$gene_name)` genes, shown below:
+
+```{r echo=FALSE}
+hitlist$gene_name
+
+```
+
+```{r plot-venn, fig.height=7, fig.width=7, message=FALSE, warning=FALSE, include=FALSE}
+# Generate 3 sets of 200 words
+set87 = rraS87[FDR < .15, Gene]
+set86 = rraS86[FDR < .15, Gene]
+set76 = rraS76[FDR < .15, Gene]
+
+# Helper function to display Venn diagram
+display_venn <- function(x, ...){
+  library(VennDiagram)
+  grid.newpage()
+  venn_object <- venn.diagram(x, filename = NULL, disable.logging=T, ...)
+  grid.draw(venn_object)
+}
+
+svg("venn.svg")
+display_venn(x = list(set86, set87, hitlist$gene_name), 
+             category = c("Td- vs iN", "Td- vs Td+", "Hits"),
+             alpha = .7, fill = c("tomato1", 'lightblue', 'lightgreen'),
+             cat.cex = 1, cex = 1, label.col = "blue",
+             imagetype = "svg"
+            )
+dev.off()
+```
+
+```{r}
+knitr::include_graphics("venn.svg")
+```
+
+
+
+
+
+Notice a large number of overlaps. When we combine hits found from Td- vs. iN and Td- vs. Td+ with FDR \< 0.15 (which is the same way we selected our 120 hits. There are 23 (NEUROG1 and NEUROG2 are not considered) hits found in existing method, but not found in the RRA method. Nearly all the hits that we initially removed in our existing method, which are labeled as hit with the RRA method are non-targeting controls. This highlights the advantage of our existing manual method of more precise control of false positives and potential false negatives. Of course, the disadvantage is that the existing manual method does not produce a p-value thus is less informative in statistical confidence.
+
+Below shows hits that are found in both this method and our existing method. Notice many of these TFs are repeatedly identified as differentially expressed as well as later identified as nodes in the putative neuronal development gene regulatory network.
+
+```{r}
+intersect(union(set87, set86), hitlist$gene_name) %>% length
+intersect(union(set87, set86), hitlist$gene_name)
+```
+
+Below are hits that are found in our existing method but missed in this method.
+
+```{r}
+setdiff(hitlist$gene_name, union(set87, set86))
+```
+
+Below are labeled hits in this method but rejected in our existing method. Notice many are in fact non-targeting controls, suggesting our existing method may be better suited in removing false positives.
+
+```{r}
+setdiff(union(set87, set86), hitlist$gene_name)
+```

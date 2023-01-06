@@ -5,6 +5,7 @@ SNAKEMAKE_MODE = T
 if (SNAKEMAKE_MODE) {
   print("### Running in snakemake script.")
   bam = snakemake@input[[1]]
+  bamlabel = snakemake@params[[1]]
   outfile = snakemake@output[[1]]
 
 } else {
@@ -15,10 +16,11 @@ if (SNAKEMAKE_MODE) {
 
 #estimateLibComplexity(readsDupFreq(bamFile = bam))
 
-print(paste0("### Input file: ", bam))
+cat(paste0("### Input file: ", bam, " , label: ", bamlabel))
 pdf(outfile)
 
 fragSize <- fragSizeDist(bamFiles = bam,
-                         bamFiles.labels = sub(".bam", "", basename(bam)))
+                         bamFiles.labels = bamlabel
+                        )
 
 dev.off()

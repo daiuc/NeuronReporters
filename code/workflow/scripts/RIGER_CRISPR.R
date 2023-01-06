@@ -58,8 +58,9 @@ cnts.norm = melt(cnts.norm[, -c("S6", "S7", "S8")],
      value.name = "l2fc") %>%
   .[, .(ID, l2fc,
         rnk = rank(-l2fc, ties.method = "first")),
-    by = c("Gene", "Condition")] %>%
-  .[rnk < 3]
+    by = c("Gene", "Condition")]
+#%>%
+#  .[rnk < 3]
 
 cnts.norm[, .(
   ws = map2_dbl(l2fc, rnk, ~)

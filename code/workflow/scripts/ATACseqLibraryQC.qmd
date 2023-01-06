@@ -1,0 +1,75 @@
+---
+title: "ATAC-seq Library QC"
+format: html
+params:
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressMessages(library(tidyverse))
+suppressMessages(library(data.table))
+
+```
+
+
+
+
+
+## Estimate library complexity
+```{r}
+getPRiP = function(summaryfile) {
+    summary = fread(summaryfile, col.names=c('type', 'value'))
+    assigned = summary[type == 'Assigned', value] %>% deframe
+    total = summary$value %>% sum
+    return(assigned/total)
+}
+```
+
+
+```{r}
+files = dir('../../results/reviews/atac/counts', 'ATAC.+.countsinpeaks.txt.summary', full.names = T)
+files
+```
+
+
+```{r}
+# files = naturalsort::naturalsort(files)
+# names(files) = str_extract(files, "ATAC[0-9]{1,2}")
+
+# PRIPS = map_dbl(files, getPRiP)
+
+# PRIPS %>% enframe %>% 
+#     mutate(name = factor(name, levels = naturalsort::naturalsort(name))) %>% 
+#     ggplot() + geom_col(aes(name, value)) +
+#         labs(x = NULL, y = "reads in peaks") + 
+#         scale_y_continuous(labels = scales::percent_format())
+
+
+
+files = naturalsort::naturalsort(files)
+names(files) = str_extract(files, "ATAC[0-9]{1,2}")
+
+PRIPS = map_dbl(files, getPRiP)
+
+PRIPS %>% enframe %>% 
+    mutate(name = factor(name, levels = naturalsort::naturalsort(name))) %>% 
+    ggplot() + geom_col(aes(name, value)) +
+        labs(x = NULL, y = "reads in peaks") + 
+        scale_y_continuous(labels = scales::percent_format()) +
+        theme_classic()
+```
+
+```{r}
+ggsave("../../results/reviews/atac/PRiP.pdf", width=7, height = 5)
+```
+
+
+
+
+
+
+
+
+
