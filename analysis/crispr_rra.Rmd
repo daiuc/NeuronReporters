@@ -245,7 +245,7 @@ rraS76[FDR < .15]
 
 ------------------------------------------------------------------------
 
-### Compare with hits found from existing method, using FDR\< .15
+## Compare with hits found from existing method, using FDR\< .15
 
 ```{r}
 hitlist = fread("../code/resources/crispr/Hitlist_20191230.csv")
@@ -272,14 +272,14 @@ display_venn <- function(x, ...){
   grid.draw(venn_object)
 }
 
-png("venn.png")
+# png("venn.png")
 display_venn(x = list(set86, set87, hitlist$gene_name), 
              category = c("Td- vs iN", "Td- vs Td+", "Hits"),
              alpha = .7, fill = c("tomato1", 'lightblue', 'lightgreen'),
              cat.cex = 1, cex = 1, label.col = "blue",
              imagetype = "png"
             )
-dev.off()
+# dev.off()
 ```
 
 ```{r}
