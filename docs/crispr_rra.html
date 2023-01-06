@@ -600,28 +600,22 @@ rraS76[, FDR := ecdf.S76(rankscore)]</code></pre>
 ## [109] &quot;ZBTB18&quot;    &quot;CHD5&quot;      &quot;CTNNB1&quot;    &quot;ZNF554&quot;    &quot;UBE2K&quot;     &quot;HTATIP2&quot;  
 ## [115] &quot;NEUROG3&quot;   &quot;SMAD3&quot;     &quot;LHX4&quot;      &quot;PRDM6&quot;     &quot;NEUROG1&quot;   &quot;NEUROG2&quot;  
 ## [121] &quot;HIST1H2BC&quot; &quot;HIST1H1E&quot;</code></pre>
-<pre class="r"><code># Generate 3 sets of 200 words
-set87 = rraS87[FDR &lt; .15, Gene]
-set86 = rraS86[FDR &lt; .15, Gene]
-set76 = rraS76[FDR &lt; .15, Gene]
-
-# Helper function to display Venn diagram
-display_venn &lt;- function(x, ...){
-  library(VennDiagram)
-  grid.newpage()
-  venn_object &lt;- venn.diagram(x, filename = NULL, ...)
-  grid.draw(venn_object)
-}
-
-display_venn(x = list(set86, set87, hitlist$gene_name), 
-             category = c(&quot;Td- vs iN&quot;, &quot;Td- vs Td+&quot;, &quot;Hits&quot;),
-             alpha = .7, fill = c(&quot;tomato1&quot;, &#39;lightblue&#39;, &#39;lightgreen&#39;),
-             cat.cex = 1, cex = 1, label.col = &quot;blue&quot;,
-             imagetype = &quot;png&quot;
-            )</code></pre>
-<pre><code>## Loading required package: grid</code></pre>
-<pre><code>## Loading required package: futile.logger</code></pre>
-<p><img src="crispr_rra_files/figure-html/plot-venn-1.png" width="384" /></p>
+<pre><code>## INFO [2023-01-06 13:17:58] [[1]]
+## INFO [2023-01-06 13:17:58] x
+## INFO [2023-01-06 13:17:58] 
+## INFO [2023-01-06 13:17:58] $filename
+## INFO [2023-01-06 13:17:58] NULL
+## INFO [2023-01-06 13:17:58] 
+## INFO [2023-01-06 13:17:58] $disable.logging
+## INFO [2023-01-06 13:17:58] T
+## INFO [2023-01-06 13:17:58] 
+## INFO [2023-01-06 13:17:58] [[4]]
+## INFO [2023-01-06 13:17:58] ...
+## INFO [2023-01-06 13:17:58]</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre class="r"><code>knitr::include_graphics(&quot;venn.png&quot;)</code></pre>
+<p><img src="venn.png" width="240" /></p>
 <p>Notice a large number of overlaps. When we combine hits found from Td- vs. iN and Td- vs. Td+ with FDR &lt; 0.15 (which is the same way we selected our 120 hits. There are 23 (NEUROG1 and NEUROG2 are not considered) hits found in existing method, but not found in the RRA method. Nearly all the hits that we initially removed in our existing method, which are labeled as hit with the RRA method are non-targeting controls. This highlights the advantage of our existing manual method of more precise control of false positives and potential false negatives. Of course, the disadvantage is that the existing manual method does not produce a p-value thus is less informative in statistical confidence.</p>
 <p>Below shows hits that are found in both this method and our existing method. Notice many of these TFs are repeatedly identified as differentially expressed as well as later identified as nodes in the putative neuronal development gene regulatory network.</p>
 <pre class="r"><code>intersect(union(set87, set86), hitlist$gene_name) %&gt;% length</code></pre>
