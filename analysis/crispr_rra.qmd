@@ -315,3 +315,39 @@ Below are labeled hits in this method but rejected in our existing method. Notic
 ```{r}
 setdiff(union(set87, set86), hitlist$gene_name)
 ```
+
+
+## Compare with other papers
+
+
+### Take Tian et. al Neuron 2019 screen data
+
+Hits are selected from their day 14 Neuron hits with pvalue < 0.01. Since most genes dropped out, only found 3 overlapping genes, of which `CTDP1` pass 15% FDR. 
+
+```{r}
+tian_day14 = readxl::read_excel("../data/tian_neuron2019/mmc2.xlsx", sheet = "Day 14 neuron")
+tian_day14_hits = filter(tian_day14, Pvalue < 0.01) %>% pull(`Gene symbol`)
+rraS86[Gene %in% tian_day14_hits]
+```
+
+Are our hits in their data?
+
+Only 5 of our hits were in their data, of which, 1 significant with 0.001 as cutoff. 
+
+```{r}
+tian_day14 %>% filter(`Gene symbol` %in% hitlist$gene_name) %>% 
+  arrange(Pvalue)
+```
+
+
+## Liu et al., Cell Stem Cell 2018 screen data
+
+Only raw data available, analysis TBD.
+
+
+## Black et al. Cell Reports 2020 screend ata
+
+Counts data and screen results with p-value availabl, analyses TBD. 
+
+
+

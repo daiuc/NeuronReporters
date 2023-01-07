@@ -9,6 +9,9 @@ analysis/*png
 analysis/*html
 analysis/*_cache
 analysis/site_libs
+data
 **test*
 **tmp*
 **/.ipynb_checkpoints/**
+.quarto
+.vscode
