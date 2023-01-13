@@ -1,0 +1,133 @@
+---
+title: "Compare interaction output files"
+author: Chao
+date: today
+code-fold: true
+---
+
+## Introduction
+
+Compare interaction files computed from before (2020) and recomputed now with essentially same code. The purpose is to make sure the results are consistent.
+
+```{r}
+#| label: setup
+#| include: false
+
+suppressMessages(library(tidyverse))
+suppressMessages(library(data.table))
+suppressMessages(library(readxl))
+
+
+```
+
+## Compare interactions (genebody) from current run with run in 2020
+
+```{r}
+inter.mx.old = "../code/resources/TFscreen/Interaction_matrix_nofilter_AllTF_20200107.csv"
+inter.mx.old = fread(inter.mx.old)
+
+inter.mx.new = "../code/results/reviews/interactions/Interaction_matrix_nofilter_AllTF_genebody_20230111.csv"
+inter.mx.new = fread(inter.mx.new)
+
+```
+
+differences in total interaction pairs?
+```{r}
+interactions = map(
+  list(old = inter.mx.old, new = inter.mx.new),
+  ~ .x[, .(interaction = paste(regulator_gene, target_gene, sep="_"))] %>% 
+    .[, interaction] %>% unique
+)
+
+map_int(interactions, length)
+```
+
+Intersections of the two is exactly the same number as the length of new interactions. Thus new is a subset of old.
+```{r}
+reduce(interactions, intersect) %>% length
+setdiff(interactions$new, reduce(interactions, intersect)) %>% length
+```
+
+
+What interactions in the old not found in new?
+Only about 26 targets comprise genes missed out in the new run.
+
+```{r}
+print("Regulators of interactions not found in new:")
+setdiff(interactions$old, interactions$new) %>%
+  str_split("_", simplify = T) %>% 
+  as.data.table %>% 
+  pull(V1) %>% unique %>% length
+
+print("Targets of interactions not found in new:")
+setdiff(interactions$old, interactions$new) %>%
+  str_split("_", simplify = T) %>% 
+  as.data.table %>% 
+  pull(V2) %>% unique
+```
+
+Are the numbers about the same in the new run?
+
+Randomly pick 7 values, show that the difference is almost always 0. Plot shows that
+the two runs are mostly exactly the same. 
+
+```{r}
+inter.mx.old[, interaction := paste(regulator_gene, target_gene, sep="_")]
+inter.mx.new[, interaction := paste(regulator_gene, target_gene, sep="_")]
+
+# common sets
+inter.mx = list(
+  old = inter.mx.old[interaction %in% reduce(interactions, intersect)][
+    order(interaction)],
+  new = inter.mx.new[interaction %in% reduce(interactions, intersect)][
+    order(interaction)]
+)
+```
+
+```{r}
+# check atac.D4
+if (all(inter.mx$old$interaction == inter.mx$new$interaction)) {
+  comps = list(
+  atac.D4.diff = round(inter.mx$old$atac.D4 - inter.mx$new$atac.D4),
+  atac.cnt.D1.diff = round(inter.mx$old$atac.cnt.D1 - inter.mx$new$atac.cnt.D1),
+  tar.cnt.ES.diff = round(inter.mx$old$tar.ge.ES - inter.mx$new$tar.ge.ES),
+  tar.ge.H16.diff = round(inter.mx$old$tar.ge.H16 - inter.mx$new$tar.ge.H16),
+  reg.fdr.D4 = round(inter.mx$old$reg.fdr.D4 - inter.mx$new$reg.fdr.D4, digits = 2),
+  tar.l2fc.D1 = round(inter.mx$old$l2fc.D1 - inter.mx$new$tar.l2fc.D1, digits = 2),
+  corr = round(inter.mx$old$corr - inter.mx$new$corr, digits = 2)
+  ) %>% as.data.table
+}
+
+melt(comps, variable.name = "type", value.name = "diff") %>%
+  ggplot() + stat_ecdf(aes(diff, color = type))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
