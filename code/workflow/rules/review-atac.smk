@@ -35,6 +35,11 @@ atac_ss_path = 'resources/TFscreen/atac/samplesheet2.csv' # symbolic link to fil
 # wildcard_constraints:
 #     atacN = "[0-9]{1,2}"
 
+
+#----------------------------------------------------------------------------------------
+#                  ATAC QC   
+#----------------------------------------------------------------------------------------
+
 rule makePromoters:
     input: 'resources/annotations/hs38/gencode_v31_protein.bed'
     output: 
@@ -205,6 +210,103 @@ rule plotFragmentSizeDistribution:
     params:
         label = 'ATAC{atacN}',
     script: '../scripts/ATACseqLibraryQC.R'
+
+
+
+
+#----------------------------------------------------------------------------------------
+#                  CRISPR Screen RIGER   
+#----------------------------------------------------------------------------------------
+
+rule RigerRRA:
+    '''
+    Run custom Riger RRA analysis on CRISPR screen data.
+    Use this snakemake rule mainly as documentation. Preferably run the qmd in rstudio.
+    '''
+    input: '../analysis/crispr_rra.qmd'
+    output: '../docs/analysis/crispr_rra.html'
+    shell: 
+        '''
+        quarto render {input}
+        ls -lah {output}
+        '''
+
+
+
+#----------------------------------------------------------------------------------------
+#                  Re-generate interaction nodes
+#----------------------------------------------------------------------------------------
+
+def getRecomputeInteractionsInput(wildcards):
+
+        samplesheet = "resources/TFscreen/atac/samplesheet2.csv", # has header
+        peakfile = "resources/TFscreen/atac/diffbind/diffbind_consensu_min2overlap.bed", # no header
+        rawcounts = "resources/TFscreen/atac/diffbind/diffbind_consensu_min2overlap_NO_RECENTER.txt", # has header
+        hitlist = "resources/TFscreen/Hitlist_20191230.csv", # has header
+        tflist = "resources/TFscreen/TFlist_20191230.csv", # has header
+        jaspar2020 = "resources/TFscreen/atac/JASPAR2020_combined_matrices_20191030.txt"
+        anno = {'genebody': 'resources/TFscreen/atac/Protein_coding_genes_Up_2k_20191230.bed', # gene body + TSS upstream 2kb
+                'promoter': 'resources/TFscreen/atac/Protein_coding_gene_promoters_V2.bed', # 2kb up TSS + 500b down TSS
+                'intergenic': 'resources/TFscreen/atac/Protein_coding_genes_Up_100k_20230111.bed' # 100kb up TSS + 1kb down TES
+        }
+
+        return {
+            'samplesheet': samplesheet,
+            'peakfile': peakfile,
+            'rawcounts': rawcounts,
+            'hitlist': hitlist,
+            'tflist': tflist,
+            'jaspar2020': jaspar2020,
+            'generegion': anno[wildcards.FeatureType2]
+        }
+
+rule RecomputeInteractions:
+    input: unpack(getRecomputeInteractionsInput)
+    output: 'results/reviews/interactions/Interactions_AllTF_{FeatureType2}_{Normalize}_20230110.xlsx'
+    wildcard_constraints:
+        FeatureType2 = 'genebody|promoter|intergenic', # modify this if including other feature types
+        Normalize = 'norm|raw'
+    threads: 16
+    resources: cpu = 16, mem_mb = 40000, time = 2100
+    script: '../scripts/compute_interactions.R'
+
+
+rule IntegrateInteractions:
+    input:
+        interaction_raw = 'results/reviews/interactions/Interactions_AllTF_{FeatureType2}_raw_20230110.xlsx',
+        interaction_norm = 'results/reviews/interactions/Interactions_AllTF_{FeatureType2}_norm_20230110.xlsx',
+        dge = 'resources/TFscreen/RNA-seq_timepoint_deseq_result_20200102.xlsx',
+        hitlist = "resources/TFscreen/Hitlist_20191230.csv", # has header
+        tflist = "resources/TFscreen/TFlist_20191230.csv" # has header
+    output:
+        csv = 'results/reviews/interactions/Interaction_matrix_nofilter_AllTF_{FeatureType2}_20230111.csv',
+        readme = 'results/reviews/interactions/Interaction_matrix_nofilter_AllTF_{FeatureType2}_20230111_readme.txt' 
+    wildcard_constraints:
+        FeatureType2 = 'genebody|promoter|intergenic', # modify this if including other feature types
+    params:
+        interaction_sheets = ['Regulator_to_Target'],
+        dge_timepoints_sheets = ["H15_vs_ES", "D1_vs_ES", "D4_vs_ES"],
+        dge_rawcount_sheet = 'rawCounts'
+    script: '../scripts/integrate_interactions.R'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

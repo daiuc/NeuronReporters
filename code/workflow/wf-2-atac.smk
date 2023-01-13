@@ -309,7 +309,7 @@ def getComputeInteractionsFeatures(wildcards):
     return config[wildcards.interact_feature]
 
 
-
+ 
 rule ComputeInteractions:
     input: 
         peaks = config['ATAC_CONSENSUS_PEAKS'],
@@ -337,3 +337,8 @@ rule ZipInteractionsFile:
         '''
         bgzip -c {input.expanded} > {output.expanded}
         '''
+
+
+
+
+        

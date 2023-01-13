@@ -58,15 +58,21 @@ if (SnakeMode) {
 
 # custom function to check if a motifname contains a hit gene name or TF gene name
 # the reason is motifname sometimes contains "(var.2)" or other characters
-mystrfunc = function(motifname, target_match) {
-  #' @param motifname: scalar string, e.g. TFAP4(var.2)
+mystrfunc = function(motifnames, target_match) {
+  #' @param motifnames: a character vector of motif names
   #' @param target_match: string vector, e.g. hitlist, or tflist
-
-  x = str_match_all(motifname, "[A-Z0-9\\-]{2,13}") %>% map(~.x[, 1]) %>% .[[1]]
-
-  in_list = x %in% target_match %>% purrr::reduce(., `|`)
-
-  return(in_list)
+  #' @returns : equal length vector of TRUE/FALSE indicating whether or not it's in target
+  
+  x = str_match_all(motifnames, "[A-Z0-9\\-]{2,13}")
+  in_list = map_lgl(x, function(m) {
+    # each m is a character matrix, col1 is the full match
+    motifs = as.vector(m[,1]) # clean gene names of TF motifs
+    is.in.list = map_lgl(motifs, ~ .x %in% target_match)
+    # usually 1 gene, but in the case of dimers, multiple gene name exists
+    # return TRUE as long as one gene is in target list
+    return(any(is.in.list))
+  })
+  return(if_else(in_list, "Yes", "No"))
 }
 
 
