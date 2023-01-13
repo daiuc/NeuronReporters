@@ -330,16 +330,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="fu">melt</span>(comps, <span class="at">variable.name =</span> <span class="st">"type"</span>, <span class="at">value.name =</span> <span class="st">"diff"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> <span class="fu">stat_ecdf</span>(<span class="fu">aes</span>(diff, <span class="at">color =</span> type))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in melt.data.table(comps, variable.name = "type", value.name = "diff"):
-id.vars and measure.vars are internally guessed when both are 'NULL'. All non-
-numeric/integer/logical type columns are considered id.vars, which in this case
-are columns []. Consider providing at least one of 'id' or 'measure' vars in
-future.</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 27523 rows containing non-finite values (stat_ecdf).</code></pre>
-</div>
 <div class="cell-output-display">
 <p><img src="compare_interaction_files_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>

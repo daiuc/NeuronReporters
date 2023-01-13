@@ -1,0 +1,90 @@
+---
+title: Extended network analysis to include intergenic region
+subtitle: "How does the network change if we include intergenic region (100kb upstream of TSS) as opposed to gene body in previous analysis?"
+author: Chao
+date: 2023-01-11
+code-fold: true
+---
+
+```{r}
+#| include: false
+
+suppressMessages(library(data.table))
+suppressMessages(library(tidyverse))
+```
+
+```{r}
+
+old = "../code/resources/TFscreen/Interaction_matrix_nofilter_AllTF_20200107.csv"
+new = "../code/results/reviews/interactions/Interaction_matrix_nofilter_AllTF_intergenic_20230111.csv"
+
+inter = list(genebody = fread(old), intergen = fread(new))
+
+walk(inter, ~.x[, interaction := paste(regulator_gene, target_gene, sep="_")])
+
+```
+
+## What's not captured in intergenic vs. genebody?
+
+Some interactions are not captured in the new method, mostly due to the 25 targets being removed. Otherwise, all the interactions are captualized in the expanded method.
+
+```{r}
+removed_interactions = setdiff(inter$genebody$interaction,inter$intergen$interaction)
+inter$genebody[interaction %in% removed_interactions, .(regulator_gene, target_gene)][,target_gene] %>% unique
+
+```
+
+## How many interactions gained by expanding to intergenic
+
+We are gaining 178135 interactions. 
+
+```{r}
+gained_interactions = setdiff(inter$intergene$interaction, inter$genebody$interaction) %>%
+  setdiff(., removed_interactions)
+```
+
+## Zoom in on NEUROG2, ZBTB18 as regulators
+
+We can clearly see by including 100kb of intergenic regions upstream of TSS, the network grew larger. Similar trend can be seen with elevated ATAC-seq reads.
+
+:::{.tabset}
+
+### Network grew!
+```{r}
+imap(inter, ~.x[regulator_gene %in% c("NEUROG2", "ZBTB18", "EBF1", "POU3F2", "SNAI2"), 
+    .(N.target = length(unique(target_gene)), lab = .y),
+    by = .(regulator_gene)]) %>% 
+  rbindlist %>% 
+  ggplot() + geom_col(aes(lab, N.target, fill = regulator_gene), position = "dodge") +
+    labs(x = NULL, y = "Number of interaction targets\n(before applying fiters)")
+```
+
+### NEUROG2
+```{r}
+imap(inter, ~.x[regulator_gene == "NEUROG2", 
+    .(atac.ES, atac.H16, atac.D1, atac.D4, lab = .y),
+    by = .(regulator_gene, target_gene)]) %>% 
+  rbindlist %>% 
+  melt(id.var = c("regulator_gene", "target_gene", "lab"),
+       variable.name = "type") %>% 
+  ggplot() + geom_boxplot(aes(type, value, color = lab)) +
+    labs(x = NULL, y = NULL, title = "NEUROG2's normalized ATAC footprints on its targets")
+```
+### ZBTB18
+```{r}
+imap(inter, ~.x[regulator_gene == "ZBTB18", 
+    .(atac.ES, atac.H16, atac.D1, atac.D4, lab = .y),
+    by = .(regulator_gene, target_gene)]) %>% 
+  rbindlist %>% 
+  melt(id.var = c("regulator_gene", "target_gene", "lab"),
+       variable.name = "type") %>% 
+  ggplot() + geom_boxplot(aes(type, value, color = lab)) +
+    scale_y_log10() +
+    labs(x = NULL, y = NULL, title = "ZBTB18's normalized ATAC footprints on its targets")
+```
+
+:::
+
+
+
+

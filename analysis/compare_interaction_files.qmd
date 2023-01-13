@@ -3,6 +3,8 @@ title: "Compare interaction output files"
 author: Chao
 date: today
 code-fold: true
+execute: 
+  warning: false
 ---
 
 ## Introduction
