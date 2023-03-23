@@ -340,5 +340,29 @@ rule ZipInteractionsFile:
 
 
 
+plot_regions = {
+    "NEUROG2": "chr4:112,512,907-112,516,272",
+    "ZBTB18": "chr1:244,047,412-244,061,348",
+    "FOXN2": "chr2:48,298,529-48,395,449",
+    "POU3F2": "chr6:98,833,946-98,839,782",
+    "VAX2": "chr2:70,896,924-70,934,684",
+    "INSM1": "chr20:20,367,631-20,371,231"
+}
+rule plotPyGenomeTracks:
+    '''manually run snakemake to plot regions in `plot_regions`
+    '''
+    input: "results/genometracks/{gene_name}/tracks.ini"
+    output: "results/genometracks/{gene_name}/tracks.pdf"
+    params:
+        region = lambda wcs: plot_regions[wcs.gene_name]
+    threads: 1
+    shell:
+        '''
+        pyGenomeTracks --tracks {input} \
+            --region {params.region} \
+            --title {wildcards.gene_name} \
+            -o {output}
+        '''
 
-        
+
+
