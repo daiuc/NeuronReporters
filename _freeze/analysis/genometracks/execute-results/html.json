@@ -1,0 +1,14 @@
+{
+  "hash": "719ecdc6967209f4babb2ae38460e114",
+  "result": {
+    "markdown": "---\ntitle: \"pygenometracks\"\nauthor: \"daiuc\"\ndate: \"2023-03-15\"\n\n---\n\n\n\n\n### pyGenomeTracks\n\nof ATACseq\n\n::: {.panel-tabset}\n\n### NEUROG2\n\n::: {.cell}\n\n```{.r .cell-code}\nknitr::include_graphics(\"../code/results/genometracks/NEUROG2/tracks.pdf\")\n```\n\n::: {.cell-output-display}\n![](../code/results/genometracks/NEUROG2/tracks.pdf){width=95% height=500px}\n:::\n:::\n\n\n### ZBTB18\n\n::: {.cell}\n\n```{.r .cell-code}\nknitr::include_graphics(\"../code/results/genometracks/ZBTB18/tracks.pdf\")\n```\n\n::: {.cell-output-display}\n![](../code/results/genometracks/ZBTB18/tracks.pdf){width=95% height=500px}\n:::\n:::\n\n\n### FOXN2\n\n::: {.cell}\n\n```{.r .cell-code}\nknitr::include_graphics(\"../code/results/genometracks/FOXN2/tracks.pdf\")\n```\n\n::: {.cell-output-display}\n![](../code/results/genometracks/FOXN2/tracks.pdf){width=95% height=500px}\n:::\n:::\n\n\n### POU3F2\n\n::: {.cell}\n\n```{.r .cell-code}\nknitr::include_graphics(\"../code/results/genometracks/POU3F2/tracks.pdf\")\n```\n\n::: {.cell-output-display}\n![](../code/results/genometracks/POU3F2/tracks.pdf){width=95% height=500px}\n:::\n:::\n\n\n### VAX2\n\n::: {.cell}\n\n```{.r .cell-code}\nknitr::include_graphics(\"../code/results/genometracks/VAX2/tracks.pdf\")\n```\n\n::: {.cell-output-display}\n![](../code/results/genometracks/VAX2/tracks.pdf){width=95% height=500px}\n:::\n:::\n\n\n### INSM1\n\n::: {.cell}\n\n```{.r .cell-code}\nknitr::include_graphics(\"../code/results/genometracks/INSM1/tracks.pdf\")\n```\n\n::: {.cell-output-display}\n![](../code/results/genometracks/INSM1/tracks.pdf){width=95% height=500px}\n:::\n:::\n\n\n:::\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

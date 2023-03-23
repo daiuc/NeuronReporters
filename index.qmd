@@ -13,7 +13,7 @@ title: "NeuronReporters"
 - Respond to comments on ATAC QC [link](analysis/atac_QC_comments.qmd)
 - Updated interaction computation and made some comparisons with previous results. [link](analysis/compare_interaction_files.qmd)
 - Run interaction computation on 100kb upstream of TSS (per reviewer comment), [link](analysis/Expand_GeneRegion_for_NetworkAnalysis.qmd)
-
+- [genometrakcs](analysis/genometracks.qmd)
 
 
 ## Reviewer 1

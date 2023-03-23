@@ -1,0 +1,68 @@
+---
+title: "pygenometracks"
+author: "daiuc"
+date: "2023-03-15"
+
+---
+
+
+
+### pyGenomeTracks
+
+of ATACseq
+
+::: {.panel-tabset}
+
+### NEUROG2
+```{r}
+#| out-width: "95%"
+#| out-height: "500px"
+
+knitr::include_graphics("../code/results/genometracks/NEUROG2/tracks.pdf")
+```
+
+### ZBTB18
+```{r}
+#| out-width: "95%"
+#| out-height: "500px"
+
+knitr::include_graphics("../code/results/genometracks/ZBTB18/tracks.pdf")
+```
+
+### FOXN2
+```{r}
+#| out-width: "95%"
+#| out-height: "500px"
+
+knitr::include_graphics("../code/results/genometracks/FOXN2/tracks.pdf")
+```
+
+### POU3F2
+```{r}
+#| out-width: "95%"
+#| out-height: "500px"
+
+knitr::include_graphics("../code/results/genometracks/POU3F2/tracks.pdf")
+```
+
+### VAX2
+```{r}
+#| out-width: "95%"
+#| out-height: "500px"
+
+knitr::include_graphics("../code/results/genometracks/VAX2/tracks.pdf")
+```
+
+### INSM1
+```{r}
+#| out-width: "95%"
+#| out-height: "500px"
+
+knitr::include_graphics("../code/results/genometracks/INSM1/tracks.pdf")
+```
+
+:::
+
+
+
+

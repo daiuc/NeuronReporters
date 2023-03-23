@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "NeuronReporters",
     "section": "",
-    "text": "Did CRISPR screen analysis using custom RRA method link\nRespond to comments on ATAC QC link\nUpdated interaction computation and made some comparisons with previous results. link\nRun interaction computation on 100kb upstream of TSS (per reviewer comment), link"
+    "text": "Did CRISPR screen analysis using custom RRA method link\nRespond to comments on ATAC QC link\nUpdated interaction computation and made some comparisons with previous results. link\nRun interaction computation on 100kb upstream of TSS (per reviewer comment), link\ngenometrakcs"
   },
   {
     "objectID": "index.html#reviewer-1",
@@ -159,5 +159,12 @@
     "title": "Extended network analysis to include intergenic region",
     "section": "Zoom in on NEUROG2, ZBTB18 as regulators",
     "text": "Zoom in on NEUROG2, ZBTB18 as regulators\nWe can clearly see by including 100kb of intergenic regions upstream of TSS, the network grew larger. Similar trend can be seen with elevated ATAC-seq reads.\n\n\nNetwork grew!\n\n\nCode\nimap(inter, ~.x[regulator_gene %in% c(\"NEUROG2\", \"ZBTB18\", \"EBF1\", \"POU3F2\", \"SNAI2\"), \n    .(N.target = length(unique(target_gene)), lab = .y),\n    by = .(regulator_gene)]) %>% \n  rbindlist %>% \n  ggplot() + geom_col(aes(lab, N.target, fill = regulator_gene), position = \"dodge\") +\n    labs(x = NULL, y = \"Number of interaction targets\\n(before applying fiters)\")\n\n\n\n\n\n\n\nNEUROG2\n\n\nCode\nimap(inter, ~.x[regulator_gene == \"NEUROG2\", \n    .(atac.ES, atac.H16, atac.D1, atac.D4, lab = .y),\n    by = .(regulator_gene, target_gene)]) %>% \n  rbindlist %>% \n  melt(id.var = c(\"regulator_gene\", \"target_gene\", \"lab\"),\n       variable.name = \"type\") %>% \n  ggplot() + geom_boxplot(aes(type, value, color = lab)) +\n    labs(x = NULL, y = NULL, title = \"NEUROG2's normalized ATAC footprints on its targets\")\n\n\n\n\n\n\n\nZBTB18\n\n\nCode\nimap(inter, ~.x[regulator_gene == \"ZBTB18\", \n    .(atac.ES, atac.H16, atac.D1, atac.D4, lab = .y),\n    by = .(regulator_gene, target_gene)]) %>% \n  rbindlist %>% \n  melt(id.var = c(\"regulator_gene\", \"target_gene\", \"lab\"),\n       variable.name = \"type\") %>% \n  ggplot() + geom_boxplot(aes(type, value, color = lab)) +\n    scale_y_log10() +\n    labs(x = NULL, y = NULL, title = \"ZBTB18's normalized ATAC footprints on its targets\")"
+  },
+  {
+    "objectID": "analysis/genometracks.html",
+    "href": "analysis/genometracks.html",
+    "title": "pygenometracks",
+    "section": "",
+    "text": "pyGenomeTracks\nof ATACseq\n\nNEUROG2ZBTB18FOXN2POU3F2VAX2INSM1\n\n\n\n\nCode\nknitr::include_graphics(\"../code/results/genometracks/NEUROG2/tracks.pdf\")\n\n\n\n\n\n\n\n\n\nCode\nknitr::include_graphics(\"../code/results/genometracks/ZBTB18/tracks.pdf\")\n\n\n\n\n\n\n\n\n\nCode\nknitr::include_graphics(\"../code/results/genometracks/FOXN2/tracks.pdf\")\n\n\n\n\n\n\n\n\n\nCode\nknitr::include_graphics(\"../code/results/genometracks/POU3F2/tracks.pdf\")\n\n\n\n\n\n\n\n\n\nCode\nknitr::include_graphics(\"../code/results/genometracks/VAX2/tracks.pdf\")\n\n\n\n\n\n\n\n\n\nCode\nknitr::include_graphics(\"../code/results/genometracks/INSM1/tracks.pdf\")"
   }
 ]
