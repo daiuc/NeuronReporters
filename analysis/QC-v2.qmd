@@ -1,0 +1,121 @@
+---
+title: "QC"
+author: "Chao Dai"
+date: "7/28/22 (modified: `r Sys.Date()`)"
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r}
+#| include: false
+
+library(tidyverse)
+library(data.table)
+library(yaml)
+
+```
+
+
+## Library Description
+
+```{r}
+
+# config yaml
+config = yaml.load_file("../code/config/config.yaml")
+
+# sample sheets
+ss = list(rna = fread(paste0("../code/", config$RNA_SAMPLES)),
+          atac = fread(paste0("../code/", config$ATAC_SAMPLES))
+          )
+```
+
+
+```{r}
+
+ss$rna = ss$rna[, .(
+  library = "rna-seq",
+  batch = if_else(batch == "A", 1, 2),
+  sampleid = sample,
+  condition = paste(treatment, time, sep="-")
+)] %>% unique
+
+ss$atac = ss$atac[, .(
+  library = "atac-seq", 
+  batch = 1,
+  sampleid = paste("S", str_match(fastq, "ATAC([0-9]{1,2})")[, 2], sep=""),
+  condition = paste("wt", time, sep="-")
+)] %>% unique
+
+ss = rbindlist(ss)
+
+# bam flagstats
+flagstat = dir("../code/results/QC/flagstat", '*txt', recursive = T, full.names = T)
+flagstat_meta = str_match(flagstat, "([rnatc]{3,4}-seq).+(batch[1/2]).+(S[0-9]{2})")  %>% as.data.table
+flagstat_meta = flagstat_meta[, .(
+  library = V2,
+  batch = str_extract(V3, "[0-9]{1}") %>% as.numeric,
+  sampleid = V4,
+  file = flagstat
+)] %>% unique
+
+
+# join
+flagstat_meta = ss[flagstat_meta, on = c("library", "batch", "sampleid"), nomatch = NA]
+
+```
+
+
+```{r}
+# library size = primary mapped reads
+flagstat_meta[, data := map(file, fread)]
+
+lib_size1 = flagstat_meta[, .(
+  description = paste(library, condition, sep = "::"),
+  library,
+  batch,
+  sampleid,
+  condition,
+  primary_mapped = map_dbl(data, ~ .x$V1[[9]] %>% as.numeric)
+)][order(description), .(size = sum(primary_mapped)), by = "description"] 
+
+lib_size2 = flagstat_meta[, .(
+  description = paste(library, condition, sep = "::"),
+  library,
+  batch,
+  sampleid,
+  condition,
+  primary_mapped = map_dbl(data, ~ .x$V1[[9]] %>% as.numeric)
+)][, .(size = sum(primary_mapped)), by = "library"]
+
+lib_size3 = flagstat_meta[, .(
+  library,
+  batch,
+  sampleid,
+  condition,
+  primary_mapped = map_dbl(data, ~ .x$V1[[9]] %>% as.numeric)
+)][order(library, condition, sampleid), .(size = sum(primary_mapped)), by = .(library, condition, sampleid)]
+
+```
+
+Overall we generated `r lib_size2$size[1] %>% scales::comma(.)` primarily mapped reads for the ATAC-seq library and `r lib_size2$size[2] %>% scales::comma(.)` primarily mapped reads for the RNA-seq library ( table \@ref(tab:table1).
+
+```{r table1, include=TRUE}
+# total library size
+lib_size2[, .(library, size = scales::comma(size))] #%>% knitr::kable(., caption = "Total library size")
+```
+
+
+Detailed library size in table \@ref(tab:table2)
+
+```{r table2, include=TRUE}
+# library size by condition
+lib_size1[, .(description,
+              size = scales::comma(size)
+                )] 
+
+```
+
+```{r}
+lib_size3
+```
+
