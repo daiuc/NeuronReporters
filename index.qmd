@@ -47,7 +47,7 @@ title: "NeuronReporters"
 
 -   Regarding libary QC, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.drfri2pwzln8)
 
-    -   See Library summary [LINK](QC.html)
+    -   See Library summary [LINK](analysis/QC-v2.qmd)
 
 
 -   Regarding RNA-seq heatmap in Fig. 1B, see google doc [section](https://docs.google.com/document/d/1m4bml55GpEqOuePVW7lyhkZZgy6DNjqOX4Aq9iGc9tE/edit#bookmark=id.gca3m2hkd6ql)
