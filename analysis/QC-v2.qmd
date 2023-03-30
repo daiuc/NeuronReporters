@@ -119,3 +119,63 @@ lib_size1[, .(description,
 lib_size3
 ```
 
+## CRISPR
+
+```{r}
+cnts.file = "../code/resources/crispr/counts/wrangled_raw_counts.tsv" # raw file
+cnts = fread(cnts.file) %>% .[, .(ID=sgRNA, Gene, S6 = Day14_iN, S7=Day14_Tdpos, S8=Day14_Tdneg)]
+```
+
+
+### numer of guides
+
+```{r}
+cnts[, type := if_else(str_detect(Gene, "NonTarget"), "NTC", "Targeting")]
+```
+```{r}
+cnts[, .(N_total_gRNAs = length(unique(ID))), by = type]
+```
+
+```{r}
+cnts[ type == "Targeting", Gene] %>% unique %>% length
+```
+
+
+
+```{r}
+# group 10 NTC guides into 1 NTC group
+NTC = paste("NonTargeting_Human_", sort(rep(1:100, 10)), sep="")
+cnts[str_detect(toupper(Gene), "NONTARGET"), Gene := NTC]
+```
+
+
+total library size
+```{r}
+cnts[, .SD, .SDcols = is.numeric] %>% sum
+```
+
+size by library
+```{r}
+cnts[, .SD, .SDcols = is.numeric] %>% colSums
+```
+
+
+## Hits 
+```{r}
+hitlist = fread("../code/resources/crispr/Hitlist_20191230.csv")
+```
+
+```{r}
+dt = cnts[, .(Gene, ID, S6, S7, S8, rs = rowSums(cnts[, .(S6, S7, S8)]))][
+  Gene %in% hitlist$gene_name & rs>0
+][order(Gene, rs), -c("rs")]
+
+dt = dt[, .(Gene, ID, iN = S6, td_pos = S7, td_neg = S8)]
+fwrite(dt, "../data/hitTFs-reads-by-gRNA.tsv", sep = "\t")
+
+
+dt
+```
+
+
+
