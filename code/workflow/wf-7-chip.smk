@@ -159,7 +159,7 @@ rule CallPeaksChip:
 rule IntersectChipPeaks:
     message: 'Intersect Chip peaks to find targets'
     input: 
-        peaks = rules.CallPeaksChip.output,
+        peaks = "results/ChIP/{Gene}/macs2/chip_peaks.narrowPeak",
         tf = 'resources/annotations/hs38/gencode_v31_tf_u2k_d1k.bed'
     output: 'results/ChIP/{Gene}/targets.bed'
     threads: 1
@@ -176,13 +176,16 @@ rule DeeptoolsHeatmap:
     input: 
         bigwig = rules.BigwigChip.output,
         bed1 = 'resources/annotations/hs38/zeb1_target_tfs.bed',
-        bed2 = 'resources/annotations/hs38/zeb1_nontarget_tfs.bed'
+        bed2 = 'resources/annotations/hs38/random2000proteingenes.bed'
+        # bed2 = 'resources/annotations/hs38/gencode_v31_protein_u2k_d1k.bed'
+        # bed2 = 'resources/annotations/hs38/zeb1_protein_u2k_d1k_noChIPPeaks.bed'
+        # bed2 = 'resources/annotations/hs38/zeb1_nontarget_tfs.bed'
     output: 
         mx = 'results/ChIP/{Gene}/deeptools/chip.mat.gz',
         svg = 'results/ChIP/{Gene}/deeptools/chip.svg'
     log: 'logs/DeeptoolsHeatmap_{Gene}.log'
-    threads: 4
-    resources: cpu = 4, mem_mb = 25000, time = 2100
+    threads: 8
+    resources: cpu = 8, mem_mb = 25000, time = 2100
     shell: 
         '''
         computeMatrix scale-regions \

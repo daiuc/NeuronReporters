@@ -8,7 +8,6 @@ CHROMS = ["chr" + str(s) for s in range(1,23)]
 CHROMS.extend(['chrX','chrY'])
 
 
-
 rna = (pd.read_csv(config['RNA_SAMPLES'], sep='\t', 
                    dtype={'treatment': str, 'timepoint':str, 'time':str, 'rep': str, 'batch': str, 'sample':str, 'fastq': str})
       .set_index(['treatment', 'timepoint', 'rep', 'batch'], drop=False)
