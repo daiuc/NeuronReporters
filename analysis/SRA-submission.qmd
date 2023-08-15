@@ -1,0 +1,53 @@
+---
+title: "SRA submission"
+author: "Chao Dai"
+date: "8/4/2023"
+editor_options:
+  chunk_output_type: inline
+execute: 
+  echo: false
+  include: false
+---
+
+```{r}
+library(tidyverse)
+library(data.table)
+```
+
+
+```{r}
+rna.sheets <- fread("../code/config/rna.tsv")
+atac.sheets <- fread("../code/config/atac.tsv")
+```
+
+### ATAC-seq files
+
+```{r}
+atac.sheets 
+```
+
+### RNA-seq files
+
+
+#### All wild types
+```{r}
+rna.sheets[treatment %in% c("k108", "k112"), .(treatment, timepoint, time, rep, batch, fastq)][order(treatment, timepoint, rep, batch, fastq)]
+```
+
+
+```{r}
+rna.sheets[treatment %in% c("k108", "k112"), .(treatment, timepoint, time, rep, batch, fastq)][order(treatment, timepoint, rep, batch, fastq)][, .(fastq)]
+```
+
+
+```{r}
+rna.sheets[treatment %in% c("wt", "k112", "k108"), .(treatment, timepoint, time, rep, batch)][order(treatment, timepoint, rep, batch)] %>% unique %>% 
+  .[, .(label = paste(
+    toupper(treatment),
+    toupper(time),
+    paste("Rep", rep, sep=""),
+    batch,
+    sep = "-"
+  ))]
+```
+

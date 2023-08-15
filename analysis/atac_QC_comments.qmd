@@ -1,7 +1,7 @@
 ---
 title: "Respond to ATAC-seq QC comments"
 author: "daiuc"
-date: "2023-01-06"
+date: "2023-08-14"
 
 ---
 
@@ -20,6 +20,19 @@ Sample 11 and 12 are day 5, which is drastcally different comparing to other sam
 
 knitr::include_graphics("../code/results/reviews/BigwigSummary/Genome/heatmap.pdf")
 ```
+
+
+### Genome wide2
+```{r}
+#| out-width: "95%"
+#| out-height: "500px"
+
+# file produced from analysis/ATAC-QC-replot-corr-heatmap.qmd
+knitr::include_graphics("ATAC-QC-bigwig-genomewide-corrplot.pdf")
+
+```
+
+
 
 ### Genebody
 ```{r}

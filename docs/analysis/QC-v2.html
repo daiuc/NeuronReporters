@@ -168,6 +168,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    
   <ul>
   <li><a href="#library-description" id="toc-library-description" class="nav-link active" data-scroll-target="#library-description">Library Description</a></li>
+  <li><a href="#crispr" id="toc-crispr" class="nav-link" data-scroll-target="#crispr">CRISPR</a>
+  <ul class="collapse">
+  <li><a href="#numer-of-guides" id="toc-numer-of-guides" class="nav-link" data-scroll-target="#numer-of-guides">numer of guides</a></li>
+  </ul></li>
+  <li><a href="#hits" id="toc-hits" class="nav-link" data-scroll-target="#hits">Hits</a></li>
+  <li><a href="#number-of-atac-seq-reads-in-promoters" id="toc-number-of-atac-seq-reads-in-promoters" class="nav-link" data-scroll-target="#number-of-atac-seq-reads-in-promoters">Number of ATAC-seq reads in promoters</a></li>
+  <li><a href="#number-of-atac-seeq-raw-sequenced-reads" id="toc-number-of-atac-seeq-raw-sequenced-reads" class="nav-link" data-scroll-target="#number-of-atac-seeq-raw-sequenced-reads">Number of ATAC-seeq raw sequenced reads</a></li>
+  <li><a href="#number-of-rna-seq-raw-sequenced-reads" id="toc-number-of-rna-seq-raw-sequenced-reads" class="nav-link" data-scroll-target="#number-of-rna-seq-raw-sequenced-reads">Number of RNA-seq raw sequenced reads</a></li>
   </ul>
 </nav>
     </div>
@@ -326,6 +334,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 16:  rna-seq::wt-h15  26,318,653</code></pre>
 </div>
 </div>
+<p><strong>sample</strong></p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -368,6 +377,1073 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 33:  rna-seq    wt-h15      S15 13690829
 34:  rna-seq    wt-h15      S16 12627824
      library condition sampleid     size</code></pre>
+</div>
+</div>
+<p><strong>by sample and batch</strong></p>
+<p>ATAC</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>flagstat_meta[, .(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  library,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  batch,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  sampleid,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  condition,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">primary_mapped =</span> <span class="fu">map_dbl</span>(data, <span class="sc">~</span> .x<span class="sc">$</span>V1[[<span class="dv">9</span>]] <span class="sc">%&gt;%</span> <span class="fu">as.integer</span>(.))</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)][<span class="fu">order</span>(library, condition, sampleid, batch), .(<span class="at">size =</span> <span class="fu">sum</span>(primary_mapped)), by <span class="ot">=</span> .(library, condition, sampleid, batch)] <span class="sc">%&gt;%</span> </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  .[library <span class="sc">==</span> <span class="st">"atac-seq"</span>] <span class="sc">%&gt;%</span> </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">library</th>
+<th style="text-align: left;">condition</th>
+<th style="text-align: left;">sampleid</th>
+<th style="text-align: right;">batch</th>
+<th style="text-align: right;">size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-d1</td>
+<td style="text-align: left;">S09</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">86433463</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-d1</td>
+<td style="text-align: left;">S10</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">58769639</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-d5</td>
+<td style="text-align: left;">S11</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">45593714</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-d5</td>
+<td style="text-align: left;">S12</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">41018709</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S01</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">47160567</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S02</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42659978</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-h1</td>
+<td style="text-align: left;">S03</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">47790998</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-h1</td>
+<td style="text-align: left;">S04</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">45981815</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-h16</td>
+<td style="text-align: left;">S07</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">39407650</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-h16</td>
+<td style="text-align: left;">S08</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">43303214</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-h4</td>
+<td style="text-align: left;">S05</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42795268</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">atac-seq</td>
+<td style="text-align: left;">wt-h4</td>
+<td style="text-align: left;">S06</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">61357612</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>RNA</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>flagstat_meta[, .(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  library,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  batch,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  sampleid,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  condition,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">primary_mapped =</span> <span class="fu">map_dbl</span>(data, <span class="sc">~</span> .x<span class="sc">$</span>V1[[<span class="dv">9</span>]] <span class="sc">%&gt;%</span> <span class="fu">as.integer</span>(.))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)][<span class="fu">order</span>(library, condition, sampleid, batch), .(<span class="at">size =</span> <span class="fu">sum</span>(primary_mapped)), by <span class="ot">=</span> .(library, condition, sampleid, batch)] <span class="sc">%&gt;%</span> </span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  .[library <span class="sc">==</span> <span class="st">"rna-seq"</span>] <span class="sc">%&gt;%</span> </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped">
+<thead>
+<tr class="header">
+<th style="text-align: left;">library</th>
+<th style="text-align: left;">condition</th>
+<th style="text-align: left;">sampleid</th>
+<th style="text-align: right;">batch</th>
+<th style="text-align: right;">size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k108-d4</td>
+<td style="text-align: left;">S09</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6055433</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k108-d4</td>
+<td style="text-align: left;">S09</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6953777</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k108-d4</td>
+<td style="text-align: left;">S10</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2826607</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k108-d4</td>
+<td style="text-align: left;">S10</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5729117</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k108-es</td>
+<td style="text-align: left;">S03</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5163810</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k108-es</td>
+<td style="text-align: left;">S03</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4411297</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k108-es</td>
+<td style="text-align: left;">S04</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5059043</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k108-es</td>
+<td style="text-align: left;">S04</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7957506</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k112-d4</td>
+<td style="text-align: left;">S11</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4475065</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k112-d4</td>
+<td style="text-align: left;">S11</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5330218</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k112-d4</td>
+<td style="text-align: left;">S12</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5894307</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k112-d4</td>
+<td style="text-align: left;">S12</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8490823</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k112-es</td>
+<td style="text-align: left;">S05</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6624411</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k112-es</td>
+<td style="text-align: left;">S05</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8101648</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k112-es</td>
+<td style="text-align: left;">S06</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6243150</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">k112-es</td>
+<td style="text-align: left;">S06</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">12791272</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d1</td>
+<td style="text-align: left;">S17</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5066315</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d1</td>
+<td style="text-align: left;">S17</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7779676</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d1</td>
+<td style="text-align: left;">S18</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5014762</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d1</td>
+<td style="text-align: left;">S18</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7866352</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d2</td>
+<td style="text-align: left;">S19</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5723479</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d2</td>
+<td style="text-align: left;">S19</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6340591</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d2</td>
+<td style="text-align: left;">S20</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5691175</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d2</td>
+<td style="text-align: left;">S20</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8029185</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d4</td>
+<td style="text-align: left;">S07</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5327393</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d4</td>
+<td style="text-align: left;">S07</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1980278</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d4</td>
+<td style="text-align: left;">S08</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7052039</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d4</td>
+<td style="text-align: left;">S08</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7296073</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d7</td>
+<td style="text-align: left;">S21</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3702690</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d7</td>
+<td style="text-align: left;">S21</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">4816273</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d7</td>
+<td style="text-align: left;">S22</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4173331</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-d7</td>
+<td style="text-align: left;">S22</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6645127</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S01</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5625097</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S01</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">5867606</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S02</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5704710</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S02</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7237994</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S13</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6621604</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S13</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">8010292</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S14</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5398943</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-es</td>
+<td style="text-align: left;">S14</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7776305</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-h15</td>
+<td style="text-align: left;">S15</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">6157027</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-h15</td>
+<td style="text-align: left;">S15</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7533802</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-h15</td>
+<td style="text-align: left;">S16</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">5709784</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">rna-seq</td>
+<td style="text-align: left;">wt-h15</td>
+<td style="text-align: left;">S16</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6918040</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="crispr" class="level2">
+<h2 class="anchored" data-anchor-id="crispr">CRISPR</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>cnts.file <span class="ot">=</span> <span class="st">"../code/resources/crispr/counts/wrangled_raw_counts.tsv"</span> <span class="co"># raw file</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cnts <span class="ot">=</span> <span class="fu">fread</span>(cnts.file) <span class="sc">%&gt;%</span> .[, .(<span class="at">ID=</span>sgRNA, Gene, <span class="at">S6 =</span> Day14_iN, <span class="at">S7=</span>Day14_Tdpos, <span class="at">S8=</span>Day14_Tdneg)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<section id="numer-of-guides" class="level3">
+<h3 class="anchored" data-anchor-id="numer-of-guides">numer of guides</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>cnts[, type <span class="sc">:</span><span class="er">=</span> <span class="fu">if_else</span>(<span class="fu">str_detect</span>(Gene, <span class="st">"NonTarget"</span>), <span class="st">"NTC"</span>, <span class="st">"Targeting"</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>cnts[, .(<span class="at">N_total_gRNAs =</span> <span class="fu">length</span>(<span class="fu">unique</span>(ID))), by <span class="ot">=</span> type]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        type N_total_gRNAs
+1: Targeting         18838
+2:       NTC          1000</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>cnts[ type <span class="sc">==</span> <span class="st">"Targeting"</span>, Gene] <span class="sc">%&gt;%</span> unique <span class="sc">%&gt;%</span> length</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1891</code></pre>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># group 10 NTC guides into 1 NTC group</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>NTC <span class="ot">=</span> <span class="fu">paste</span>(<span class="st">"NonTargeting_Human_"</span>, <span class="fu">sort</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="dv">10</span>)), <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>cnts[<span class="fu">str_detect</span>(<span class="fu">toupper</span>(Gene), <span class="st">"NONTARGET"</span>), Gene <span class="sc">:</span><span class="er">=</span> NTC]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>total library size</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>cnts[, .SD, .SDcols <span class="ot">=</span> is.numeric] <span class="sc">%&gt;%</span> sum</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 4769269</code></pre>
+</div>
+</div>
+<p>size by library</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>cnts[, .SD, .SDcols <span class="ot">=</span> is.numeric] <span class="sc">%&gt;%</span> colSums</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     S6      S7      S8 
+1717607 1290124 1761538 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="hits" class="level2">
+<h2 class="anchored" data-anchor-id="hits">Hits</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>hitlist <span class="ot">=</span> <span class="fu">fread</span>(<span class="st">"../code/resources/crispr/Hitlist_20191230.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">=</span> cnts[, .(Gene, ID, S6, S7, S8, <span class="at">rs =</span> <span class="fu">rowSums</span>(cnts[, .(S6, S7, S8)]))][</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  Gene <span class="sc">%in%</span> hitlist<span class="sc">$</span>gene_name <span class="sc">&amp;</span> rs<span class="sc">&gt;</span><span class="dv">0</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>][<span class="fu">order</span>(Gene, rs), <span class="sc">-</span><span class="fu">c</span>(<span class="st">"rs"</span>)]</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">=</span> dt[, .(Gene, ID, <span class="at">iN =</span> S6, <span class="at">td_pos =</span> S7, <span class="at">td_neg =</span> S8)]</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(dt, <span class="st">"../data/hitTFs-reads-by-gRNA.tsv"</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>dt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Gene             ID iN td_pos td_neg
+   1: AFF4 GUIDES_sg00114  3      0      0
+   2: AFF4 GUIDES_sg00111  6      6      0
+   3: AFF4 GUIDES_sg00113 26      7      0
+   4: AFF4 GUIDES_sg00115 43     14      0
+   5: AFF4 GUIDES_sg00112 50     40      0
+  ---                                     
+1150: ZZZ3 GUIDES_sg18836 20     17      0
+1151: ZZZ3 GUIDES_sg18832 34     12      0
+1152: ZZZ3 GUIDES_sg18835 59     49      0
+1153: ZZZ3 GUIDES_sg18833 38     36   1557
+1154: ZZZ3 GUIDES_sg18829 80    118   2257</code></pre>
+</div>
+</div>
+</section>
+<section id="number-of-atac-seq-reads-in-promoters" class="level2">
+<h2 class="anchored" data-anchor-id="number-of-atac-seq-reads-in-promoters">Number of ATAC-seq reads in promoters</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>preads.f <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"../code/results/reviews/atac/counts/promoter/ATAC{1:12}.txt.summary"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(preads.f) <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"ATAC{1:12}"</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>preads <span class="ot">&lt;-</span> <span class="fu">map</span>(preads.f, \(x) <span class="fu">fread</span>(x) <span class="sc">%&gt;%</span> deframe <span class="sc">%&gt;%</span> .[[<span class="st">"Assigned"</span>]]) <span class="sc">%&gt;%</span> unlist</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>preads <span class="ot">&lt;-</span> <span class="fu">enframe</span>(preads)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>preads <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">sampleid =</span> <span class="fu">str_replace</span>(name, <span class="st">"ATAC"</span>, <span class="st">""</span>) <span class="sc">%&gt;%</span> <span class="fu">str_pad</span>(<span class="dv">2</span>, <span class="at">pad=</span><span class="st">"0"</span>) <span class="sc">%&gt;%</span> <span class="fu">str_pad</span>(<span class="dv">3</span>, <span class="at">pad=</span><span class="st">"S"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">filter</span>(ss, library <span class="sc">==</span> <span class="st">"atac-seq"</span>), <span class="at">by =</span> <span class="st">"sampleid"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(library, condition, sampleid, value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 4
+   library  condition sampleid   value
+   &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;      &lt;int&gt;
+ 1 atac-seq wt-es     S01       776638
+ 2 atac-seq wt-es     S02       676624
+ 3 atac-seq wt-h1     S03       700464
+ 4 atac-seq wt-h1     S04       689459
+ 5 atac-seq wt-h4     S05       726751
+ 6 atac-seq wt-h4     S06       989551
+ 7 atac-seq wt-h16    S07       601360
+ 8 atac-seq wt-h16    S08       824131
+ 9 atac-seq wt-d1     S09      1521868
+10 atac-seq wt-d1     S10      1014683
+11 atac-seq wt-d5     S11      1209667
+12 atac-seq wt-d5     S12      1080010</code></pre>
+</div>
+</div>
+</section>
+<section id="number-of-atac-seeq-raw-sequenced-reads" class="level2">
+<h2 class="anchored" data-anchor-id="number-of-atac-seeq-raw-sequenced-reads">Number of ATAC-seeq raw sequenced reads</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC01_11-14-18_fastqc/fastqc_data.txt</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>fastqdata <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC{str_pad(1:12, 2, pad=</span><span class="sc">\'</span><span class="st">0</span><span class="sc">\'</span><span class="st">)}_11-14-18_fastqc/fastqc_data.txt"</span>),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC{str_pad(1:12, 2, pad=</span><span class="sc">\'</span><span class="st">0</span><span class="sc">\'</span><span class="st">)}_11-14-18_fastqc/fastqc_data.txt"</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>cmds <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"awk '$0 ~ /Total Sequences/ {{print $0}}' {fastqdata}"</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(cmds) <span class="ot">&lt;-</span> <span class="fu">str_extract</span>(cmds, <span class="st">"(n</span><span class="sc">\\</span><span class="st">d{2}).+(ATAC</span><span class="sc">\\</span><span class="st">d{2})"</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span>(cmds, \(x) <span class="fu">fread</span>(x) <span class="sc">%&gt;%</span> .[, V2]) <span class="sc">%&gt;%</span> unlist <span class="sc">%&gt;%</span> enframe <span class="sc">%&gt;%</span> </span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(name, <span class="fu">c</span>(<span class="st">"read"</span>, <span class="st">"sampleid"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sampleid =</span> <span class="fu">str_replace</span>(sampleid, <span class="st">"ATAC"</span>, <span class="st">"S"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sampleid) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">readsbysample =</span> <span class="fu">sum</span>(value)) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(ss[library <span class="sc">==</span> <span class="st">"atac-seq"</span>, .(library, sampleid, condition)] <span class="sc">%&gt;%</span> unique, <span class="at">by =</span> <span class="st">"sampleid"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(library, condition, sampleid, readsbysample) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">readsbysample =</span> scales<span class="sc">::</span><span class="fu">number</span>(readsbysample)) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(sampleid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC01_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC02_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC03_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC04_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC05_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC06_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC07_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC08_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC09_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC10_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC11_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC12_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC01_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC02_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC03_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC04_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC05_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC06_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC07_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC08_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC09_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC10_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC11_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Taking input= as a system command ('awk '$0 ~ /Total Sequences/ {print $0}' ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC12_11-14-18_fastqc/fastqc_data.txt') and a variable has been used in the expression passed to `input=`. Please use fread(cmd=...). There is a security concern if you are creating an app, and the app could have a malicious user, and the app is not running in a secure environment; e.g. the app is running as root. Please read item 5 in the NEWS file for v1.11.6 for more information and for the option to suppress this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 4
+   library  condition sampleid readsbysample
+   &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;    &lt;chr&gt;        
+ 1 atac-seq wt-es     S01      59 888 540   
+ 2 atac-seq wt-es     S02      53 791 264   
+ 3 atac-seq wt-h1     S03      61 414 542   
+ 4 atac-seq wt-h1     S04      58 651 844   
+ 5 atac-seq wt-h4     S05      54 478 534   
+ 6 atac-seq wt-h4     S06      79 064 076   
+ 7 atac-seq wt-h16    S07      50 592 262   
+ 8 atac-seq wt-h16    S08      54 346 242   
+ 9 atac-seq wt-d1     S09      110 710 086  
+10 atac-seq wt-d1     S10      74 905 594   
+11 atac-seq wt-d5     S11      57 281 292   
+12 atac-seq wt-d5     S12      51 539 826   </code></pre>
+</div>
+</div>
+</section>
+<section id="number-of-rna-seq-raw-sequenced-reads" class="level2">
+<h2 class="anchored" data-anchor-id="number-of-rna-seq-raw-sequenced-reads">Number of RNA-seq raw sequenced reads</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ../code/results/RNAseq/fastqc/HFJM7BGXC_n01_S17_fastqc/fastqc_data.txt</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="co">#HFJM7BGXC_n01_S19_fastqc.zip</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>fastqdata <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"../code/results/RNAseq/fastqc/H2HY7BGXC_n01_S{str_pad(1:22, 2, pad=</span><span class="sc">\'</span><span class="st">0</span><span class="sc">\'</span><span class="st">)}_fastqc/fastqc_data.txt"</span>),</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"../code/results/RNAseq/fastqc/HFJM7BGXC_n01_S{str_pad(1:22, 2, pad=</span><span class="sc">\'</span><span class="st">0</span><span class="sc">\'</span><span class="st">)}_fastqc/fastqc_data.txt"</span>)</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>batches <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"H2HY7BGXC"</span> <span class="ot">=</span> <span class="st">"1"</span>, <span class="st">"HFJM7BGXC"</span> <span class="ot">=</span> <span class="st">"2"</span>)</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>cmds <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">"awk '$0 ~ /Total Sequences/ {{print $0}}' {fastqdata}"</span>)</span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(cmds) <span class="ot">&lt;-</span> <span class="fu">str_extract</span>(cmds, <span class="st">"(H2HY7BGXC|HFJM7BGXC).+(S</span><span class="sc">\\</span><span class="st">d{2})"</span>)</span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a><span class="fu">map</span>(cmds, \(x) <span class="fu">fread</span>(<span class="at">cmd =</span> x) <span class="sc">%&gt;%</span> .[, V2]) <span class="sc">%&gt;%</span> unlist <span class="sc">%&gt;%</span> enframe <span class="sc">%&gt;%</span> </span>
+<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">extract</span>(name, <span class="fu">c</span>(<span class="st">"batch"</span>, <span class="st">"sampleid"</span>), <span class="st">"(H2HY7BGXC|HFJM7BGXC).+(S</span><span class="sc">\\</span><span class="st">d{2})"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">batch =</span> <span class="fu">map_chr</span>(batch, \(x) batches[x])) <span class="sc">%&gt;%</span> </span>
+<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sampleid, batch) <span class="sc">%&gt;%</span> </span>
+<span id="cb55-17"><a href="#cb55-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">readsbysample =</span> <span class="fu">sum</span>(value), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb55-18"><a href="#cb55-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(ss[library <span class="sc">==</span> <span class="st">"rna-seq"</span>, .(library, sampleid, condition, <span class="at">batch=</span><span class="fu">as.character</span>(batch))] <span class="sc">%&gt;%</span> unique, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"sampleid"</span>, <span class="st">"batch"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb55-19"><a href="#cb55-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(library, condition, sampleid,  batch, readsbysample) <span class="sc">%&gt;%</span> </span>
+<span id="cb55-20"><a href="#cb55-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">#mutate(readsbysample = scales::comma(readsbysample)) %&gt;% </span></span>
+<span id="cb55-21"><a href="#cb55-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(condition,  sampleid, batch) <span class="sc">%&gt;%</span> </span>
+<span id="cb55-22"><a href="#cb55-22" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">format =</span> <span class="st">"html"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> library </th>
+   <th style="text-align:left;"> condition </th>
+   <th style="text-align:left;"> sampleid </th>
+   <th style="text-align:left;"> batch </th>
+   <th style="text-align:right;"> readsbysample </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k108-d4 </td>
+   <td style="text-align:left;"> S09 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 9698544 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k108-d4 </td>
+   <td style="text-align:left;"> S09 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 12293462 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k108-d4 </td>
+   <td style="text-align:left;"> S10 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 4540513 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k108-d4 </td>
+   <td style="text-align:left;"> S10 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 7162386 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k108-es </td>
+   <td style="text-align:left;"> S03 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 7243079 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k108-es </td>
+   <td style="text-align:left;"> S03 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 6271747 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k108-es </td>
+   <td style="text-align:left;"> S04 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 6487837 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k108-es </td>
+   <td style="text-align:left;"> S04 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 10041854 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k112-d4 </td>
+   <td style="text-align:left;"> S11 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 7408825 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k112-d4 </td>
+   <td style="text-align:left;"> S11 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 11139959 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k112-d4 </td>
+   <td style="text-align:left;"> S12 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 8730021 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k112-d4 </td>
+   <td style="text-align:left;"> S12 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 10603993 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k112-es </td>
+   <td style="text-align:left;"> S05 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 9221893 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k112-es </td>
+   <td style="text-align:left;"> S05 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 11072457 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k112-es </td>
+   <td style="text-align:left;"> S06 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 9197964 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> k112-es </td>
+   <td style="text-align:left;"> S06 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 19389122 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d1 </td>
+   <td style="text-align:left;"> S17 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 7553238 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d1 </td>
+   <td style="text-align:left;"> S17 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 12884149 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d1 </td>
+   <td style="text-align:left;"> S18 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 7665723 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d1 </td>
+   <td style="text-align:left;"> S18 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 11834691 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d2 </td>
+   <td style="text-align:left;"> S19 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 8132358 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d2 </td>
+   <td style="text-align:left;"> S19 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 8524946 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d2 </td>
+   <td style="text-align:left;"> S20 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 8296923 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d2 </td>
+   <td style="text-align:left;"> S20 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 11276232 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d4 </td>
+   <td style="text-align:left;"> S07 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 7722012 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d4 </td>
+   <td style="text-align:left;"> S07 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 2576710 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d4 </td>
+   <td style="text-align:left;"> S08 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 11376879 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d4 </td>
+   <td style="text-align:left;"> S08 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 11527405 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d7 </td>
+   <td style="text-align:left;"> S21 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 7097874 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d7 </td>
+   <td style="text-align:left;"> S21 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 8477857 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d7 </td>
+   <td style="text-align:left;"> S22 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 7327925 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-d7 </td>
+   <td style="text-align:left;"> S22 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 11143121 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-es </td>
+   <td style="text-align:left;"> S01 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 8389636 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-es </td>
+   <td style="text-align:left;"> S01 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 7861728 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-es </td>
+   <td style="text-align:left;"> S02 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 8193903 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-es </td>
+   <td style="text-align:left;"> S02 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 10278302 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-es </td>
+   <td style="text-align:left;"> S13 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 9068995 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-es </td>
+   <td style="text-align:left;"> S13 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 10295966 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-es </td>
+   <td style="text-align:left;"> S14 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 7775055 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-es </td>
+   <td style="text-align:left;"> S14 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 10244819 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-h15 </td>
+   <td style="text-align:left;"> S15 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 8979579 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-h15 </td>
+   <td style="text-align:left;"> S15 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 10030662 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-h15 </td>
+   <td style="text-align:left;"> S16 </td>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:right;"> 8459794 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> rna-seq </td>
+   <td style="text-align:left;"> wt-h15 </td>
+   <td style="text-align:left;"> S16 </td>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:right;"> 9847128 </td>
+  </tr>
+</tbody>
+</table>
+
 </div>
 </div>
 

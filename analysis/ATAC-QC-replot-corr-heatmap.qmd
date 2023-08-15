@@ -1,0 +1,159 @@
+---
+title: 'Plot deeptools genomewide correlation heatmap - replot'
+date: 2023-08-14
+execute: 
+  echo: false
+---
+
+
+```{r}
+suppressMessages(library(tidyverse))
+suppressMessages(library(data.table))
+suppressMessages(library(ComplexHeatmap))
+library(circlize)
+library(RColorBrewer)
+library(glue)
+```
+
+
+```{r}
+# genome wide correlation
+gw.mx <- fread("../code/results/reviews/BigwigSummary/Genome/corr.matrix")
+colnames(gw.mx) <- colnames(gw.mx) %>% str_replace_all("(\\.bw)|(\\')", "")
+gw.mx[, V1 := str_replace_all(V1, "(\\.bw)|(\\')", "")]
+gw.mx[, V1 := factor(V1, glue("ATAC{1:12}"))]
+
+```
+
+```{r}
+lkup <- as.data.table(list(id = glue("ATAC{1:12}")))
+
+lkup[, `:=`(
+    id = as.character(id),
+    timepoint = c("ES", "ES", "1H", "1H", "4H", "4H", "15H", "15H", "D1", "D1", "D4", "D4"),
+    repl = rep(c("R1", "R2"), 6)
+)]
+
+lkup[, lab := paste(timepoint, repl)]
+```
+
+```{r}
+gw.mx[order(V1)][, c(lkup$id, "V1"), with=F] %>% 
+  column_to_rownames("V1")
+```
+
+
+```{r}
+gw.mx[order(V1)][, c(lkup$id, "V1"), with=F] %>% 
+  column_to_rownames("V1") %>% 
+  as.matrix
+```
+
+
+```{r}
+gw.mx %>% 
+    column_to_rownames('V1') %>% 
+    as.matrix
+```
+
+```{r}
+
+label_lookup = left_join(gw.mx[, .(V1)], lkup[, .(id, lab)], by = c(V1 = "id")) %>% deframe
+row_labels = left_join(gw.mx[, .(V1)], lkup[, .(id, lab)], by = c(V1 = "id")) %>% deframe
+row_labels
+```
+
+```{r}
+
+
+col_labels <- gw.mx[, -c("V1")] %>% colnames
+names(col_labels) <- col_labels
+col_labels <- map_chr(col_labels, \(x) row_labels[x])
+
+col_labels
+```
+
+
+
+```{r}
+n_colors <- 100
+
+# Create a custom color palette similar to Viridis
+custom_viridis_palette <- colorRampPalette(brewer.pal(9, "YlOrBr"))(n_colors)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+h <- gw.mx %>% 
+  column_to_rownames('V1') %>% 
+  as.matrix %>%
+  .[glue("ATAC{1:12}"), glue("ATAC{1:12}")] %>% 
+  Heatmap(
+          cluster_rows = F, cluster_columns = F,
+          col = colorRamp2(breaks = c(0, .2, .8, .85, .9, .95, 1), 
+                           colors = viridis::viridis(7)), 
+          border = "black",
+          rect_gp = gpar(col = 'black', lwd=.5),
+          cell_fun = function(j, i, x, y, width, height, fill) {
+            grid.text(sprintf("%.2f", .[i, j]), x, y, gp = gpar(fontsize = 8))
+            },
+          heatmap_legend_param = list(
+            title = NULL,
+            at = seq(0, 1, .2)
+          ),
+          row_labels = map_chr(rownames(.), ~label_lookup[.x]),
+          column_labels = map_chr(colnames(.), ~label_lookup[.x]),
+          column_title = "Spearman Correlation - Genome Wide"
+  )
+    
+```
+
+
+
+
+```{r}
+draw(h)
+```
+
+
+
+```{r}
+# save to pdf
+pdf("ATAC-QC-bigwig-genomewide-corrplot.pdf", width = 7, height = 5)
+draw(h)
+dev.off()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

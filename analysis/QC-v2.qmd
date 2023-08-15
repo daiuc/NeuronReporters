@@ -115,9 +115,46 @@ lib_size1[, .(description,
 
 ```
 
+
+**sample**
+
 ```{r}
 lib_size3
 ```
+
+
+**by sample and batch**
+
+ATAC
+
+```{r}
+flagstat_meta[, .(
+  library,
+  batch,
+  sampleid,
+  condition,
+  primary_mapped = map_dbl(data, ~ .x$V1[[9]] %>% as.integer(.))
+)][order(library, condition, sampleid, batch), .(size = sum(primary_mapped)), by = .(library, condition, sampleid, batch)] %>% 
+  .[library == "atac-seq"] %>% 
+  knitr::kable()
+```
+
+
+
+RNA
+
+```{r}
+flagstat_meta[, .(
+  library,
+  batch,
+  sampleid,
+  condition,
+  primary_mapped = map_dbl(data, ~ .x$V1[[9]] %>% as.integer(.))
+)][order(library, condition, sampleid, batch), .(size = sum(primary_mapped)), by = .(library, condition, sampleid, batch)] %>% 
+  .[library == "rna-seq"] %>% 
+  knitr::kable()
+```
+
 
 ## CRISPR
 
@@ -176,6 +213,84 @@ fwrite(dt, "../data/hitTFs-reads-by-gRNA.tsv", sep = "\t")
 
 dt
 ```
+
+## Number of ATAC-seq reads in promoters
+
+```{r}
+preads.f <- glue::glue("../code/results/reviews/atac/counts/promoter/ATAC{1:12}.txt.summary")
+names(preads.f) <- glue::glue("ATAC{1:12}")
+preads <- map(preads.f, \(x) fread(x) %>% deframe %>% .[["Assigned"]]) %>% unlist
+
+preads <- enframe(preads)
+```
+
+```{r}
+preads %>% mutate(sampleid = str_replace(name, "ATAC", "") %>% str_pad(2, pad="0") %>% str_pad(3, pad="S")) %>% 
+  left_join(filter(ss, library == "atac-seq"), by = "sampleid") %>% 
+  select(library, condition, sampleid, value)
+```
+
+
+## Number of ATAC-seeq raw sequenced reads
+
+
+```{r}
+# ../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC01_11-14-18_fastqc/fastqc_data.txt
+
+fastqdata <- c(
+  glue::glue("../code/results/ATACseq/fastqc/HG7FNBGX9_n01_ATAC{str_pad(1:12, 2, pad=\'0\')}_11-14-18_fastqc/fastqc_data.txt"),
+  glue::glue("../code/results/ATACseq/fastqc/HG7FNBGX9_n02_ATAC{str_pad(1:12, 2, pad=\'0\')}_11-14-18_fastqc/fastqc_data.txt")
+  )
+
+cmds <- glue::glue("awk '$0 ~ /Total Sequences/ {{print $0}}' {fastqdata}")
+names(cmds) <- str_extract(cmds, "(n\\d{2}).+(ATAC\\d{2})")
+
+map(cmds, \(x) fread(x) %>% .[, V2]) %>% unlist %>% enframe %>% 
+  separate(name, c("read", "sampleid")) %>% 
+  mutate(sampleid = str_replace(sampleid, "ATAC", "S")) %>% 
+  group_by(sampleid) %>% 
+  summarise(readsbysample = sum(value)) %>% 
+  inner_join(ss[library == "atac-seq", .(library, sampleid, condition)] %>% unique, by = "sampleid") %>% 
+  select(library, condition, sampleid, readsbysample) %>% 
+  mutate(readsbysample = scales::number(readsbysample)) %>% 
+  arrange(sampleid)
+
+```
+
+
+## Number of RNA-seq raw sequenced reads
+
+```{r}
+# ../code/results/RNAseq/fastqc/HFJM7BGXC_n01_S17_fastqc/fastqc_data.txt
+#HFJM7BGXC_n01_S19_fastqc.zip
+
+fastqdata <- c(
+  glue::glue("../code/results/RNAseq/fastqc/H2HY7BGXC_n01_S{str_pad(1:22, 2, pad=\'0\')}_fastqc/fastqc_data.txt"),
+  glue::glue("../code/results/RNAseq/fastqc/HFJM7BGXC_n01_S{str_pad(1:22, 2, pad=\'0\')}_fastqc/fastqc_data.txt")
+  )
+
+batches <- c("H2HY7BGXC" = "1", "HFJM7BGXC" = "2")
+cmds <- glue::glue("awk '$0 ~ /Total Sequences/ {{print $0}}' {fastqdata}")
+names(cmds) <- str_extract(cmds, "(H2HY7BGXC|HFJM7BGXC).+(S\\d{2})")
+
+map(cmds, \(x) fread(cmd = x) %>% .[, V2]) %>% unlist %>% enframe %>% 
+  extract(name, c("batch", "sampleid"), "(H2HY7BGXC|HFJM7BGXC).+(S\\d{2})") %>%
+  mutate(batch = map_chr(batch, \(x) batches[x])) %>% 
+  group_by(sampleid, batch) %>% 
+  summarise(readsbysample = sum(value), .groups = "drop") %>% 
+  inner_join(ss[library == "rna-seq", .(library, sampleid, condition, batch=as.character(batch))] %>% unique, by = c("sampleid", "batch")) %>% 
+  select(library, condition, sampleid,  batch, readsbysample) %>% 
+  #mutate(readsbysample = scales::comma(readsbysample)) %>% 
+  arrange(condition,  sampleid, batch) %>% 
+  knitr::kable(format = "html")
+
+```
+
+
+
+
+
+
 
 
 
