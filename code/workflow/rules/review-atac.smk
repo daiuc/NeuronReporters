@@ -293,7 +293,28 @@ rule IntegrateInteractions:
 
 
 
+#----------------------------------------------------------------------------------------
+#                  Re-generate interaction nodes
+#----------------------------------------------------------------------------------------
 
+rule countReadsInPromoter:
+    '''
+    Only count promoter region reads in ATAC
+    '''
+    input:
+        bam = 'resources/TFscreen/atac/bams_v3/ATAC{atacN}.PE.mapq.bam',
+        promoter = 'resources/TFscreen/atac/Protein_coding_gene_promoters_V2.bed', # 2kb up TSS + 500b down TSS
+    output: 'results/reviews/atac/counts/promoter/ATAC{atacN}.txt'
+    threads: 10
+    resources: cpu = 10, mem_mb = 25000, time = 2100
+    shell:
+        '''
+        featureCounts -T {threads} \
+            -F SAF \
+            -a <(awk 'BEGIN {{OFS="\t"}}; {{print $4,$1,$2,$3,$6}}' {input.promoter}) \
+            -p --primary -Q 20 -s 1 \
+            -o {output} {input.bam}
+        '''
 
 
 
